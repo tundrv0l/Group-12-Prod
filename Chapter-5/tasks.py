@@ -5,16 +5,19 @@ def least_element(elements, relation):
                 break
         else:
             return a
+
     return None
 
 def minimal_elements(elements, relation):
     minimals = set()
+
     for a in elements:
         for b in elements - set(a):
             if (b,a) in relation:
                 break
         else:
             minimals.add(a)
+
     return minimals
 
 def table_to_relation(relation, table_input):
@@ -56,6 +59,7 @@ def timed_table():
 
     if time_input.strip():
         time_strings = time_input.split(",")
+        
         try:
             times = [float(t) for t in time_strings]
         except ValueError:

@@ -19,6 +19,7 @@ def check_properties(elements, relation):
     for (a, b) in relation:
         if (b, a) in relation:
             asymmetric = False
+            
             if a != b:
                 antisymmetric = False
         else:
@@ -34,22 +35,28 @@ def check_properties(elements, relation):
 
 def reflexive_closure(elements, relation):
     closure = copy.deepcopy(relation)
+
     for element in elements:
         closure.add((element, element))
+
     return closure
 
 def symmetric_closure(relation):
     closure = copy.deepcopy(relation)
+
     for (a, b) in relation:
         closure.add((b, a))
+
     return closure
 
 def transitive_closure(relation):
     closure = copy.deepcopy(relation)
+
     for (a, b) in relation:
         for (c, d) in relation:
                 if b == c:
-                    closure.add((a, d)) 
+                    closure.add((a, d))
+
     return closure
 
 def least_element(elements, relation):
@@ -59,6 +66,7 @@ def least_element(elements, relation):
                 break
         else:
             return a
+
     return None
 
 def greatest_element(elements, relation):
@@ -68,26 +76,31 @@ def greatest_element(elements, relation):
                 break
         else:
             return a
+
     return None
 
 def minimal_elements(elements, relation):
     minimals = set()
+
     for a in elements:
         for b in elements - set(a):
             if (b,a) in relation:
                 break
         else:
             minimals.add(a)
+
     return minimals
 
 def maximal_elements(elements, relation):
     maximals = set()
+
     for a in elements:
         for b in elements - set(a):
             if (a,b) in relation:
                 break
         else:
             maximals.add(a)
+
     return maximals
 
 def main():
@@ -102,16 +115,19 @@ def main():
     # Process the input relation
     if relation_input.strip():  # Only process if input is not empty
         pairs = relation_input.split("),")
+
         for pair in pairs:
             pair = pair.strip()
+
             if pair.endswith(")"):
                 pair = pair[:-1]  # Remove the closing parenthesis
             if pair.startswith("("):
                 pair = pair[1:]  # Remove the opening parenthesis
+
             try:
                 a, b = pair.split(",")
                 if a not in elements or b not in elements:
-                    print("Pairs must be comrpised of elements from your set.")
+                    print("Pairs must be comprised of elements from your set.")
                     return
                 relation.add((a.strip(), b.strip()))
             except ValueError:
