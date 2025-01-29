@@ -1,4 +1,5 @@
 import methods
+import copy
 
 def table_to_relation(relation, table_input):
     i = 0
@@ -26,11 +27,22 @@ def table_to_relation(relation, table_input):
 
     return i
 
-def critical_path(relation, times):
+def topological_sort(elements, relation):
+    total_relation = []
+    temp = copy.deepcopy(elements)
 
-def topological_sort(relation):
+    while temp != set():
+        for m in methods.minimal_elements(temp, relation):
+            temp = temp - set(m)
+            total_relation.append(m)
+            break
+
+    relation = set()
+
+    for i in range(len(total_relation)):
+        for j in range(i, len(total_relation)):
+            relation.add((total_relation[i], total_relation[j]))
     
-
 def timed_table():
     table_input = input("Enter a task table as a comma-separated list of prerequisite tasks as tuples: ")
     relation = set()
@@ -39,6 +51,8 @@ def timed_table():
         return
 
     methods.transitive_closure(relation)
+    
+    topological_sort(set([i for i in range(1, i + 1)]), relation)
     
     time_input = input("Enter the task times in order and comma-separated: ")
     times = []
@@ -56,6 +70,8 @@ def timed_table():
         print("Table length doesn't match number of times.")
         return
 
+    print("Topological sort: ", relation)
+
 def untimed_table():
     table_input = input("Enter a task table: ")
     relation = set()
@@ -64,6 +80,10 @@ def untimed_table():
         return
     
     methods.transitive_closure(relation)
+
+    topological_sort(set([i for i in range(1, i + 1)]), relation)
+
+    print("Topological sort: ", relation)
 
 def main():
     # Timed or not
