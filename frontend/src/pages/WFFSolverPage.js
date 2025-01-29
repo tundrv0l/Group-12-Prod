@@ -2,12 +2,12 @@ import React from 'react';
 import { Page, PageContent, PageHeader, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Footer, Anchor } from 'grommet';
 
 /*
-* Name: SolverPage.js
+* Name: WFFSolverPage.js
 * Author: Parker Clark
-* Description: Generic solver page for the application.
+* Description: Solver page for the WFF to Truth Table.
 */
 
-const SolverPage = () => (
+const WFFSolverPage = () => (
   <Page>
     <PageContent align="center" skeleton={false}>
       <PageHeader title="Well-Formed Formula To Truth Table" level="2" margin="small" />
@@ -60,4 +60,4 @@ const SolverPage = () => (
   </Page>
 );
 
-export default SolverPage;
+export default WFFSolverPage;
