@@ -1,24 +1,4 @@
-def least_element(elements, relation):
-    for a in elements:
-        for b in elements:
-            if (a,b) not in relation:
-                break
-        else:
-            return a
-
-    return None
-
-def minimal_elements(elements, relation):
-    minimals = set()
-
-    for a in elements:
-        for b in elements - set(a):
-            if (b,a) in relation:
-                break
-        else:
-            minimals.add(a)
-
-    return minimals
+import methods
 
 def table_to_relation(relation, table_input):
     i = 0
@@ -46,13 +26,19 @@ def table_to_relation(relation, table_input):
 
     return i
 
+def critical_path(relation, times):
+
+def topological_sort(relation):
+    
+
 def timed_table():
     table_input = input("Enter a task table as a comma-separated list of prerequisite tasks as tuples: ")
     relation = set()
     i = table_to_relation(relation, table_input)
-
     if i == -1:
         return
+
+    methods.transitive_closure(relation)
     
     time_input = input("Enter the task times in order and comma-separated: ")
     times = []
@@ -74,6 +60,10 @@ def untimed_table():
     table_input = input("Enter a task table: ")
     relation = set()
     i = table_to_relation(relation, table_input)
+    if i == -1:
+        return
+    
+    methods.transitive_closure(relation)
 
 def main():
     # Timed or not

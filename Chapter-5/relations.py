@@ -1,4 +1,4 @@
-import copy
+import methods
 
 def check_properties(elements, relation):
     reflexive = True
@@ -32,76 +32,6 @@ def check_properties(elements, relation):
                 transitive = False
 
     return reflexive, irreflexive, symmetric, asymmetric, antisymmetric, transitive
-
-def reflexive_closure(elements, relation):
-    closure = copy.deepcopy(relation)
-
-    for element in elements:
-        closure.add((element, element))
-
-    return closure
-
-def symmetric_closure(relation):
-    closure = copy.deepcopy(relation)
-
-    for (a, b) in relation:
-        closure.add((b, a))
-
-    return closure
-
-def transitive_closure(relation):
-    closure = copy.deepcopy(relation)
-
-    for (a, b) in relation:
-        for (c, d) in relation:
-                if b == c:
-                    closure.add((a, d))
-
-    return closure
-
-def least_element(elements, relation):
-    for a in elements:
-        for b in elements:
-            if (a,b) not in relation:
-                break
-        else:
-            return a
-
-    return None
-
-def greatest_element(elements, relation):
-    for a in elements:
-        for b in elements:
-            if (b,a) not in relation:
-                break
-        else:
-            return a
-
-    return None
-
-def minimal_elements(elements, relation):
-    minimals = set()
-
-    for a in elements:
-        for b in elements - set(a):
-            if (b,a) in relation:
-                break
-        else:
-            minimals.add(a)
-
-    return minimals
-
-def maximal_elements(elements, relation):
-    maximals = set()
-
-    for a in elements:
-        for b in elements - set(a):
-            if (a,b) in relation:
-                break
-        else:
-            maximals.add(a)
-
-    return maximals
 
 def main():
     # Input set of elements
@@ -148,27 +78,27 @@ def main():
 
     # Output closures if they were generated
     if not reflexive:
-        print("Reflexive Closure:", reflexive_closure(elements, relation))
+        print("Reflexive Closure:", methods.reflexive_closure(elements, relation))
     if not symmetric:
-        print("Symmetric Closure:", symmetric_closure(relation))
+        print("Symmetric Closure:", methods.symmetric_closure(relation))
     if not transitive:
-        print("Transitive Closure:", transitive_closure(relation))
+        print("Transitive Closure:", methods.transitive_closure(relation))
 
     # Output special elements of partial orders
     if reflexive and antisymmetric and transitive:
-        least = least_element(elements, relation)
+        least = methods.least_element(elements, relation)
         if least:
             print("Least Element: ", least)
 
-        greatest = greatest_element(elements, relation)
+        greatest = methods.greatest_element(elements, relation)
         if greatest:
             print("Greatest Element: ", greatest)
         
-        minimals = minimal_elements(elements, relation)
+        minimals = methods.minimal_elements(elements, relation)
         if minimals:
             print("Minimal Elements: ", minimals)
 
-        maximals = maximal_elements(elements, relation)
+        maximals = methods.maximal_elements(elements, relation)
         if maximals:
             print("Maximal Elements: ", maximals)
 
