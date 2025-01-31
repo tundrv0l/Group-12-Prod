@@ -1,3 +1,7 @@
+# File: tasks.py
+# Author: Jacob Warren
+# Description: 5.2 stuff
+
 import methods
 import copy
 

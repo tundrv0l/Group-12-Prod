@@ -1,3 +1,7 @@
+# File: relations.py
+# Author: Jacob Warren
+# Description: 5.1 stuff
+
 import methods
 
 def check_properties(elements, relation):
@@ -61,7 +65,7 @@ def main():
                     return
                 relation.add((a.strip(), b.strip()))
             except ValueError:
-                print(f"Invalid pair: {pair}. Please enter pairs in the format (a,b).")
+                print(f"Invalid pair: {pair}.")
                 return
 
     # Check properties
@@ -84,7 +88,7 @@ def main():
     if not transitive:
         print("Transitive Closure:", methods.transitive_closure(relation))
 
-    # Output special elements of partial orders
+    # Output special elements of partial orders, and filter for a Hasse Diagram
     if reflexive and antisymmetric and transitive:
         least = methods.least_element(elements, relation)
         if least:
@@ -101,6 +105,11 @@ def main():
         maximals = methods.maximal_elements(elements, relation)
         if maximals:
             print("Maximal Elements: ", maximals)
+
+        methods.reflexive_filter(elements, relation)
+        methods.transitive_filter(elements, relation)
+
+        print("Relation ready for diagramming: ", relation)
 
 if __name__ == "__main__":
     main()
