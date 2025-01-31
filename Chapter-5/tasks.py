@@ -10,7 +10,8 @@ def table_to_relation(relation, table_input):
 
     if table_input.strip():
         tuples = table_input.split("),")
-        
+        i = 0
+
         for tuple_ in tuples:
             i = i + 1
             tuple_ = tuple_.strip()
@@ -24,7 +25,8 @@ def table_to_relation(relation, table_input):
 
             try:
                 for p in prereqs:
-                    relation.add((int(p),i))
+                    if p != "":
+                        relation.add((int(p),i))
             except ValueError:
                 print(f"Invalid tuple: {tuple_}")
                 return -1
@@ -35,17 +37,38 @@ def topological_sort(elements, relation):
     total_relation = []
     temp = copy.deepcopy(elements)
 
-    while temp != set():
+    for i in range(0, len(elements)):
         for m in methods.minimal_elements(temp, relation):
-            temp = temp - set(m)
+            temp.remove(m)
             total_relation.append(m)
             break
 
-    relation = set()
+    return total_relation
 
-    for i in range(len(total_relation)):
-        for j in range(i, len(total_relation)):
-            relation.add((total_relation[i], total_relation[j]))
+def critical_path(relation, times):
+    num_tasks = len(times)
+    latest_finish = {task: 0 for task in range(1, num_tasks + 1)}
+
+    sorted_tasks = topological_sort(set(range(1, num_tasks + 1)), relation)
+
+    for task in sorted_tasks:
+        for prereq in relation:
+            if prereq[1] == task:
+                latest_finish[task] = max(latest_finish[task], latest_finish[prereq[0]] + times[task - 1])
+
+    critical_path_array = [num_tasks]
+    time = latest_finish[num_tasks]
+    task = num_tasks
+
+    while time > 0:
+        for prereq in relation:
+            if prereq[1] == task and latest_finish[task] - times[task - 1] == latest_finish[prereq[0]]:
+                critical_path_array.append(prereq[0])
+                time = time - times[task - 1]
+                task = prereq[0]
+                break
+
+    return list(reversed(critical_path_array))
     
 def timed_table():
     table_input = input("Enter a task table as a comma-separated list of prerequisite tasks as tuples: ")
@@ -54,9 +77,11 @@ def timed_table():
     if i == -1:
         return
 
+    elements = set([j for j in range(1, i + 1)])
+
+    # make it a partial order
     methods.transitive_closure(relation)
-    
-    topological_sort(set([i for i in range(1, i + 1)]), relation)
+    methods.reflexive_closure(elements, relation)
     
     time_input = input("Enter the task times in order and comma-separated: ")
     times = []
@@ -74,7 +99,9 @@ def timed_table():
         print("Table length doesn't match number of times.")
         return
 
-    print("Topological sort: ", relation)
+    critical_path_set = critical_path(relation, times)
+
+    print("Critical Path: ", critical_path_set)
 
 def untimed_table():
     table_input = input("Enter a task table: ")
@@ -82,10 +109,14 @@ def untimed_table():
     i = table_to_relation(relation, table_input)
     if i == -1:
         return
-    
-    methods.transitive_closure(relation)
 
-    topological_sort(set([i for i in range(1, i + 1)]), relation)
+    elements = set([j for j in range(1, i + 1)])
+    
+    # make it a partial order
+    relation = methods.transitive_closure(relation)
+    relation = methods.reflexive_closure(elements, relation)
+
+    relation = topological_sort(elements, relation)
 
     print("Topological sort: ", relation)
 

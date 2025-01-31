@@ -8,8 +8,8 @@ import copy
 def reflexive_closure(elements, relation):
     closure = copy.deepcopy(relation)
 
-    for element in elements:
-        closure.add((element, element))
+    for a in elements:
+        closure.add((a, a))
 
     return closure
 
@@ -77,7 +77,7 @@ def minimal_elements(elements, relation):
     minimals = set()
 
     for a in elements:
-        for b in elements - set(a):
+        for b in elements - {a}:
             if (b, a) in relation:
                 break
         else:
@@ -90,7 +90,7 @@ def maximal_elements(elements, relation):
     maximals = set()
 
     for a in elements:
-        for b in elements - set(a):
+        for b in elements - {a}:
             if (a, b) in relation:
                 break
         else:
