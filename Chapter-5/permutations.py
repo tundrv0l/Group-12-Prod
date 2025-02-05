@@ -61,6 +61,8 @@ def disjoint_form(cycles):
 
     permutation = {}
 
+    # create a dictionary representation of the permutation
+    # represented by the cycles
     for element in multi_mapping:
         result = element
 
@@ -71,7 +73,7 @@ def disjoint_form(cycles):
             if i in multi_mapping[result]:
                 result = multi_mapping[result][i]
 
-        # 1->2->3 = {1: 3, ...}
+        # example: 1->2->3 = {1: 3, ...}
         permutation[element] = result
 
     return cycle_form(permutation)
