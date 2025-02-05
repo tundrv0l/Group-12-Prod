@@ -6,10 +6,12 @@
 # Input: permutation in the form of a dictionary
 # Output: cycle representation of the provided permutation
 #         in the form of a list of tuples
+# Purpose: solve problems like 53
 def cycle_form(permutation):
     visited = set()
     cycles = []
 
+    # chop the permutation into cycles
     for element in permutation:
         # start next cycle
         if element not in visited:
@@ -41,6 +43,7 @@ def cycle_form(permutation):
 #        (possibly not disjoint)
 # Output: a disjoint cycle representation of the same mapping
 #         in the form of a list of tuples
+# Purpose: solve problems like 56-59
 def disjoint_form(cycles):
     multi_mapping = {}
     cycle_count = 0

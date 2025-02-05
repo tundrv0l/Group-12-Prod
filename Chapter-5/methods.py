@@ -2,53 +2,59 @@
 # Author: Jacob Warren
 # Description: Chapter 5 helper functions
 
-import copy
-
-# return a reflexive relation extending the inputted one
 def reflexive_closure(elements, relation):
-    closure = copy.deepcopy(relation)
+    closure = set()
 
     for a in elements:
-        closure.add((a, a))
+        if (a, a) not in relation:
+            closure.add((a,a))
 
     return closure
 
-# return a symmetric relation extending the inputted one
 def symmetric_closure(relation):
-    closure = copy.deepcopy(relation)
+    closure = set()
 
     for (a, b) in relation:
-        closure.add((b, a))
+        if (b, a) not in relation:
+            closure.add((b, a))
 
     return closure
 
-# return a transitive relation extending the inputted one
 def transitive_closure(relation):
-    closure = copy.deepcopy(relation)
+    closure = set(relation)
+    changed = True
 
-    for (a, b) in relation:
-        for (c, d) in relation:
-                if b == c:
+    while changed:
+        changed = False
+
+        for (a, b) in relation | closure:
+            for (c, d) in relation | closure:
+                if b == c and (a, d) not in relation | closure:
+                    changed = True
                     closure.add((a, d))
 
     return closure
 
-# remove all pairs implied by transitivity (can only be called after reflexive_filter)
 def transitive_filter(elements, relation):
-    remove = set()
+    removal = set()
+    non_reflexive = set(relation) - reflexive_filter(elements, relation)
 
-    for (a, b) in relation:
-        for (c, d) in relation:
-            if b == c:
-                remove.add((a, d))
+    for (a, b) in non_reflexive:
+        for (c, d) in non_reflexive:
+            if b == c and (a, d) in relation:
+                removal.add((a, d))
 
-    for a in remove:
-        relation.remove(a)
+    return removal
 
-# remove all pairs implied by reflexitivity 
 def reflexive_filter(elements, relation):
+    removal = set()
+
     for a in elements:
-        relation.remove((a,a))
+        if (a, a) in relation:
+            removal.add((a, a))
+
+    return removal
+
     
 # if it exists, return the least element of a partially ordered set
 def least_element(elements, relation):

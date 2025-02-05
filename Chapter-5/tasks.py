@@ -80,8 +80,8 @@ def timed_table():
     elements = set([j for j in range(1, i + 1)])
 
     # make it a partial order
-    methods.transitive_closure(relation)
-    methods.reflexive_closure(elements, relation)
+    relation |= methods.transitive_closure(relation)
+    relation |= methods.reflexive_closure(elements, relation)
     
     time_input = input("Enter the task times in order and comma-separated: ")
     times = []
@@ -113,8 +113,8 @@ def untimed_table():
     elements = set([j for j in range(1, i + 1)])
     
     # make it a partial order
-    relation = methods.transitive_closure(relation)
-    relation = methods.reflexive_closure(elements, relation)
+    relation |= methods.transitive_closure(relation)
+    relation |= methods.reflexive_closure(elements, relation)
 
     relation = topological_sort(elements, relation)
 
