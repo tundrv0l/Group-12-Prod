@@ -11,10 +11,25 @@ import { solveWFF  } from '../api';
 const WFFSolverPage = () => {
   const [input, setInput] = React.useState('');
   const [output, setOutput] = React.useState('');
+  const [error, setError] = React.useState('');
 
   const handleSolve = async () => {
+
+    // Validate input
+    const isValid = validateInput(input);
+    if (!isValid) {
+      setError('Invalid input. Please enter a valid logical statement.');
+      return;
+    }
+
+    setError('');
     const result = await solveWFF(input);
     setOutput(result);
+  }
+
+  const validateInput = (input) => {
+    const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
+    return wffRegex.test(input);
   }
 
   return (
@@ -47,6 +62,7 @@ const WFFSolverPage = () => {
               value={input}
               onChange={(event) => setInput(event.target.value)}
             />
+            {error && <Text color="status-critical">{error}</Text>}
           </CardBody>
           <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
             <Button label="Solve" onClick={handleSolve} />

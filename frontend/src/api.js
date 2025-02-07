@@ -22,3 +22,8 @@ const solve = async (solverType, data) => {
 export const solveWFF = async (formula) => {
     return await solve('wff', { formula });
 };
+
+// Call Propositional Logic solver to the backend
+export const solvePropositionalLogic = async (hypotheses, conclusion) => {
+    return await solve('propositional-logic', { hypotheses, conclusion });
+};
