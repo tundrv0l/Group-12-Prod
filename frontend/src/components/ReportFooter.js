@@ -1,5 +1,6 @@
 import React from 'react';
-import {Footer, Text, Anchor} from 'grommet';
+import {Footer, Text} from 'grommet';
+import { Link } from 'react-router-dom';
 
 /*
 * Name: ReportFooter.js
@@ -12,7 +13,11 @@ const ReportFooter = ()=> (
         <Text>
             Found an Issue? Please report it
         </Text>
-        <Anchor label="here!" gap="none" />
+        <Link to="/report-form" style={{ textDecoration: 'none' }}>
+            <Text color="brand" style={{ cursor: 'pointer' }}>
+                here!
+            </Text>
+        </Link>
     </Footer>
 );
 

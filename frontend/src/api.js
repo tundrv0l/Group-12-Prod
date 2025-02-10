@@ -18,6 +18,21 @@ const solve = async (solverType, data) => {
     }
 };
 
+const report = async (email, issue) => {
+    try {
+        const response = await axios.post('http://localhost:5000/report-problem', { email, issue });
+        return response.data;
+    } catch (error)
+    {
+        console.error('Error Reporting:', error);
+        return null;
+    }
+}
+
+export const reportProblem = async (email, issue) => {
+    return await report(email, issue);
+};
+
 // Call WFF to Truthtable solver to the backend 
 export const solveWFF = async (formula) => {
     return await solve('wff', { formula });
@@ -26,4 +41,9 @@ export const solveWFF = async (formula) => {
 // Call Propositional Logic solver to the backend
 export const solvePropositionalLogic = async (hypotheses, conclusion) => {
     return await solve('propositional-logic', { hypotheses, conclusion });
+};
+
+// Call recursion solver to the backend
+export const solveRecursion = async (input) => {
+    return await solve('recursive-definitions', { input });
 };
