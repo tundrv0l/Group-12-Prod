@@ -8,7 +8,9 @@
 #---Imports---#
 from flask import Blueprint, request, jsonify
 from backend.solvers import wff_solver
+from backend.reporter import send_email
 
+# Define a Blueprint for the controller
 controller_bp = Blueprint('controller', __name__)
 
 @controller_bp.route('/solve/<solver_type>', methods=['POST'])
@@ -31,42 +33,6 @@ def solve(solver_type):
     result = solve_algorithim(solver_type, data)
     return(jsonify(result))
 
-@controller_bp.route('/report-problem', methods=['POST'])
-def report_problem():
-    '''
-        An api endpoint to report a problem.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        result: json
-            Returned the serialized json of the result and return to the client.
-    '''
-    data = request.json
-    email = data['email']
-    issue = data['issue']
-    send_report(email, issue)
-    return(jsonify({'status': 'success'}))
-
-def send_report(email, issue):
-    '''
-        A function to send a report of an issue.
-
-        Parameters
-        ----------
-        email (str): 
-            The email of the user reporting the issue
-        issue (str): 
-            The issue being reported
-
-        Returns
-        ----------
-        None
-    '''
-    pass
 
 def solve_algorithim(solver_type, data):
     '''
@@ -86,11 +52,28 @@ def solve_algorithim(solver_type, data):
     '''
     if solver_type == 'wff':
         return wff_solver.solve(data['formula'])
-    elif solver_type == 'propositional-logic':
-        # Implement and return the result of the propositional logic solver
-        pass
-    elif solver_type == 'recursive-definition':
-        # Implement and return the result of the recursive definition solver
-        pass
     else:
         return jsonify({'error': 'Unsupported solver type'}), 400
+
+@controller_bp.route('/report-problem', methods=['POST'])
+def report_problem():
+    '''
+        A function that calls the send_email function to send an email 
+          to the webmaster with a report of a problem.
+
+        Returns
+        ----------
+        None
+    '''
+
+    # Get the data from the request
+    data = request.json
+    
+    # Send the email using the send_email function
+    successful = send_email.send_email(data['email'], data['issue'])
+
+    # Check if the email was sent successfully
+    if successful:
+        return jsonify({'message': 'Email sent successfully'}), 200
+    else:
+        return jsonify({'error': 'Failed to send email'}), 500
