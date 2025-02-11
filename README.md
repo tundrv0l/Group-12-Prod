@@ -4,6 +4,7 @@
 This project is a Discrete Math Solver application that provides various tools to solve discrete math problems, including well-formed formulas (WFF) to truth tables, propositional logic validation, and recursive definitions solver. The application is built using React for the frontend and Flask for the backend.
 
 ## Project Structure
+```
 .
 ├── app.py
 ├── backend/
@@ -24,6 +25,7 @@ This project is a Discrete Math Solver application that provides various tools t
 │   │   ├── pages/
 ├── README.md
 ├── requirements.txt
+```
 
 ## Setup Instructions
 
