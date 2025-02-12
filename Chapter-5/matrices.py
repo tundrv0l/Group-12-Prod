@@ -52,8 +52,8 @@ def matrix_multiply(A, B):
 
 # unit tests
 def main():
-    problems = [
-        [
+    matrices = [
+        ( # 47
             [
                 [1, 0, 0],
                 [1, 1, 0],
@@ -64,12 +64,54 @@ def main():
                 [0, 1, 1],
                 [1, 1, 1]
             ]
-        ]
+        ),
+        ( # 48
+            [
+                [0, 0, 1],
+                [1, 1, 0],
+                [1, 0, 0]
+            ],
+            [
+                [0, 1, 1],
+                [0, 0, 0],
+                [1, 0, 0]
+            ]
+        ),
+        ( # 49
+            [
+                [0, 1, 0],
+                [1, 0, 1],
+                [0, 0, 1]
+            ],
+            [
+                [0, 1, 1],
+                [0, 0, 1],
+                [1, 0, 0]
+            ]
+        ),
+        ( # 50
+            [
+                [1, 1, 0],
+                [0, 1, 1],
+                [0, 0, 1]
+            ],
+            [
+                [1, 0, 1],
+                [0, 1, 1],
+                [1, 1, 1]
+            ]
+        ),
+        ( # edge case
+            [[]],
+            [[]]
+        )
     ]
 
-    print(matrix_and(problems[0][0], problems[0][1]))
-    print(matrix_or(problems[0][0], problems[0][1]))
-    print(matrix_multiply(problems[0][0], problems[0][1]))
+    for i in range(len(matrices)):
+        print(f"A∧B {i}: ", matrix_and(matrices[i][0], matrices[i][1]))
+        print(f"A∨B {i}: ", matrix_or(matrices[i][0], matrices[i][1]))
+        print(f"A×B {i}: ", matrix_multiply(matrices[i][0], matrices[i][1]))
+        print(f"B×A {i}: ", matrix_multiply(matrices[i][1], matrices[i][0]))
 
 if __name__ == "__main__":
     main()
