@@ -7,7 +7,7 @@ def reflexive_closure(elements, relation):
 
     for a in elements:
         if (a, a) not in relation:
-            closure.add((a,a))
+            closure.add((a, a))
 
     return closure
 
@@ -71,7 +71,7 @@ def least_element(elements, relation):
 def greatest_element(elements, relation):
     for a in elements:
         for b in elements:
-            if (b,a) not in relation:
+            if (b, a) not in relation:
                 break
         else:
             return a
