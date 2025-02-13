@@ -1,5 +1,6 @@
 #CHAPTER 3
 
+'''
 # Example 1
 def fibonacci(n):
     """
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     except ValueError:
         print("Invalid input. Please enter a valid integer.")
 
-
+'''
 # Program to output a specific f(n) number
 def evaluate_recursive(formula, base_case, n):
     """
