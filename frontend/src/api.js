@@ -18,17 +18,19 @@ const solve = async (solverType, data) => {
     }
 };
 
+// A function to report problems to the webmaster
 const report = async (email, issue) => {
     try {
         const response = await axios.post('http://localhost:5000/report-problem', { email, issue });
-        return response.data;
+        return response;
     } catch (error)
     {
         console.error('Error Reporting:', error);
-        return null;
+        throw error
     }
 }
 
+// Driver function to call the report function to the backend
 export const reportProblem = async (email, issue) => {
     return await report(email, issue);
 };
@@ -47,3 +49,7 @@ export const solvePropositionalLogic = async (hypotheses, conclusion) => {
 export const solveRecursion = async (input) => {
     return await solve('recursive-definitions', { input });
 };
+
+export const solveBasicSetFunctions = async (input) => {
+    return await solve('basic-set-functions', { input });
+}

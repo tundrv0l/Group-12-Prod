@@ -63,7 +63,7 @@ def send_email(return_address, issue):
 
         # Print the error message if an exception occurs
         print(f"An error occurred while sending the email: {e}")
-        return None
+        return False
 
 def _grab_email_address():
     '''

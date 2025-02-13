@@ -1,6 +1,6 @@
 import React from 'react';
 import ReportFooter from '../components/ReportFooter';
-import { Page, PageContent, PageHeader, Box, Text, Card, CardBody, TextInput, CardFooter, Button } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button } from 'grommet';
 import { solvePropositionalLogic  } from '../api';
 
 /*
@@ -17,6 +17,10 @@ const PropositionalLogicSolver = () => {
 
   const handleSolve = async () => {
 
+    // Empty output and error messages
+    setOutput('');
+    setError('');
+
     // Validate input
     const isValidHypotheses = validateInput(hypotheses);
     const isValidConclusion = validateInput(conclusion);
@@ -32,6 +36,7 @@ const PropositionalLogicSolver = () => {
   }
 
   const validateInput = (input) => {
+    // TODO: Change regex here based on input pattern
     const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
     return wffRegex.test(input);
   }
@@ -39,7 +44,11 @@ const PropositionalLogicSolver = () => {
   return (
     <Page>
       <PageContent align="center" skeleton={false}>
-        <PageHeader title="Propositional Logic Solver" level="2" margin="small" />
+        <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
+          <Text size="xxlarge" weight="bold">
+            Propositional Logic Validator
+          </Text>
+        </Box>
         <Box align="center" justify="center">
           <Text size="large" margin="none" weight={500}>
             Topic: Propositional Logic

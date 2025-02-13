@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, PageHeader, Box, Text, Card, CardBody, TextInput, CardFooter, Button } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button } from 'grommet';
 import { solveWFF  } from '../api';
 import ReportFooter from '../components/ReportFooter';
 
@@ -16,6 +16,10 @@ const WFFSolverPage = () => {
 
   const handleSolve = async () => {
 
+    // Empty output and error messages
+    setOutput('');
+    setError('');
+
     // Validate input
     const isValid = validateInput(input);
     if (!isValid) {
@@ -29,6 +33,7 @@ const WFFSolverPage = () => {
   }
 
   const validateInput = (input) => {
+    // TODO: Change regex here based on input pattern
     const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
     return wffRegex.test(input);
   }
@@ -36,7 +41,11 @@ const WFFSolverPage = () => {
   return (
     <Page>
       <PageContent align="center" skeleton={false}>
-        <PageHeader title="Well-Formed Formula To Truth Table" level="2" margin="small" />
+        <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
+          <Text size="xxlarge" weight="bold">
+            WFF to Truth Table Solver
+          </Text>
+        </Box>
         <Box align="center" justify="center">
           <Text size="large" margin="none" weight={500}>
             Topic: Statement And Tautologies
@@ -75,8 +84,8 @@ const WFFSolverPage = () => {
               Output:
             </Text>
             <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-              <Text>
-                {output ? JSON.stringify(output) : "Output will be displayed here!"}
+              <Text style={{whiteSpace: 'pre-wrap'}}>
+                {output ? output : "Output will be displayed here!"}
               </Text>
             </Box>
           </CardBody>

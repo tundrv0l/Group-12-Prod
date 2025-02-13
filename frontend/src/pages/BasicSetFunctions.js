@@ -1,15 +1,15 @@
 import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button } from 'grommet';
-import { solveRecursion  } from '../api';
+import { solveBasicSetFunctions  } from '../api';
 import ReportFooter from '../components/ReportFooter';
 
 /*
-* Name: RecursiveDefinitions.js
+* Name: BasicSetFunctions.js
 * Author: Parker Clark
-* Description: Solver page for solving recursive definitions.
+* Description: Solver page for providing basic set functions.
 */
 
-const RecursiveDefinitions = () => {
+const BasicSetFunctions = () => {
   const [input, setInput] = React.useState('');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
@@ -19,12 +19,12 @@ const RecursiveDefinitions = () => {
     // Validate input
     const isValid = validateInput(input);
     if (!isValid) {
-      setError('Invalid input. Please enter a valid recursive statement.');
+      setError('Invalid input. Please enter a valid set.');
       return;
     }
 
     setError('');
-    const result = await solveRecursion(input);
+    const result = await solveBasicSetFunctions(input);
     setOutput(result);
   }
 
@@ -39,32 +39,32 @@ const RecursiveDefinitions = () => {
       <PageContent align="center" skeleton={false}>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
-            Recursive Definitions Solver
+            Basic Set Functions
           </Text>
         </Box>
         <Box align="center" justify="center">
           <Text size="large" margin="none" weight={500}>
-            Topic: Recursive Definitions
+            Topic: Sets
           </Text>
         </Box>
-        <Box align="center" justify="start" direction="column" cssGap={false}>
+        <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
           <Text margin={{"bottom":"small"}} textAlign="center">
-            This tool helps you solve recursive definitions.
+            This tool helps you apply basic set functions.
           </Text>
           <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            A recursive definition is a way of defining a function or a sequence in terms of itself. It consists of base cases and recursive cases. The base cases provide the initial values, and the recursive cases define the values in terms of previous values.
+            A set is a collection of distinct objects, considered as an object in its own right. Basic set functions include the ability to test if sets are a subset of another, and determine elements of the set.
           </Text>
           <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-          By analyzing recursive definitions, we can understand how sequences and functions are constructed and how they behave. This tool allows you to input a recursive definition and generate the corresponding sequence or function values.
+            By applying set functions, you can identify relationships between sets, find common elements, and determine the differences between sets. This tool allows you to input a set and apply basic set functions to generate the corresponding results.
           </Text>
           <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-            Enter your recursive definition below to generate its values and analyze its properties!
+            Enter your set notation below to apply basic set functions and analyze the results!
           </Text>
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
             <TextInput 
-              placeholder="Example: Enter your recursive definition here (e.g., a(n) = a(n-1) + 2)"
+              placeholder="Example: Enter your set notation here (e.g., A ∩ B)"
               value={input}
               onChange={(event) => setInput(event.target.value)}
             />
@@ -92,4 +92,4 @@ const RecursiveDefinitions = () => {
   );
 };
 
-export default RecursiveDefinitions;
+export default BasicSetFunctions;

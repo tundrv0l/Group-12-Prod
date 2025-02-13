@@ -22,11 +22,11 @@ const SidebarMenu = () => (
       </AccordionPanel>
       <AccordionPanel label="4.1: Sets">
         <AccordionPanelContent content={[
-          { label: "Basic Set Functions", path: "/sets/basic-functions" },
-          { label: "Power Set", path: "/sets/power-set" },
-          { label: "Set Complement", path: "/sets/set-complement" },
-          { label: "Binary/Unary Operators", path: "/sets/binary-unary-operators" },
-          { label: "Cartesian Products", path: "/sets/cartesian-products" }
+          { label: "Basic Set Functions", path: "/basic-set-functions" },
+          { label: "Power Set", path: "/power-set" },
+          { label: "Set Complement", path: "/set-complement" },
+          { label: "Binary/Unary Operators", path: "/binary-unary-operators" },
+          { label: "Cartesian Products", path: "/cartesian-products" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="5.1: Relations">

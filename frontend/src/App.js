@@ -7,6 +7,7 @@ import ReportForm from './pages/ReportForm';
 import AppLayout from './components/AppLayout';
 import NotFound from './pages/NotFound';
 import RecursiveDefinitions from './pages/RecursiveDefinitions';
+import BasicSetFunctions from './pages/BasicSetFunctions';
 
 const App = () => (
   <AppLayout>
@@ -17,6 +18,7 @@ const App = () => (
         <Route path="/propositional-logic" element={<PropositionalLogic />} />
         <Route path="/report-form" element={<ReportForm />} />
         <Route path="/recursive-definitions" element={<RecursiveDefinitions />} />
+        <Route path="/basic-set-functions" element={<BasicSetFunctions />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

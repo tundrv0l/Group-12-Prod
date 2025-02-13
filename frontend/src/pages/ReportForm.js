@@ -25,13 +25,17 @@ const ReportForm = () => {
 
         try {
             const response = await reportProblem(email, issue);
+            
+            console.log('Response status:', response.status);
 
-            if (response) {
+            if (response.status === 200) {
                 setSuccess('Your issue has been reported successfully.');
                 setEmail('');
                 setIssue('');
+            } else if (response.status === 500) {
+                setError('Unable to send report. Please try again later.');
             } else {
-                setError('Failed to report the issue. Please try again.');
+                setError('Unexpected error occured. Please try again.');
             }
         } catch (error) {
             setError('An error occurred. Please try again.');
