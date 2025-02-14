@@ -55,8 +55,6 @@ def reflexive_filter(elements, relation):
 
     return removal
 
-    
-# if it exists, return the least element of a partially ordered set
 def least_element(elements, relation):
     for a in elements:
         for b in elements:
@@ -67,7 +65,6 @@ def least_element(elements, relation):
 
     return None
 
-# if it exists, return the greatest element of a partially ordered set
 def greatest_element(elements, relation):
     for a in elements:
         for b in elements:
@@ -78,7 +75,6 @@ def greatest_element(elements, relation):
 
     return None
 
-# return a set of all manimal elements of a partially ordered set
 def minimal_elements(elements, relation):
     minimals = set()
 
@@ -91,7 +87,6 @@ def minimal_elements(elements, relation):
 
     return minimals
 
-# return a set of all maximal elements of a partially ordered set
 def maximal_elements(elements, relation):
     maximals = set()
 
