@@ -90,3 +90,11 @@ The main component that defines interactive functions for the frontend api endpo
 
 ### Backend - /solvers/
 As previously mentioned, the traffic from the frontend is routed through app.py, and then controller.py. controller.py makes the final call on where that input should go for the particular solver. Those algoritihims and solvers that drive the actual solving exist in this folder. Since traffic is routed monotonically (that is, one request at a time), controller.py will make a ***single driver or function call*** for each solver. That isn't exactly feasible, so to work around this, each solver can of course, just setup a driver function (akin to a main() or equivalent) and leverage other functions in the file to accomplish what it needs to. Additionally, we have designated /solvers/util as a folder that can hold utility functions or classes that can be imported straight into the solver. This way, traffic is handled in a decent fashion without completely exposing our API endpoints to the backend. 
+
+## Running the email services
+1. **Ensure Flask is running**
+    - Flask needs to be running in order to capture the email report requests received on the front-end report page, see above on insturctions to start it.
+2. **Ensure .env configuration (IMPORTANT)**
+    - This step is vital. Ensure you have the shared .env (see #notes-resources in discord) and that it is put inside /backend/reporter, so that send_email.py can source it as enviroment variables. This is the primary way on how SMTPLIB auth's with the gmail account.
+3. **Confirm mailing list**
+    - Finally, confirm that the mailing list at /backend/report (.webmaster_emails.txt) is correct. To add an email, simple add it to the bottom of the list and confirm that it is a valid one. 
