@@ -2,10 +2,10 @@
 # Author: Jacob Warren
 # Description: Chapter 5 helper functions
 
-def reflexive_closure(elements, relation):
+def reflexive_closure(set_, relation):
     closure = set()
 
-    for a in elements:
+    for a in set_:
         if (a, a) not in relation:
             closure.add((a, a))
 
@@ -35,9 +35,9 @@ def transitive_closure(relation):
 
     return closure
 
-def transitive_filter(elements, relation):
+def transitive_filter(set_, relation):
     removal = set()
-    non_reflexive = set(relation) - reflexive_filter(elements, relation)
+    non_reflexive = relation - reflexive_filter(set_, relation)
 
     for (a, b) in non_reflexive:
         for (c, d) in non_reflexive:
@@ -46,18 +46,18 @@ def transitive_filter(elements, relation):
 
     return removal
 
-def reflexive_filter(elements, relation):
+def reflexive_filter(set_, relation):
     removal = set()
 
-    for a in elements:
+    for a in set_:
         if (a, a) in relation:
             removal.add((a, a))
 
     return removal
 
-def least_element(elements, relation):
-    for a in elements:
-        for b in elements:
+def least_element(set_, relation):
+    for a in set_:
+        for b in set_:
             if (a, b) not in relation:
                 break
         else:
@@ -65,9 +65,9 @@ def least_element(elements, relation):
 
     return None
 
-def greatest_element(elements, relation):
-    for a in elements:
-        for b in elements:
+def greatest_element(set_, relation):
+    for a in set_:
+        for b in set_:
             if (b, a) not in relation:
                 break
         else:
@@ -75,11 +75,11 @@ def greatest_element(elements, relation):
 
     return None
 
-def minimal_elements(elements, relation):
+def minimal_elements(set_, relation):
     minimals = set()
 
-    for a in elements:
-        for b in elements - {a}:
+    for a in set_:
+        for b in set_ - {a}:
             if (b, a) in relation:
                 break
         else:
@@ -87,11 +87,11 @@ def minimal_elements(elements, relation):
 
     return minimals
 
-def maximal_elements(elements, relation):
+def maximal_elements(set_, relation):
     maximals = set()
 
-    for a in elements:
-        for b in elements - {a}:
+    for a in set_:
+        for b in set_ - {a}:
             if (a, b) in relation:
                 break
         else:

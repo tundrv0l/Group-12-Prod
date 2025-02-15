@@ -80,6 +80,7 @@ def analyze_table(table):
 
     return [list(reversed(critical_path)), latest_finish[sorted_tasks[-1]]]
 
+# unit tests
 def main():
     tables = [
         { # 3/5/11
