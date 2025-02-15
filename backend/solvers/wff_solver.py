@@ -388,10 +388,32 @@ def solve(data):
     print([str(h) for h in hypothesi])
     print([str(l) for l in letters])
     outputStr = "|"
+    noHypot = hypothesi.__len__()
     for l in letters:
         outputStr += " " + l.letter + " |"
         truthTable.append("T")
-    keepGoint = True
+    hypotLs = []
+    allHypothesi = []
+    for h in hypothesi:
+        if isinstance(h, Letter) or (isinstance(h.letter1, Letter) and isinstance(h.letter2, Letter)) and noHypot > 1:
+            outputStr += " " + str(h) + " |"
+            hypotLs.append(str(h).__len__())
+            allHypothesi.append(h)
+        else:
+            print("Yo")
+            if not isinstance(h.letter1, Letter):
+                allHypothesi.append(h.letter1)
+                outputStr += " " + str(h.letter1) + " |"
+                hypotLs.append(str(h.letter1).__len__())
+            if not isinstance(h.letter2, Letter):
+                allHypothesi.append(h.letter2)
+                outputStr += " " + str(h.letter2) + " |"
+                hypotLs.append(str(h.letter2).__len__())
+            if noHypot > 1:
+                allHypothesi.append(h)
+                outputStr += " " + str(h), + " |"
+                hypotLs.append(str(h).__len__())
+    noHypot = allHypothesi.__len__()
     outputStr += " " + data + " |\n"
     truthLen = data.__len__()
     firstOne = math.floor(truthLen / 2)
@@ -413,8 +435,36 @@ def solve(data):
         for l in truthTable:
             outputStr += " " + l + " |"
         currentOutput = True
-        for h in hypothesi:
-            currentOutput = currentOutput and h.checkTrue()
+        m = 0
+        if noHypot > 1:
+            for h in allHypothesi:
+                ht = h.checkTrue()
+                currentOutput = currentOutput and ht
+                if noHypot > 1:
+                    j = 0
+                    fo = math.floor(hypotLs[m] / 2)
+                    so = math.ceil(hypotLs[m] / 2)
+                    m += 1
+                    if so == fo:
+                        so += 1
+                    else:
+                        fo += 1
+                    while j < fo:
+                        outputStr += " "
+                        j += 1
+                    if ht:
+                        outputStr += "T"
+                    else:
+                        outputStr += "F"
+                    j = 0
+                    while j < so:
+                        outputStr += " "
+                        j += 1
+                    outputStr += "|"
+        else:
+            for h in hypothesi:
+                ht = h.checkTrue()
+                currentOutput = currentOutput and ht
         i = 0
         while i < firstOne:
             outputStr += " "
@@ -444,3 +494,6 @@ def solve(data):
                 t = "F"
             truthTable[index] = t
     return outputStr
+
+p = input(" ")
+print(solve(p))
