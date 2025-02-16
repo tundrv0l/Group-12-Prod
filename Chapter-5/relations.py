@@ -6,68 +6,6 @@ import methods
 import strings
 
 
-
-# Function: special_elements
-# Input: a string containing a valid set and
-#        a string containing a valid partial order
-# Output: a list containing strings of each special 
-#         element or special element collection
-# Purpose: solve problems like 32
-def special_elements(data):
-    properties = check_properties(data)
-
-    if not properties[0] or not properties[4] or not properties[5]:
-        raise ValueError(f"Not a partial order.")
-
-    set_list, relation = is_a_relation(data[0], data[1])
-    set_ = {i for i in range(0, len(set_list))}
-
-    least = methods.least_element(set_, relation)
-    greatest = methods.greatest_element(set_, relation)
-    minimals = set()
-    maximals = set()
-    
-    least_string = ""
-    greatest_string = ""
-    minimals_string = "{"
-    maximals_string = "{"
-
-    # the existance of least or greatest elements implied there is only one
-    # minimal or maximal element respectively
-    if least != None:
-        minimals = {least}
-        least_string = set_list[least]
-        minimals_string += least_string
-    else:
-        minimals = methods.minimal_elements(set_, relation)
-
-        for m in minimals:
-            minimals_string += set_list[m]
-            minimals_string += ", "
-
-        if minimals:
-            minimals_string = minimals_string[:-2]
-
-    minimals_string += "}"
-
-    if greatest != None:
-        maximals = {greatest}
-        greatest_string = set_list[greatest]
-        maximals_string += greatest_string
-    else:
-        maximals = methods.maximal_elements(set_, relation)
-
-        for m in maximals:
-            maximals_string += set_list[m]
-            maximals_string += ", "
-
-        if maximals:
-            maximals_string = maximals_string[:-2]
-
-    maximals_string += "}"
-
-    return [least_string, greatest_string, minimals_string, maximals_string]
-
 # Function: equivalence_relation
 # Input: a string representing a valid set
 #        a string representing a valid partition

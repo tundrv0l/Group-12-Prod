@@ -24,13 +24,7 @@ result
 string: a string representing the filtered relation that can be used to generate
         a Hasse diagram directly
 '''
-# Function: hasse_diagram
-# Input: a string containing a valid set and
-#        a string containing a valid partial order
-# Output: a filtered relation in the form of a list of tuples
-#         that can be used to visualize a Hasse diagram
-# Purpose: solve problems like 31
-def hasse_diagram(data):
+def solve(data):
     properties = properties_solver.solve(data)
 
     if not properties[0] or not properties[4] or not properties[5]:
