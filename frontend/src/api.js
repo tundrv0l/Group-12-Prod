@@ -50,6 +50,42 @@ export const solveRecursion = async (input) => {
     return await solve('recursive-definitions', { input });
 };
 
+// Call basic set functions solver to the backend
 export const solveBasicSetFunctions = async (input) => {
     return await solve('basic-set-functions', { input });
+}
+
+// Call power set solver to the backend
+export const solvePowerSet = async (input) => {
+    return await solve('power-set', { input });
+}
+
+// Call set complement solver to the backend
+export const solveSetComplement = async (input) => {
+    return await solve('set-complement', { input });
+}
+
+// Call binary and unary operators solver to the backend
+export const solveBinaryUnaryOperators = async (input) => {
+    return await solve('binary-unary-operators', { input });
+}
+
+// Call cartesian products solver to the backend
+export const solveCartesianProducts = async (input) => {
+    return await solve('cartesian-products', { input });
+}
+
+// Call properties of relations solver to the backend
+export const solvePropertiesOfRelations = async (input) => {
+    return await solve('properties-of-relations', { input });
+}
+
+// Call closure axioms solver to the backend
+export const solveClosureAxioms = async (input) => {
+    return await solve('closure-axioms', { input });
+}
+
+// Call equivalence relations solver to the backend
+export const solveEquivalenceRelations = async (input) => {
+    return await solve('equivalence-relations', { input });
 }

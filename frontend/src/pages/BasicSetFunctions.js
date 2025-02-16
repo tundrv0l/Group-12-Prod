@@ -1,6 +1,6 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button } from 'grommet';
-import { solveBasicSetFunctions  } from '../api';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { solveBasicSetFunctions } from '../api';
 import ReportFooter from '../components/ReportFooter';
 
 /*
@@ -13,19 +13,31 @@ const BasicSetFunctions = () => {
   const [input, setInput] = React.useState('');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   const handleSolve = async () => {
+    // Empty output and error messages
+    setLoading(true);
+    setOutput('');
+    setError('');
 
     // Validate input
     const isValid = validateInput(input);
     if (!isValid) {
       setError('Invalid input. Please enter a valid set.');
+      setLoading(false);
       return;
     }
 
     setError('');
-    const result = await solveBasicSetFunctions(input);
-    setOutput(result);
+    try {
+      const result = await solveBasicSetFunctions(input);
+      setOutput(result);
+    } catch (err) {
+      setError('An error occurred while solving the set functions.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   const validateInput = (input) => {
@@ -71,7 +83,7 @@ const BasicSetFunctions = () => {
             {error && <Text color="status-critical">{error}</Text>}
           </CardBody>
           <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-            <Button label="Solve" onClick={handleSolve} />
+            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
           </CardFooter>
         </Card>
         <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>

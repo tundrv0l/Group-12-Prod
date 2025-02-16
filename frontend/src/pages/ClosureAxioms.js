@@ -1,15 +1,15 @@
 import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
-import { solveRecursion  } from '../api';
+import { solveClosureAxioms } from '../api';
 import ReportFooter from '../components/ReportFooter';
 
 /*
-* Name: RecursiveDefinitions.js
+* Name: ClosureAxioms.js
 * Author: Parker Clark
-* Description: Solver page for solving recursive definitions.
+* Description: Solver page for closure axioms.
 */
 
-const RecursiveDefinitions = () => {
+const ClosureAxioms = () => {
   const [input, setInput] = React.useState('');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
@@ -24,17 +24,17 @@ const RecursiveDefinitions = () => {
     // Validate input
     const isValid = validateInput(input);
     if (!isValid) {
-      setError('Invalid input. Please enter a valid recursive statement.');
+      setError('Invalid input. Please enter a valid relations.');
       setLoading(false);
       return;
     }
 
     setError('');
     try {
-      const result = await solveRecursion(input);
+      const result = await solveClosureAxioms(input);
       setOutput(result);
     } catch (err) {
-      setError('An error occurred while solving the recursive definition.');
+      setError('An error occurred while analyzing the closure axioms.');
     } finally {
       setLoading(false);
     }
@@ -51,39 +51,39 @@ const RecursiveDefinitions = () => {
       <PageContent align="center" skeleton={false}>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
-            Recursive Definitions Solver
+            Closure Axioms
           </Text>
         </Box>
         <Box align="center" justify="center">
           <Text size="large" margin="none" weight={500}>
-            Topic: Recursive Definitions
+            Topic: Relations
           </Text>
         </Box>
-        <Box align="center" justify="start" direction="column" cssGap={false} width={'large'}>
-          <Text margin={{"bottom":"small"}} textAlign="center">
-            This tool helps you solve recursive definitions.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            A recursive definition is a way of defining a function or a sequence in terms of itself. It consists of base cases and recursive cases. The base cases provide the initial values, and the recursive cases define the values in terms of previous values.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-          By analyzing recursive definitions, we can understand how sequences and functions are constructed and how they behave. This tool allows you to input a recursive definition and generate the corresponding sequence or function values.
-          </Text>
-          <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-            Enter your recursive definition below to generate its values and analyze its properties!
-          </Text>
+        <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
+            <Text margin={{"bottom":"small"}} textAlign="center">
+                This tool helps you analyze closure axioms.
+            </Text>
+            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+                Closure axioms are properties that define how a set remains closed under certain operations. For example, a set is closed under an operation if performing that operation on elements of the set always produces an element that is also in the set. 
+            </Text>
+            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+                Common closure axioms include closure under addition, where the sum of any two elements in the set is also in the set, and closure under multiplication, where the product of any two elements in the set is also in the set. Other examples include closure under union, where the union of any two subsets is also a subset of the set, and closure under intersection, where the intersection of any two subsets is also a subset of the set.
+            </Text>
+            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+                Enter your set and operation below to analyze its closure properties!
+            </Text>
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
             <TextInput 
-              placeholder="Example: Enter your recursive definition here (e.g., a(n) = a(n-1) + 2)"
+              placeholder="Example: Enter your set notation here (e.g., {(1, 2), (2, 3)})"
               value={input}
               onChange={(event) => setInput(event.target.value)}
             />
             {error && <Text color="status-critical">{error}</Text>}
           </CardBody>
           <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} />
+            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
           </CardFooter>
         </Card>
         <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
@@ -104,4 +104,4 @@ const RecursiveDefinitions = () => {
   );
 };
 
-export default RecursiveDefinitions;
+export default ClosureAxioms;

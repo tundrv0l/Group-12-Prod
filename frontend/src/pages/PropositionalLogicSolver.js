@@ -1,7 +1,7 @@
 import React from 'react';
 import ReportFooter from '../components/ReportFooter';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button } from 'grommet';
-import { solvePropositionalLogic  } from '../api';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { solvePropositionalLogic } from '../api';
 
 /*
 * Name: PropositionalLogicSolver.js
@@ -14,10 +14,11 @@ const PropositionalLogicSolver = () => {
   const [conclusion, setConclusion] = React.useState('');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   const handleSolve = async () => {
-
     // Empty output and error messages
+    setLoading(true);
     setOutput('');
     setError('');
 
@@ -27,12 +28,19 @@ const PropositionalLogicSolver = () => {
 
     if (!isValidHypotheses || !isValidConclusion) {
       setError('Invalid input. Please enter a valid propositional logic statement.');
+      setLoading(false);
       return;
     }
 
     setError('');
-    const result = await solvePropositionalLogic({ hypotheses, conclusion });
-    setOutput(result);
+    try {
+      const result = await solvePropositionalLogic({ hypotheses, conclusion });
+      setOutput(result);
+    } catch (err) {
+      setError('An error occurred while solving the propositional logic.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   const validateInput = (input) => {
@@ -54,7 +62,7 @@ const PropositionalLogicSolver = () => {
             Topic: Propositional Logic
           </Text>
         </Box>
-        <Box align="center" justify="start" direction="column" cssGap={false}>
+        <Box align="center" justify="start" direction="column" cssGap={false} width={'large'}>
           <Text margin={{"bottom":"small"}} textAlign="center">
             This tool helps you analyze propositional logic statements and their truth values
           </Text>
@@ -87,7 +95,7 @@ const PropositionalLogicSolver = () => {
             {error && <Text color="status-critical">{error}</Text>}
           </CardBody>
           <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-            <Button label="Solve" onClick={handleSolve} />
+            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
           </CardFooter>
         </Card>
         <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>

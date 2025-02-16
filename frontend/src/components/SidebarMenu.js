@@ -31,11 +31,11 @@ const SidebarMenu = () => (
       </AccordionPanel>
       <AccordionPanel label="5.1: Relations">
         <AccordionPanelContent content={[
-          { label: "Property Of Relations", path: "/relations/property" },
-          { label: "Closure Axioms", path: "/relations/closure-axioms" },
-          { label: "Equivalence Relations", path: "/relations/equivalence" },
-          { label: "Partial Orderings", path: "/relations/partial-orderings" },
-          { label: "Hasse Diagram", path: "/relations/hasse-diagram" }
+          { label: "Property Of Relations", path: "/properties-of-relations" },
+          { label: "Closure Axioms", path: "/closure-axioms" },
+          { label: "Equivalence Relations", path: "/equivalence-relations" },
+          { label: "Partial Orderings", path: "/partial-orderings" },
+          { label: "Hasse Diagram", path: "/hasse-diagram" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="5.2: Topological Sorting">

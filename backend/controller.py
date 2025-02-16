@@ -52,6 +52,36 @@ def solve_algorithim(solver_type, data):
     '''
     if solver_type == 'wff':
         return wff_solver.solve(data['formula'])
+    elif solver_type == 'propositional-logic':
+        # Call the appropriate function for propositional logic
+        pass
+    elif solver_type == 'recursive-definitions':
+        # Call the appropriate function for recursive definitions
+        pass
+    elif solver_type == 'basic-set-functions':
+        # Call the appropriate function for basic set functions
+        pass
+    elif solver_type == 'power-set':
+        # Call the appropriate function for power set
+        pass
+    elif solver_type == 'set-complement':
+        # Call the appropriate function for set complement
+        pass
+    elif solver_type == 'binary-unary-operators':
+        # Call the appropriate function for binary and unary operators
+        pass
+    elif solver_type == 'cartesian-products':
+        # Call the appropriate function for cartesian products
+        pass
+    elif solver_type == 'properties-of-relations':
+        # Call the appropriate function for properties of relations
+        pass
+    elif solver_type == 'closure-axioms':
+        # Call the appropriate function for closure axioms
+        pass
+    elif solver_type == 'equivalence-relations':
+        # Call the appropriate function for equivalence relations
+        pass
     else:
         return jsonify({'error': 'Unsupported solver type'}), 400
 

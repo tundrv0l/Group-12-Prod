@@ -1,15 +1,15 @@
 import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
-import { solveRecursion  } from '../api';
+import { solveBinaryUnaryOperators } from '../api';
 import ReportFooter from '../components/ReportFooter';
 
 /*
-* Name: RecursiveDefinitions.js
+* Name: BinaryUnaryOperators.js
 * Author: Parker Clark
-* Description: Solver page for solving recursive definitions.
+* Description: Solver page for calculating binary/unary operations.
 */
 
-const RecursiveDefinitions = () => {
+const BinaryUnaryOperators = () => {
   const [input, setInput] = React.useState('');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
@@ -24,17 +24,17 @@ const RecursiveDefinitions = () => {
     // Validate input
     const isValid = validateInput(input);
     if (!isValid) {
-      setError('Invalid input. Please enter a valid recursive statement.');
+      setError('Invalid input. Please enter a valid set.');
       setLoading(false);
       return;
     }
 
     setError('');
     try {
-      const result = await solveRecursion(input);
+      const result = await solveBinaryUnaryOperators(input);
       setOutput(result);
     } catch (err) {
-      setError('An error occurred while solving the recursive definition.');
+      setError('An error occurred while performing the operation.');
     } finally {
       setLoading(false);
     }
@@ -51,39 +51,39 @@ const RecursiveDefinitions = () => {
       <PageContent align="center" skeleton={false}>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
-            Recursive Definitions Solver
+            Binary & Unary Operators
           </Text>
         </Box>
         <Box align="center" justify="center">
           <Text size="large" margin="none" weight={500}>
-            Topic: Recursive Definitions
+            Topic: Sets
           </Text>
         </Box>
-        <Box align="center" justify="start" direction="column" cssGap={false} width={'large'}>
-          <Text margin={{"bottom":"small"}} textAlign="center">
-            This tool helps you solve recursive definitions.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            A recursive definition is a way of defining a function or a sequence in terms of itself. It consists of base cases and recursive cases. The base cases provide the initial values, and the recursive cases define the values in terms of previous values.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-          By analyzing recursive definitions, we can understand how sequences and functions are constructed and how they behave. This tool allows you to input a recursive definition and generate the corresponding sequence or function values.
-          </Text>
-          <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-            Enter your recursive definition below to generate its values and analyze its properties!
-          </Text>
+        <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
+            <Text margin={{"bottom":"small"}} textAlign="center">
+                This tool helps you generate and analyze binary and unary operations on sets.
+            </Text>
+            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+                Binary operations on sets include operations like union, intersection, and difference. For example, the union of sets A and B, denoted by A ∪ B, is the set of all elements that are in A, in B, or in both. The intersection of sets A and B, denoted by A ∩ B, is the set of all elements that are in both A and B. The difference of sets A and B, denoted by A - B, is the set of all elements that are in A but not in B.
+            </Text>
+            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+                Unary operations on sets include operations like complement. The complement of a set A, denoted by A', is the set of all elements in the universal set that are not in A.
+            </Text>
+            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+                Enter your set notation below to perform binary or unary operations and analyze the results!
+            </Text>
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
             <TextInput 
-              placeholder="Example: Enter your recursive definition here (e.g., a(n) = a(n-1) + 2)"
+              placeholder="Example: Enter your set notation here (e.g., A ∩ B)"
               value={input}
               onChange={(event) => setInput(event.target.value)}
             />
             {error && <Text color="status-critical">{error}</Text>}
           </CardBody>
           <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} />
+            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
           </CardFooter>
         </Card>
         <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
@@ -104,4 +104,4 @@ const RecursiveDefinitions = () => {
   );
 };
 
-export default RecursiveDefinitions;
+export default BinaryUnaryOperators;
