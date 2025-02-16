@@ -1,9 +1,10 @@
 # File: 5_1_test.py
 # Author: Jacob Warren
-# Description: test 5.1 stuff
+# Purpose: test 5.1 stuff
 
 import sys, os
 
+# ew
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'solvers'))
 
 import closures_solver
