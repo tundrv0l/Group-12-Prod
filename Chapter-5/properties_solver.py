@@ -15,7 +15,7 @@ data[0]: a string containing the inputted set
 data[1]: a string containing the inputted relation
     - example: "{(a, b), (23, c)}"
     - restrictions: the elements must all be pairs, and the elements in the pairs must come 
-                    from the set
+                    from data[0]
 ======
 result
 ======

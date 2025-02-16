@@ -17,19 +17,13 @@ data[0]: a string containing the inputted set
 data[1]: a string containing the inputted relation
     - example: "{(a, a), (b, b)}"
     - restrictions: the elements must all be pairs, the elements in the pairs must come 
-                    from the set, and the relation must be a partial order
+                    from data[0], and the relation must be a partial order
 ======
 result
 ======
 [string, string, string, string]: a list of strings representing the respective special
                                   elements and sets of elements
 '''
-# Function: special_elements
-# Input: a string containing a valid set and
-#        a string containing a valid partial order
-# Output: a list containing strings of each special 
-#         element or special element collection
-# Purpose: solve problems like 32
 def solve(data):
     properties = properties_solver.solve(data)
 
