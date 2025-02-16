@@ -46,3 +46,18 @@ def parse_set(set_string):
 
 def parse_tuple(tuple_string):
     return tuple(parse_set(tuple_string))
+
+def is_a_relation(set_string, relation_string):
+    set_list = parse_set(set_string)
+    relation_list = parse_set(relation_string)
+    relation = set()
+
+    for pair_string in relation_list:
+        pair = parse_tuple(pair_string)
+
+        try:
+            relation.add((set_list.index(pair[0]), set_list.index(pair[1])))
+        except ValueError:
+            raise ValueError(f"Pair {pair} has elements outside of the provided set.")
+
+    return set_list, relation

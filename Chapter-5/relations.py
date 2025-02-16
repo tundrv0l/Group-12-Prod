@@ -5,62 +5,6 @@
 import methods
 import strings
 
-def is_a_relation(set_string, relation_string):
-    set_list = strings.parse_set(set_string)
-    relation_list = strings.parse_set(relation_string)
-    relation = set()
-
-    for pair_string in relation_list:
-        pair = strings.parse_tuple(pair_string)
-
-        try:
-            relation.add((set_list.index(pair[0]), set_list.index(pair[1])))
-        except ValueError:
-            raise ValueError(f"Pair {pair} has elements outside of the provided set.")
-
-    return set_list, relation
-
-# Function: check_properties
-# Input: a string containing a valid set and
-#        a string containing a valid relation
-# Output: a list containing a boolean for each relation property
-# Purpose: solve problems like 11 and 12
-def check_properties(data):
-    set_list, relation = is_a_relation(data[0], data[1])
-    set_ = {i for i in range(0, len(set_list))}
-    
-    reflexive = True
-    irreflexive = True
-    symmetric = True
-    asymmetric = True
-    antisymmetric = True
-    transitive = True
-
-    # check reflexive and irreflexive
-    for element in set_:
-        if (element, element) in relation:
-            irreflexive = False
-        else:
-            reflexive = False
-
-    # check asymmetric, antisymmetric, and symmetric
-    for (a, b) in relation:
-        if (b, a) in relation:
-            asymmetric = False
-            
-            if a != b:
-                antisymmetric = False
-        else:
-            symmetric = False
-
-    # check transitive
-    for (a, b) in relation:
-        for (c, d) in relation:
-            if b == c and (a,d) not in relation:
-                transitive = False
-
-    return [reflexive, irreflexive, symmetric, asymmetric, antisymmetric, transitive]
-
 # Function: closures
 # Input: a string containing a valid set and
 #        a string containing a valid relation
