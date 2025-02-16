@@ -5,35 +5,7 @@
 import methods
 import strings
 
-# Function: hasse_diagram
-# Input: a string containing a valid set and
-#        a string containing a valid partial order
-# Output: a filtered relation in the form of a list of tuples
-#         that can be used to visualize a Hasse diagram
-# Purpose: solve problems like 31
-def hasse_diagram(data):
-    properties = check_properties(data)
 
-    if not properties[0] or not properties[4] or not properties[5]:
-        raise ValueError(f"Not a partial order.")
-
-    set_list, relation = is_a_relation(data[0], data[1])
-    set_ = {i for i in range(0, len(set_list))}
-    
-    relation = relation - methods.reflexive_filter(set_, relation)
-    relation = relation - methods.transitive_filter(set_, relation)
-
-    hasse_string = "{"
-
-    for pair in relation:
-        hasse_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
-
-    if relation:
-        hasse_string = hasse_string[:-2]
-
-    hasse_string += "}"
-
-    return hasse_string
 
 # Function: special_elements
 # Input: a string containing a valid set and
