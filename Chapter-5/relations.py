@@ -5,48 +5,6 @@
 import methods
 import strings
 
-# Function: closures
-# Input: a string containing a valid set and
-#        a string containing a valid relation
-# Output: a list containing relations in the form of sets of tuples
-#         for each closure-defference on that set and relation
-# Purpose: solve problems like 23 and 24
-def closures(data):
-    set_list, relation = is_a_relation(data[0], data[1])
-    set_ = {i for i in range(0, len(set_list))}
-
-    reflexive_diff = methods.reflexive_closure(set_, relation) - relation
-    symmetric_diff = methods.symmetric_closure(relation) - relation
-    transitive_diff = methods.transitive_closure(relation) - relation
-
-    reflexive_string = "{"
-    symmetric_string = "{"
-    transitive_string = "{"
-
-    for pair in reflexive_diff:
-        reflexive_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
-
-    for pair in symmetric_diff:
-        symmetric_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
-
-    for pair in transitive_diff:
-        transitive_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
-
-    if reflexive_diff:
-        reflexive_string = reflexive_string[:-2]
-
-    if symmetric_diff:
-        symmetric_string = symmetric_string[:-2]
-
-    if transitive_diff:
-        transitive_string = transitive_string[:-2]
-    
-    reflexive_string += "}"
-    symmetric_string += "}"
-    transitive_string += "}"
-
-    return [reflexive_string, symmetric_string, transitive_string]
-
 # Function: hasse_diagram
 # Input: a string containing a valid set and
 #        a string containing a valid partial order
