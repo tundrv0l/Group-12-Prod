@@ -15,6 +15,8 @@ import CartesianProducts from './pages/CartesianProducts';
 import RelationProperties from './pages/RelationProperties';
 import ClosureAxioms from './pages/ClosureAxioms';
 import EquivalenceRelations from './pages/EquivalenceRelations';
+import PartialOrderings from './pages/PartialOrderings';
+import HasseDiagram from './pages/HasseDiagram';
 
 const App = () => (
   <AppLayout>
@@ -33,6 +35,8 @@ const App = () => (
         <Route path="/properties-of-relations" element={<RelationProperties />} />
         <Route path="/closure-axioms" element={<ClosureAxioms />} />
         <Route path="/equivalence-relations" element={<EquivalenceRelations />} />
+        <Route path="/partial-orderings" element={<PartialOrderings />} />
+        <Route path="/hasse-diagram" element={<HasseDiagram />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

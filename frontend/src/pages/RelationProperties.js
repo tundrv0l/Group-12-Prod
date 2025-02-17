@@ -2,6 +2,7 @@ import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
 import { solvePropertiesOfRelations } from '../api';
 import ReportFooter from '../components/ReportFooter';
+import Background from '../components/Background';
 
 /*
 * Name: RelationProperties.js
@@ -48,6 +49,8 @@ const RelationProperties = () => {
 
   return (
     <Page>
+      <Background />
+      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
       <PageContent align="center" skeleton={false}>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
@@ -79,7 +82,7 @@ const RelationProperties = () => {
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
             <TextInput 
-              placeholder="Example: Enter your set notation here (e.g., {(1, 2), (2, 3)})"
+              placeholder="Example: Enter your relation here (e.g., {(1, 2), (2, 3)})"
               value={input}
               onChange={(event) => setInput(event.target.value)}
             />
@@ -103,6 +106,7 @@ const RelationProperties = () => {
         </Card>
         <ReportFooter />
       </PageContent>
+      </Box>
     </Page>
   );
 };

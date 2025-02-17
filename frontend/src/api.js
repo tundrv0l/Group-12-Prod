@@ -89,3 +89,13 @@ export const solveClosureAxioms = async (input) => {
 export const solveEquivalenceRelations = async (input) => {
     return await solve('equivalence-relations', { input });
 }
+
+// Call partial orderings solver to the backend
+export const solvePartialOrderings = async (input) => {
+    return await solve('partial-orderings', { input });
+}
+
+// Call hasse diagram solver to the backend
+export const solveHasseDiagram = async (input) => {
+    return await solve('hasse-diagram', { input });
+}

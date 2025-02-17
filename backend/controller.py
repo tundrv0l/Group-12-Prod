@@ -82,6 +82,12 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'equivalence-relations':
         # Call the appropriate function for equivalence relations
         pass
+    elif solver_type == 'partial-orderings':
+        # Call the appropriate function for partial orderings
+        pass
+    elif solver_type == 'hasse-diagram':
+        # Call the appropriate function for Hasse diagrams
+        pass
     else:
         return jsonify({'error': 'Unsupported solver type'}), 400
 
@@ -98,7 +104,7 @@ def report_problem():
 
     # Get the data from the request
     data = request.json
-    
+
     # Send the email using the send_email function
     successful = send_email.send_email(data['email'], data['issue'])
 

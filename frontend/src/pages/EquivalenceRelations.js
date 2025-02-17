@@ -78,7 +78,7 @@ const EquivalenceRelations = () => {
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
             <TextInput 
-              placeholder="Example: Enter your set notation here (e.g., {(1, 2), (2, 3)})"
+              placeholder="Example: Enter your relation here (e.g., {(1, 2), (2, 3)})"
               value={input}
               onChange={(event) => setInput(event.target.value)}
             />

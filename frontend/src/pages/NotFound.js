@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 
 const NotFound = () => (
   <Box align="center" justify="center" pad="large">
-    <Heading level="2">404 - Page Not Found</Heading>
+    <Heading level="2">404 - Page Not Found :(</Heading>
     <Text>Sorry, the page you are looking for does not exist.</Text>
     <Link to="/">
       <Button label="Go to Home" margin={{ top: 'medium' }} />

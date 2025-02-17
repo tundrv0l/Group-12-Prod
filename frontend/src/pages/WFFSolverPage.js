@@ -3,6 +3,7 @@ import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Bu
 import { solveWFF } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import TruthTable from '../components/TruthTable';
+import Background from '../components/Background';
 
 /*
 * Name: WFFSolverPage.js
@@ -68,6 +69,8 @@ const WFFSolverPage = () => {
 
   return (
     <Page>
+      <Background />
+      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
       <PageContent align="center" skeleton={false}>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
@@ -90,7 +93,7 @@ const WFFSolverPage = () => {
             A truth table is a systematic way to list all possible truth values for a given logical expression. It shows how the truth value of the entire formula depends on the truth values of its components. Truth tables are especially useful for verifying tautologies (statements that are always true) or contradictions (statements that are always false).
           </Text>
           <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-            Enter your logical statement below to generate its truth table and analyze its properties! Use uppercase letters for variables (A-Z), logical operators (AND: ^, OR: v, NOT: not, IMPLIES: -{'>'}, IFF: {'<>'}), and parentheses for grouping. Negate expressions with ' or 'not'.
+            Enter your logical statement below to generate its truth table and analyze its properties! Use uppercase letters for variables (A-Z), logical operators (AND: ^, OR: v, IMPLIES: -{'>'}, IFF: {'<>'}), and parentheses for grouping. Negate expressions with ' or 'not'.
           </Text>
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
@@ -118,6 +121,7 @@ const WFFSolverPage = () => {
         </Card>
         <ReportFooter />
       </PageContent>
+      </Box>
     </Page>
   );
 };

@@ -1,12 +1,13 @@
 import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
-import { solveEquivalenceRelations } from '../api';
+import { solvePartialOrderings } from '../api';
 import ReportFooter from '../components/ReportFooter';
+import Background from '../components/Background';
 
 /*
-* Name: EquivalenceRelations.js
+* Name: PartialOrderings.js
 * Author: Parker Clark
-* Description: Solver page for equivalence relations.
+* Description: Solver page for partial orderings.
 */
 
 const PartialOrderings = () => {
@@ -31,10 +32,10 @@ const PartialOrderings = () => {
 
     setError('');
     try {
-      const result = await solveEquivalenceRelations(input);
+      const result = await solvePartialOrderings(input);
       setOutput(result);
     } catch (err) {
-      setError('An error occurred while analyzing the closure axioms.');
+      setError('An error occurred while analyzing the partial ordering.');
     } finally {
       setLoading(false);
     }
@@ -48,6 +49,7 @@ const PartialOrderings = () => {
 
   return (
     <Page>
+      <Background />
       <PageContent align="center" skeleton={false}>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
@@ -60,25 +62,23 @@ const PartialOrderings = () => {
           </Text>
         </Box>
         <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{"bottom":"small"}} textAlign="center">
-                This tool helps you analyze equivalence relations.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                An equivalence relation on a set is a relation that is reflexive, symmetric, and transitive. For example, a relation R on a set A is:
-            </Text>
-            <Box margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                <Text>- Reflexive if every element is related to itself, i.e., (a, a) ∈ R for all a ∈ A.</Text>
-                <Text>- Symmetric if for every (a, b) ∈ R, (b, a) ∈ R.</Text>
-                <Text>- Transitive if for every (a, b) ∈ R and (b, c) ∈ R, (a, c) ∈ R.</Text>
-            </Box>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-                Enter your relation below to analyze its properties and determine if it is an equivalence relation!
-            </Text>
+          <Text margin={{"bottom":"small"}} textAlign="center">
+            This tool helps you analyze partial orderings in a relation.
+          </Text>
+          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            A partial ordering is a binary relation over a set that is reflexive, antisymmetric, and transitive. This tool allows you to test if a given relation is a partial ordering and to explore its properties.
+          </Text>
+          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            By analyzing partial orderings, you can identify hierarchical structures within sets, find minimal and maximal elements, and determine the comparability of elements. This tool allows you to input a relation and apply partial ordering analysis to generate the corresponding results.
+          </Text>
+          <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+            Enter your relation below to analyze partial orderings and explore the results!
+          </Text>
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
             <TextInput 
-              placeholder="Example: Enter your set notation here (e.g., {(1, 2), (2, 3)})"
+              placeholder="Example: Enter your relation here (e.g., {(1, 2), (2, 3)})"
               value={input}
               onChange={(event) => setInput(event.target.value)}
             />
