@@ -1,446 +1,399 @@
-#Inputs are the same as propositional_solver.py. A > B, A v B, A ^ B, (A > B) v (C ^ D), but there's also <> now
+'''----------------- 
+# Title: wff_solver.py
+# Author: Mathias Buchanan
+# Date: 2/15/2025
+# Description: Solver code to convert WFF to Truth Tables.
+-----------------'''
 
-import math
-letters = []
-hypothesi = []
-truthTable = []
+#---Imports---#
+import json
+import itertools
 
 class Letter:
-    def __init__(self, letter, parent1, parent2, typeOfGetThere, is_Not, istrue):
+    """
+    Class to represent a letter in a propositional logic formula.
+    It can be a variable (like 'A', 'B', etc.) or a negation of a variable (like '¬A').
+
+    - Members:
+        - letter: The letter representing a variable.
+        - is_Not: Boolean indicating if the letter is negated.
+    """
+
+    def __init__(self, letter, is_Not=False):
         self.letter = letter
         self.is_Not = is_Not
-        self.istrue = istrue
-        self.parent1 = parent1
-        self.parent2 = parent2
-        self.type = typeOfGetThere
-    
+
     def __eq__(self, value):
-        # Check if the value is a Letter object or a string
+        """
+        Check equality with another Letter or a string.
+        If the other value is a Letter, compare their letters.
+        If it's a string, compare the letter of this instance with the string.
+
+        - Parameters:
+            - value: The value to compare with.
+        
+        - Returns:
+            - True if equal, False otherwise.
+        """
+
         if isinstance(value, Letter):
             return self.letter == value.letter
-        return self.letter == value  # Compare with string if value is not a Letter
-    
-    # Override the >= operator
-    def __ge__(self, value):
-        # Check if the value is a Letter object or a string
-        if isinstance(value, Letter):
-            return self.letter == value.letter and self.is_Not == value.is_Not
-        return False  # If string, compare letter only and assume 'not' is False
+        return self.letter == value
 
     def __str__(self):
-        if self.is_Not == False:
-            return self.letter
-        elif self.is_Not == True:
-            return "not " + self.letter
-        else:
-            return self.letter + "is acting weird"
+        """
+        String representation of the Letter object.
+        If it's negated, it returns "¬" followed by the letter.
+
+        - Returns:
+            - A string representation of the letter.
+        """
+
+        return f"¬{self.letter}" if self.is_Not else self.letter
+
+    def checkTrue(self, truthTable):
+        """
+        Check the truth value of the letter based on the provided truth table.
+        If the letter is negated, return the negation of its truth value.
+
+        - Parameters:
+            - truthTable: A dictionary representing the truth values of variables.
         
-    def checkTrue(self):
-        for i, j in enumerate(letters):
-            if j == self.letter:
-                if not self.is_Not:
-                    if truthTable[i] == "T":
-                        return True
-                    return False
-                else:
-                    if truthTable[i] == "F":
-                        return True
-                    return False
-
-        
-    def clone(self):
-        return Letter(self.letter, self.parent1, self.parent2, self.type, self.is_Not, self.istrue)
-
-class OR:
-    def __init__(self, letter1, letter2, parent1, parent2, typeOfGetThere, is_Not):
-        
-        self.letter1 = letter1
-        self.letter2 = letter2
-        self.parent1 = parent1
-        self.parent2 = parent2
-        self.type = typeOfGetThere
-        self.is_Not = is_Not
-
-    def __str__(self):
-        if not self.is_Not:
-            return f"{self.letter1} or {self.letter2}"
-        return f"not ({self.letter1} or {self.letter2})"
-    
-    def __eq__(self, value):
-        if isinstance(value, OR):
-            # Compare using Letter instances directly
-            return ((self.letter1 >= value.letter1 and self.letter2 >= value.letter2) or
-                    (self.letter1 >= value.letter2 and self.letter2 >= value.letter1)) and self.is_Not == value.is_Not
-        return False
-    
-    def __ge__(self, value):
-        return self == value
-    
-    def checkTrue(self):
-        return self.letter1.checkTrue() or self.letter2.checkTrue()
-    
-    def clone(self):
-        return OR(self.letter1.clone(), self.letter2.clone(), self.parent1, self.parent2, self.type, self.is_Not)
-
-
-class IMPLIES:
-    def __init__(self, letter1, letter2, parent1=None, parent2=None, typeOfGetThere=None, is_Not=False):
-        self.letter1 = letter1
-        self.letter2 = letter2
-        self.parent1 = parent1
-        self.parent2 = parent2
-        self.type = typeOfGetThere
-        self.is_Not = is_Not
-
-    def __str__(self):
-        return f"{self.letter1} implies {self.letter2}"
-    
-    def __eq__(self, value):
-        if isinstance(value, IMPLIES):
-            return self.letter1 >= value.letter1 and self.letter2 >= value.letter2 and self.is_Not == value.is_Not
-        return False
-    
-    def __ge__(self, value):
-        return self == value
-    
-    def checkTrue(self):
-        return self.letter2.checkTrue() or not self.letter1.checkTrue()
-    
-    def clone(self):
-        return IMPLIES(self.letter1.clone(), self.letter2.clone(), self.parent1, self.parent2, self.type, self.is_Not)
-
-class DIMPLIES:
-    def __init__(self, letter1, letter2, parent1=None, parent2=None, typeOfGetThere=None, is_Not=False):
-        self.letter1 = letter1
-        self.letter2 = letter2
-        self.parent1 = parent1
-        self.parent2 = parent2
-        self.type = typeOfGetThere
-        self.is_Not = is_Not
-
-    def __str__(self):
-        return f"{self.letter1} iff {self.letter2}"
-    
-    def __eq__(self, value):
-        if isinstance(value, DIMPLIES):
-            return self.letter1 >= value.letter1 and self.letter2 >= value.letter2 and self.is_Not == value.is_Not
-        return False
-    
-    def __ge__(self, value):
-        return self == value
-    
-    def checkTrue(self):
-        return (self.letter2.checkTrue() and self.letter1.checkTrue()) or (not self.letter2.checkTrue() and not self.letter1.checkTrue())
-    
-    def clone(self):
-        return DIMPLIES(self.letter1.clone(), self.letter2.clone(), self.parent1, self.parent2, self.type, self.is_Not)
+        - Returns:
+            - True if the letter's truth value is True, False otherwise.
+        """
+        return not truthTable[self.letter] if self.is_Not else truthTable[self.letter]
 
 class AND:
-    def __init__(self, letter1, letter2, parent1, parent2, typeOfGetThere, is_Not):
-        
+    """
+    Class to represent the AND operation in propositional logic.
+    It takes two letters and can be negated.
+
+    - Members:
+        - letter1: The first letter in the AND operation.
+        - letter2: The second letter in the AND operation.
+        - is_Not: Boolean indicating if the AND operation is negated.
+    """
+
+    def __init__(self, letter1, letter2, is_Not=False):
         self.letter1 = letter1
         self.letter2 = letter2
-        self.parent1 = parent1
-        self.parent2 = parent2
-        self.type = typeOfGetThere
         self.is_Not = is_Not
 
     def __str__(self):
-        base_str = f"{self.letter1} and {self.letter2}"
-        return f"not ({base_str})" if self.is_Not else base_str
-    
-    def __eq__(self, value):
-        if isinstance(value, AND):
-            return ((self.letter1 >= value.letter1 and self.letter2 >= value.letter2) or
-                    (self.letter1 >= value.letter2 and self.letter2 >= value.letter1)) and self.is_Not == value.is_Not
-        return False
-    
-    def __ge__(self, value):
-        return self == value
-    
-    def checkTrue(self):
-        return self.letter1.checkTrue() and self.letter2.checkTrue()
+        """
+        String representation of the AND operation.
+        If negated, it returns "¬" followed by the AND operation.
 
-    def clone(self):
-        return AND(self.letter1.clone(), self.letter2.clone(), self.parent1, self.parent2, self.type, self.is_Not)
-# backend/solvers/wff_solver.py
+        - Returns:
+            - A string representation of the AND operation.
+        """
+
+        base_str = f"({self.letter1} ∧ {self.letter2})"
+        return f"¬{base_str}" if self.is_Not else base_str
+
+    def checkTrue(self, truthTable):
+        """
+        Check the truth value of the AND operation based on the provided truth table.
+        If the AND operation is negated, return the negation of its truth value.
+
+        - Parameters:
+            - truthTable: A dictionary representing the truth values of variables.
+
+        - Returns:
+            - True if the AND operation's truth value is True, False otherwise.
+        """
+
+        result = self.letter1.checkTrue(truthTable) and self.letter2.checkTrue(truthTable)
+        return not result if self.is_Not else result
+
+class OR:
+    """
+    Class to represent the OR operation in propositional logic.
+    It takes two letters and can be negated.
+
+    - Members:
+        - letter1: The first letter in the OR operation.
+        - letter2: The second letter in the OR operation.
+        - is_Not: Boolean indicating if the OR operation is negated.
+    """
+
+    def __init__(self, letter1, letter2, is_Not=False):
+        self.letter1 = letter1
+        self.letter2 = letter2
+        self.is_Not = is_Not
+
+    def __str__(self):
+        """
+        String representation of the OR operation.
+        If negated, it returns "¬" followed by the OR operation.
+
+        - Returns:
+            - A string representation of the OR operation.
+        """
+
+        base_str = f"({self.letter1} ∨ {self.letter2})"
+        return f"¬{base_str}" if self.is_Not else base_str
+
+    def checkTrue(self, truthTable):
+        """
+        Check the truth value of the OR operation based on the provided truth table.
+        If the OR operation is negated, return the negation of its truth value.
+
+        - Returns:
+            - True if the OR operation's truth value is True, False otherwise.
+        """
+
+        result = self.letter1.checkTrue(truthTable) or self.letter2.checkTrue(truthTable)
+        return not result if self.is_Not else result
+
+class IMPLIES:
+    """
+    Class to represent the IMPLIES operation in propositional logic.
+    It takes two letters and can be negated.
+
+    - Members:
+        - letter1: The first letter in the IMPLIES operation.
+        - letter2: The second letter in the IMPLIES operation.
+        - is_Not: Boolean indicating if the IMPLIES operation is negated.
+    """
+
+    def __init__(self, letter1, letter2, is_Not=False):
+        self.letter1 = letter1
+        self.letter2 = letter2
+        self.is_Not = is_Not
+
+    def __str__(self):
+        """
+        String representation of the IMPLIES operation.
+        If negated, it returns "¬" followed by the IMPLIES operation.
+
+        - Returns:
+            - A string representation of the IMPLIES operation.
+        """
+
+        base_str = f"({self.letter1} → {self.letter2})"
+        return f"¬{base_str}" if self.is_Not else base_str
+
+    def checkTrue(self, truthTable):
+        """
+        Check the truth value of the IMPLIES operation based on the provided truth table.
+        If the IMPLIES operation is negated, return the negation of its truth value.
+
+        - Parameters:
+            - truthTable: A dictionary representing the truth values of variables.
+        
+        - Returns:
+            - True if the IMPLIES operation's truth value is True, False otherwise.
+        """
+
+        result = not self.letter1.checkTrue(truthTable) or self.letter2.checkTrue(truthTable)
+        return not result if self.is_Not else result
+
+class DIMPLIES:
+    """
+    Class to represent the DIMPLIES (IFF) operation in propositional logic.
+    It takes two letters and can be negated.
+
+    - Members:
+        - letter1: The first letter in the DIMPLIES operation.
+        - letter2: The second letter in the DIMPLIES operation.
+        - is_Not: Boolean indicating if the DIMPLIES operation is negated.
+    """
+
+    def __init__(self, letter1, letter2, is_Not=False):
+        self.letter1 = letter1
+        self.letter2 = letter2
+        self.is_Not = is_Not
+
+    def __str__(self):
+        """
+        String representation of the DIMPLIES operation.
+        If negated, it returns "¬" followed by the DIMPLIES operation.
+
+        - Returns:
+            - A string representation of the DIMPLIES operation.
+        """
+
+        base_str = f"({self.letter1} ↔ {self.letter2})"
+        return f"¬{base_str}" if self.is_Not else base_str
+
+    def checkTrue(self, truthTable):
+        """
+        Check the truth value of the DIMPLIES operation based on the provided truth table.
+        If the DIMPLIES operation is negated, return the negation of its truth value.
+
+        - Parameters:
+            - truthTable: A dictionary representing the truth values of variables.
+
+        - Returns:
+            - True if the DIMPLIES operation's truth value is True, False otherwise.
+        """
+
+        result = self.letter1.checkTrue(truthTable) == self.letter2.checkTrue(truthTable)
+        return not result if self.is_Not else result
+
+def parse_formula(formula):
+    """
+    Driver function to parse a WFF and return a corresponding object.
+
+    - Parameters:
+        - formula: A string representing the WFF to be parsed.
+    
+    - Returns:
+        - An object representing the parsed WFF.
+    """
+
+    # Remove spaces and initialize a stack for parentheses
+    formula = formula.replace(" ", "")
+    stack = []
+    i = 0
+
+    # Iterate through the formula to handle grouping by parentheses
+    while i < len(formula):
+
+        # At the start of grouping, add the index to the stack
+        if formula[i] == '(':
+            stack.append(i)
+
+        # If we encounter a closing parenthesis, finish grouping, pop from the stack
+        elif formula[i] == ')':
+
+            start = stack.pop()
+
+            # If the stack is empty, we have a complete sub-formula
+            if not stack:
+                # Parse the sub-formula between the parentheses
+                sub_formula = formula[start + 1:i]
+
+                # Recursively parse the sub-formula and replace it in the original formula
+                parsed_sub_formula = parse_formula(sub_formula)
+                formula = formula[:start] + str(parsed_sub_formula) + formula[i + 1:]
+
+                # Adjust the index to continue parsing after the replaced sub-formula
+                i = start + len(str(parsed_sub_formula)) - 1
+
+        # Increment the index to continue parsing
+        i += 1
+
+    # Series of controls to check for the type of operation in the formula
+
+    # Check for implication (->)
+    if "->" in formula:
+
+        # Split the formula at the first occurrence of '->'
+        parts = formula.split("->")
+
+        # Parse the left and right parts of the implication
+        return IMPLIES(parse_formula(parts[0]), parse_formula(parts[1]))
+
+    # Check for disjunction/or (v or V)
+    elif "v" in formula or "V" in formula:
+
+        # Split the formula at the first occurrence of 'v' or 'V'
+        parts = formula.split("v") if "v" in formula else formula.split("V")
+
+        # Parse the left and right parts of the disjunction
+        return OR(parse_formula(parts[0]), parse_formula(parts[1]))
+
+    # Check for conjunction/and (^)
+    elif "^" in formula:
+
+        # Split the formula at the first occurrence of '^'
+        parts = formula.split("^")
+
+        # Parse the left and right parts of the conjunction
+        return AND(parse_formula(parts[0]), parse_formula(parts[1]))
+
+    # Check for iff/biconditional (<->)
+    elif "<>" in formula:
+
+        # Split the formula at the first occurrence of '<>'
+        parts = formula.split("<>")
+
+        # Parse the left and right parts of the biconditional
+        return DIMPLIES(parse_formula(parts[0]), parse_formula(parts[1]))
+
+    # Check for negation (not, ¬, ')
+    elif formula.startswith("not"):
+
+        # Remove the "not" prefix and parse the rest of the formula
+        return Letter(formula[3:].strip(), is_Not=True)
+    elif formula.startswith("¬"):
+
+        # Remove the "¬" prefix and parse the rest of the formula
+        return Letter(formula[1:].strip(), is_Not=True)
+    elif formula.endswith("'"):
+
+        # Remove the "'" suffix and parse the rest of the formula
+        return Letter(formula[:-1].strip(), is_Not=True)
+    else:
+
+        # If none of the above, it's a simple variable (like 'A', 'B', etc.)
+        return Letter(formula.strip())
 
 def solve(data):
-    hypothisis = data.replace(" ", "")
-    hypothisises = []
+    """
+    Driver function solve a WFF and return a truth table.
 
-    parserString = ""
-    inThing = 0
-    for index, char in enumerate(hypothisis):
-        if char == "(":
-            inThing += 1
-        if char == ")":
-            inThing -= 1
-        if char == "^" and inThing <= 0:
-            hypothisises.append(parserString)
-            parserString = ""
-        else:
-            parserString += char
-        
-    if parserString != "":
-        hypothisises.append(parserString)
-
-
-    def parse_and(component):
-        ore = "v" in component
-        andy = "^" in component
-        imp = ">" in component
-        dimp = "<>" in component
-        wholeisNot = ")'" in component
-        component = component.replace("(", "").replace(")'", "").replace(")", "")
-        coms = [component]
-        if ore:
-            coms = component.split("v")
-        if andy:
-            coms = component.split("^")
-        if imp:
-            coms = component.split(">")
-        if dimp:
-            coms = component.cplit("<>")
-        isnt = "'" in coms[0]
-        base_letter = coms[0].replace("'", "")
-        letter1 = Letter(base_letter, "hypothesis", "hypothesis", "none", isnt, "unknown")
-        letter2 = "none"
-        if coms.__len__() > 1 and coms[1] != "":  
-            isnt2 = "'" in coms[1]
-            base_letter = coms[1].replace("'", "")
-            letter2 = Letter(base_letter, "hypothesis", "hypothesis", "none", isnt2, "unknown") 
-        if isinstance(letter1, Letter) and letter1 not in letters:
-            letters.append(letter1)
-        if isinstance(letter2, Letter) and letter2 not in letters:
-            letters.append(letter2)
-        if ore:
-            return OR(letter1, letter2, "none", "none", "none", wholeisNot)
-        elif andy:
-            return AND(letter1, letter2, "none", "none", "none", wholeisNot)
-        elif imp:
-            return IMPLIES(letter1, letter2, "none", "none", "none", wholeisNot)
-        elif dimp:
-            return DIMPLIES(letter1, letter2, "none", "none", "none", wholeisNot)
-        else:
-            return letter1
-
-    def split_logic_string(i: str):
-        result = []
-        current = ""
-        
-        for index, char in enumerate(i):
-            if char == '(':
-                if current != "":
-                    result.append(str(current))
-                current = "("
-            elif char == ')': 
-                current += ")"
-                result.append(str(current))
-                current = ""
-            elif char == "'" and current == "":
-                holdUp = result.pop()
-                holdUp += "'"
-                result.append(holdUp)
-            elif current == "" and char in {'>', 'v', '^'}:
-                result.append(char)
-            else:
-                current += char
-        
-        if current != "":
-            result.append(current)
-        
-        return result
-
-    for i in hypothisises:
-
-        if "(" in i and ")" in i:
-            newEye = split_logic_string(i)
-            if newEye.__len__() > 1:
-                wholeNot = ")'" in newEye
-                if not wholeNot:
-                    finalEntry = newEye[newEye.__len__() - 1]
-                    wholeNot = ")'" in finalEntry and finalEntry.replace(")'", "").__len__() == 1
-                ore = "v" in newEye
-                andy = "^" in newEye
-                imp = ">" in newEye
-                dimp = "<>" in newEye
-                index = 0
-                while newEye[index].replace("(", "").replace(")", "").replace("'", "").replace("v", "").replace("^", "").replace(">", "").replace("<", "") == "":
-                    index += 1
-                letter1 = parse_and(newEye[index])
-                index += 1
-                while newEye[index].replace("(", "").replace(")", "").replace("'", "").replace("v", "").replace("^", "").replace(">", "").replace("<", "") == "":
-                    index += 1
-                letter2 = parse_and(newEye[index])
-                if not ore and not andy and not imp and not dimp:
-                    if isinstance(letter1, OR):
-                        newOR = OR(letter1.letter1, letter2, "hypothesis", "hypothesis", "none", wholeNot)
-                        hypothesi.append(newOR)
-                    if isinstance(letter1, AND):
-                        newAND = AND(letter1.letter1, letter2, "hypothesis", "hypothesis", "none", wholeNot)
-                        hypothesi.append(newAND)
-                    if isinstance(letter1, IMPLIES):
-                        newIMP = IMPLIES(letter1.letter1, letter2, "hypothesis", "hypotheis", "none", wholeNot)
-                        hypothesi.append(newIMP)
-                    if isinstance(letter1, DIMPLIES):
-                        newIMP = DIMPLIES(letter1.letter1, letter2, "hypothesis", "hypotheis", "none", wholeNot)
-                        hypothesi.append(newIMP)
-                if ore:
-                    newOR = OR(letter1, letter2, "hypothesis", "hypothesis", "none", wholeNot)
-                    hypothesi.append(newOR)
-                if andy:
-                    newOR = AND(letter1, letter2, "hypothesis", "hypothesis", "none", wholeNot)
-                    hypothesi.append(newOR)
-                if imp:
-                    newOR = IMPLIES(letter1, letter2, "hypothesis", "hypothesis", "none", wholeNot)
-                    hypothesi.append(newOR)
-                if dimp:
-                    newOR = DIMPLIES(letter1, letter2, "hypothesis", "hypothesis", "none", wholeNot)
-                    hypothesi.append(newOR)
-            else:
-                hypothisises.append(i.replace("(", ""))
-
-        else:
-            if "v" in i:  # Process OR
-                components = i.split("v")
-                letter1 = parse_and(components[0])  # Use parse_and for letter1
-                letter2 = parse_and(components[1])  # Use parse_and for letter2
-
-                is_not = False
-                if isinstance(letter2, Letter):
-                    is_not = i.endswith(")'")
-                elif isinstance(letter2, AND):
-                        if letter2.is_Not:
-                            is_not = i.endswith(")')'")
-                        else:
-                            is_not = i.endswith(")'")
-                newOr = OR(letter1, letter2, "hypothesis", "hypothesis", "none", is_not)
-                hypothesi.append(newOr)
-            elif "<>" in i:  # Process IMPLIES
-                components = i.split("<>")
-                letter1 = parse_and(components[0])  # Use parse_and for letter1
-                letter2 = parse_and(components[1])  # Use parse_and for letter2
-
-                is_not = False
-                if isinstance(letter2, Letter):
-                    is_not = i.endswith(")'")
-                else:
-                    if isinstance(letter2, AND):
-                        if letter2.is_Not:
-                            is_not = i.endswith(")')'")
-                        else:
-                            is_not = i.endswith(")'")
-                newImplies = DIMPLIES(letter1, letter2, "hypothesis", "hypothesis", "none", is_not)
-                hypothesi.append(newImplies)
-            # Process IMPLIES
-            elif ">" in i:  # Process IMPLIES
-                components = i.split(">")
-                letter1 = parse_and(components[0])  # Use parse_and for letter1
-                letter2 = parse_and(components[1])  # Use parse_and for letter2
-
-                is_not = False
-                if isinstance(letter2, Letter):
-                    is_not = i.endswith(")'")
-                else:
-                    if isinstance(letter2, AND):
-                        if letter2.is_Not:
-                            is_not = i.endswith(")')'")
-                        else:
-                            is_not = i.endswith(")'")
-                newImplies = IMPLIES(letter1, letter2, "hypothesis", "hypothesis", "none", is_not)
-                hypothesi.append(newImplies)
-            elif "^" in i:  # AND statement
-                components = i.replace("(", "").replace(")'", "").replace(")", "").split("^")
-                wholeNot = ")'" in i
-                letter1, letter2 = components[0], components[1]
-
-                is_not_1 = "'" in letter1
-                base_letter1 = letter1.replace("'", "")
-                letter_obj1 = Letter(base_letter1, "hypothesis", "hypothesis", "none",  is_not_1, "unknown")
-                if letter_obj1 not in letters:
-                    letters.append(letter_obj1)
-                if letter_obj1 not in hypothesi:
-                    hypothesi.append(letter_obj1)
-
-                is_not_2 = "'" in letter2
-                base_letter2 = letter2.replace("'", "")
-                letter_obj2 = Letter(base_letter2, "hypothesis", "hypothesis", "none",  is_not_2, "unknown")
-                if letter_obj2 not in letters:
-                    letters.append(letter_obj2)
-                if letter_obj2 not in hypothesi:
-                    hypothesi.append(letter_obj2)
-
-                conclusion = AND(letter_obj1, letter_obj2, "conclusion", "conclusion", "none", False)
-            else:  # Process single-letter hypothesis
-                is_not = "'" in i
-                base_letter = i.replace("'", "")
-                newLetter = Letter(base_letter, "hypothesis", "hypothesis", "none",  is_not, not is_not)  # True for positive, False for negative
-                if newLetter not in letters:
-                    letters.append(newLetter)
-                else:  # Update `istrue` if the letter already exists
-                    for letter in letters:
-                        if letter.letter == base_letter:
-                            letter.istrue = not is_not
-                hypothesi.append(newLetter)
-    # Implement the WFF to truth table algorithm
-    # This is just a placeholder implementation
-    print([str(h) for h in hypothesi])
-    print([str(l) for l in letters])
-    outputStr = "|"
-    for l in letters:
-        outputStr += " " + l.letter + " |"
-        truthTable.append("T")
-    keepGoint = True
-    outputStr += " " + data + " |\n"
-    truthLen = data.__len__()
-    firstOne = math.floor(truthLen / 2)
-    secondOne = math.ceil(truthLen / 2)
-    if secondOne == firstOne:
-        secondOne += 1
-    else:
-        firstOne += 1
-    ttl = truthTable.__len__()
+    - Parameters:
+        - data: A dictionary containing the WFF to be solved.
     
-    binary = 1
-    j = 0
-    while j < ttl:
-        binary *= 2
-        j += 1
-    binary -= 1
-    while binary >= 0:
-        outputStr += "|"
-        for l in truthTable:
-            outputStr += " " + l + " |"
-        currentOutput = True
-        for h in hypothesi:
-            currentOutput = currentOutput and h.checkTrue()
-        i = 0
-        while i < firstOne:
-            outputStr += " "
-            i += 1
-        if currentOutput:
-            outputStr += "T"
-        else:
-            outputStr += "F"
-        i = 0
-        while i < secondOne:
-            outputStr += " "
-            i += 1
-        outputStr += "|\n"
-        #reset the truth table
-        binary -= 1
-        remainder = binary
-        for index, t in enumerate(truthTable):
-            twoPower = 1
-            k = 0
-            while k < ttl - index - 1:
-                twoPower *= 2
-                k += 1
-            if remainder - twoPower >= 0:
-                remainder -= twoPower
-                t = "T"
-            else:
-                t = "F"
-            truthTable[index] = t
-    return outputStr
+    - Returns:
+        - A JSON string representing the truth table of the WFF.
+    """
+
+    # Parse the formula from the input data
+    formula = parse_formula(data)
+
+    # Extract variables from the formula and sort them
+    variables = sorted(_extract_variables(formula))
+
+    # Define the headers/row for the truth table
+    headers = variables + [str(formula)]
+    rows = []
+
+    # Generate all combinations of truth values for the variables
+    for values in itertools.product([False, True], repeat=len(variables)):
+
+        # Create a truth table for the current combination of values
+        truthTable = dict(zip(variables, values))
+
+        # Evaluate the formula for the current truth table
+        row = ["T" if truthTable[var] else "F" for var in variables]
+
+        # Append the result of the formula evaluation
+        row.append("T" if formula.checkTrue(truthTable) else "F")
+
+        # Append the row to the result
+        rows.append(row)
+
+    # Convert the result to JSON format
+    result = {
+        "headers": headers,
+        "rows": rows
+    }
+
+    return json.dumps(result)
+
+def _extract_variables(formula):
+    """
+    Recursively extract variables from a formula.
+
+    - Parameters:
+        - formula: The formula object to extract variables from.
+    
+    - Returns:
+        - A set of variables present in the formula.
+    """
+
+    # Base case: if the formula is a letter, return its variable
+    if isinstance(formula, Letter):
+        return {formula.letter}
+
+    # Recursive case: if the formula is a compound statement, extract variables from its components
+    elif isinstance(formula, (AND, OR, IMPLIES, DIMPLIES)):
+        return _extract_variables(formula.letter1) | _extract_variables(formula.letter2)
+
+    # If the formula is not recognized, return an empty set
+    return set()

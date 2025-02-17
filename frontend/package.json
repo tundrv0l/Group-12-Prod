@@ -19,7 +19,7 @@
     "joi": "^17.13.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.0.0",
+    "react-router-dom": "^6.29.0",
     "react-scripts": "^5.0.1",
     "styled-components": "^6.1.14",
     "uuid": "^11.0.5",
@@ -48,5 +48,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "webpack": "^5.97.1",
+    "webpack-dev-server": "^5.2.0"
   }
 }

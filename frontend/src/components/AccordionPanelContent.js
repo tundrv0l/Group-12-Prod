@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'grommet';
-import { RouterContext } from '../router/Router';
+import { useNavigate } from 'react-router-dom';
 
 /*
 * Name: AccordionPanelContent.js
@@ -11,10 +11,10 @@ import { RouterContext } from '../router/Router';
 const AccordionPanelContent = ({ content }) => {
 
   // Set up router context so each accordion panel text can be a link
-  const { push } = React.useContext(RouterContext);
+  const navigate = useNavigate();
 
   const handleClick = (path) => {
-    push(path);
+    navigate(path);
   };
 
   return (
