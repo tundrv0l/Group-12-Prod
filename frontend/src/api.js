@@ -76,8 +76,8 @@ export const solveCartesianProducts = async (input) => {
 }
 
 // Call properties of relations solver to the backend
-export const solvePropertiesOfRelations = async (input) => {
-    return await solve('properties-of-relations', { input });
+export const solvePropertiesOfRelations = async (set, relation) => {
+    return await solve('properties-of-relations', { set, relation });
 }
 
 // Call closure axioms solver to the backend

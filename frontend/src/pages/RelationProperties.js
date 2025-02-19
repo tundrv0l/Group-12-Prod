@@ -11,7 +11,8 @@ import Background from '../components/Background';
 */
 
 const RelationProperties = () => {
-  const [input, setInput] = React.useState('');
+  const [set, setSet] = React.useState('');
+  const [relation, setRelation] = React.useState('');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
@@ -22,9 +23,11 @@ const RelationProperties = () => {
     setOutput('');
     setError('');
 
-    // Validate input
-    const isValid = validateInput(input);
-    if (!isValid) {
+    // Validate input TODO: NEED TO ADD TWO VALIDATES
+    const isValidRelation = validateInput(relation);
+    const isValidSet = validateInput(set);
+    
+    if (!isValidRelation || !isValidSet) {
       setError('Invalid input. Please enter a valid relations.');
       setLoading(false);
       return;
@@ -32,7 +35,7 @@ const RelationProperties = () => {
 
     setError('');
     try {
-      const result = await solvePropertiesOfRelations(input);
+      const result = await solvePropertiesOfRelations({relation, set});
       setOutput(result);
     } catch (err) {
       setError('An error occurred while analyzing the relation properties.');
@@ -81,12 +84,20 @@ const RelationProperties = () => {
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
-            <TextInput 
-              placeholder="Example: Enter your relation here (e.g., {(1, 2), (2, 3)})"
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-            />
-            {error && <Text color="status-critical">{error}</Text>}
+            <Box margin={{bottom : "small" }}>
+              <TextInput 
+                placeholder="Example: Enter your set here (e.g., {a, b, c, 23})"
+                value={set}
+                onChange={(event) => setSet(event.target.value)}
+              />
+            </Box>
+            <Box margin={{top : "small" }}>
+              <TextInput 
+                placeholder="Example: Enter your relation here (e.g., {(a, b), (23, c)})"
+                value={relation}
+                onChange={(event) => setRelation(event.target.value)}
+              />
+            </Box>
           </CardBody>
           <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
             <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />

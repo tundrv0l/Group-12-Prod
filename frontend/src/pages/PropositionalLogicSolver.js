@@ -45,10 +45,28 @@ const PropositionalLogicSolver = () => {
   }
 
   const validateInput = (input) => {
-    // TODO: Change regex here based on input pattern
-    const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
-    return wffRegex.test(input);
-  }
+    // AI Generated regex to match well-formed formulas (WFFs) in propositional logic. Includes some other functions to validate proper form.
+
+    // Regular expression to validate WFF general form, including operators, NOT, and parentheses.
+    // Will match input like: (A v B) -> (C ^ D), A v B, A -> B, not A, A', (A v not B) ^ (C ^ D'), etc.
+    const wffRegex = /^(\(*\s*(not\s*)?[A-Z]('|¬)?\s*\)*(\s*(->|v|\^|<>|V)\s*\(*\s*(not\s*)?[A-Z]('|¬)?\s*\)*)*(\s*(->|v|\^|<>|V)\s*\(*\s*(not\s*)?[A-Z]('|¬)?\s*\)*)*)+|\(\s*.*\s*\)('|¬)$/;
+    // Check for balanced parentheses and at least one operator
+    const balancedParentheses = (input.match(/\(/g) || []).length === (input.match(/\)/g) || []).length;
+
+    // Check for at least one operator in the input
+    const containsOperator = /->|v|\^|<>|V|not/.test(input);
+
+    // Reject single pair of parentheses. Backend doesn't handle input like: (A V B), but does support A V B
+    const singlePairParentheses = /^\([^()]*\)$/.test(input);
+
+    // Allow single negated variables like ¬A, A', and not A
+    const singleNegatedVariable = /^(not\s*)?[A-Z]('|¬)?$/.test(input);
+
+    // Allow negated expressions with parentheses like (A V B)'
+    const negatedExpressionWithParentheses = /^\(\s*.*\s*\)('|¬)$/.test(input);
+
+    return (wffRegex.test(input) && balancedParentheses && containsOperator && !singlePairParentheses) || singleNegatedVariable || negatedExpressionWithParentheses;
+ }
 
   return (
     <Page>

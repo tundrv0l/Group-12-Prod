@@ -8,6 +8,7 @@
 #---Imports---#
 from flask import Blueprint, request, jsonify
 from backend.solvers import wff_solver
+from backend.solvers import propositional_solver
 from backend.reporter import send_email
 
 # Define a Blueprint for the controller
@@ -30,6 +31,7 @@ def solve(solver_type):
     '''
     data = request.json
     print(data)
+    
     result = solve_algorithim(solver_type, data)
     return(jsonify(result))
 
@@ -53,8 +55,8 @@ def solve_algorithim(solver_type, data):
     if solver_type == 'wff':
         return wff_solver.solve(data['formula'])
     elif solver_type == 'propositional-logic':
-        # Call the appropriate function for propositional logic
-        pass
+        data = data["hypotheses"]
+        return propositional_solver.solve(data['hypotheses'], data['conclusion'])
     elif solver_type == 'recursive-definitions':
         # Call the appropriate function for recursive definitions
         pass

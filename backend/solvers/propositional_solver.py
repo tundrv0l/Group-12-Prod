@@ -969,3 +969,4 @@ def solve(hypothisis, conclusionn):
             i.printParent()
 
     return outputString
+

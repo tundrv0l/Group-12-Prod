@@ -24,7 +24,7 @@ const TruthTable = ({ headers, rows }) => {
           <TableRow key={rowIndex}>
             {row.map((cell, cellIndex) => (
               <TableCell key={cellIndex} border={{ color: 'light-4', side: 'all' }}>
-                <Text>{cell}</Text>
+                <Text>{cell.toString()}</Text>
               </TableCell>
             ))}
           </TableRow>

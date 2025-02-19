@@ -1,399 +1,182 @@
 '''----------------- 
 # Title: wff_solver.py
 # Author: Mathias Buchanan
-# Date: 2/15/2025
-# Description: Solver code to convert WFF to Truth Tables.
+# Date: 2/18/2025
+# Description: A solver for well-formed formulas (WFF) to generate truth tables.
 -----------------'''
 
 #---Imports---#
-import json
 import itertools
-
-class Letter:
-    """
-    Class to represent a letter in a propositional logic formula.
-    It can be a variable (like 'A', 'B', etc.) or a negation of a variable (like '¬A').
-
-    - Members:
-        - letter: The letter representing a variable.
-        - is_Not: Boolean indicating if the letter is negated.
-    """
-
-    def __init__(self, letter, is_Not=False):
-        self.letter = letter
-        self.is_Not = is_Not
-
-    def __eq__(self, value):
-        """
-        Check equality with another Letter or a string.
-        If the other value is a Letter, compare their letters.
-        If it's a string, compare the letter of this instance with the string.
-
-        - Parameters:
-            - value: The value to compare with.
-        
-        - Returns:
-            - True if equal, False otherwise.
-        """
-
-        if isinstance(value, Letter):
-            return self.letter == value.letter
-        return self.letter == value
-
-    def __str__(self):
-        """
-        String representation of the Letter object.
-        If it's negated, it returns "¬" followed by the letter.
-
-        - Returns:
-            - A string representation of the letter.
-        """
-
-        return f"¬{self.letter}" if self.is_Not else self.letter
-
-    def checkTrue(self, truthTable):
-        """
-        Check the truth value of the letter based on the provided truth table.
-        If the letter is negated, return the negation of its truth value.
-
-        - Parameters:
-            - truthTable: A dictionary representing the truth values of variables.
-        
-        - Returns:
-            - True if the letter's truth value is True, False otherwise.
-        """
-        return not truthTable[self.letter] if self.is_Not else truthTable[self.letter]
-
-class AND:
-    """
-    Class to represent the AND operation in propositional logic.
-    It takes two letters and can be negated.
-
-    - Members:
-        - letter1: The first letter in the AND operation.
-        - letter2: The second letter in the AND operation.
-        - is_Not: Boolean indicating if the AND operation is negated.
-    """
-
-    def __init__(self, letter1, letter2, is_Not=False):
-        self.letter1 = letter1
-        self.letter2 = letter2
-        self.is_Not = is_Not
-
-    def __str__(self):
-        """
-        String representation of the AND operation.
-        If negated, it returns "¬" followed by the AND operation.
-
-        - Returns:
-            - A string representation of the AND operation.
-        """
-
-        base_str = f"({self.letter1} ∧ {self.letter2})"
-        return f"¬{base_str}" if self.is_Not else base_str
-
-    def checkTrue(self, truthTable):
-        """
-        Check the truth value of the AND operation based on the provided truth table.
-        If the AND operation is negated, return the negation of its truth value.
-
-        - Parameters:
-            - truthTable: A dictionary representing the truth values of variables.
-
-        - Returns:
-            - True if the AND operation's truth value is True, False otherwise.
-        """
-
-        result = self.letter1.checkTrue(truthTable) and self.letter2.checkTrue(truthTable)
-        return not result if self.is_Not else result
-
-class OR:
-    """
-    Class to represent the OR operation in propositional logic.
-    It takes two letters and can be negated.
-
-    - Members:
-        - letter1: The first letter in the OR operation.
-        - letter2: The second letter in the OR operation.
-        - is_Not: Boolean indicating if the OR operation is negated.
-    """
-
-    def __init__(self, letter1, letter2, is_Not=False):
-        self.letter1 = letter1
-        self.letter2 = letter2
-        self.is_Not = is_Not
-
-    def __str__(self):
-        """
-        String representation of the OR operation.
-        If negated, it returns "¬" followed by the OR operation.
-
-        - Returns:
-            - A string representation of the OR operation.
-        """
-
-        base_str = f"({self.letter1} ∨ {self.letter2})"
-        return f"¬{base_str}" if self.is_Not else base_str
-
-    def checkTrue(self, truthTable):
-        """
-        Check the truth value of the OR operation based on the provided truth table.
-        If the OR operation is negated, return the negation of its truth value.
-
-        - Returns:
-            - True if the OR operation's truth value is True, False otherwise.
-        """
-
-        result = self.letter1.checkTrue(truthTable) or self.letter2.checkTrue(truthTable)
-        return not result if self.is_Not else result
-
-class IMPLIES:
-    """
-    Class to represent the IMPLIES operation in propositional logic.
-    It takes two letters and can be negated.
-
-    - Members:
-        - letter1: The first letter in the IMPLIES operation.
-        - letter2: The second letter in the IMPLIES operation.
-        - is_Not: Boolean indicating if the IMPLIES operation is negated.
-    """
-
-    def __init__(self, letter1, letter2, is_Not=False):
-        self.letter1 = letter1
-        self.letter2 = letter2
-        self.is_Not = is_Not
-
-    def __str__(self):
-        """
-        String representation of the IMPLIES operation.
-        If negated, it returns "¬" followed by the IMPLIES operation.
-
-        - Returns:
-            - A string representation of the IMPLIES operation.
-        """
-
-        base_str = f"({self.letter1} → {self.letter2})"
-        return f"¬{base_str}" if self.is_Not else base_str
-
-    def checkTrue(self, truthTable):
-        """
-        Check the truth value of the IMPLIES operation based on the provided truth table.
-        If the IMPLIES operation is negated, return the negation of its truth value.
-
-        - Parameters:
-            - truthTable: A dictionary representing the truth values of variables.
-        
-        - Returns:
-            - True if the IMPLIES operation's truth value is True, False otherwise.
-        """
-
-        result = not self.letter1.checkTrue(truthTable) or self.letter2.checkTrue(truthTable)
-        return not result if self.is_Not else result
-
-class DIMPLIES:
-    """
-    Class to represent the DIMPLIES (IFF) operation in propositional logic.
-    It takes two letters and can be negated.
-
-    - Members:
-        - letter1: The first letter in the DIMPLIES operation.
-        - letter2: The second letter in the DIMPLIES operation.
-        - is_Not: Boolean indicating if the DIMPLIES operation is negated.
-    """
-
-    def __init__(self, letter1, letter2, is_Not=False):
-        self.letter1 = letter1
-        self.letter2 = letter2
-        self.is_Not = is_Not
-
-    def __str__(self):
-        """
-        String representation of the DIMPLIES operation.
-        If negated, it returns "¬" followed by the DIMPLIES operation.
-
-        - Returns:
-            - A string representation of the DIMPLIES operation.
-        """
-
-        base_str = f"({self.letter1} ↔ {self.letter2})"
-        return f"¬{base_str}" if self.is_Not else base_str
-
-    def checkTrue(self, truthTable):
-        """
-        Check the truth value of the DIMPLIES operation based on the provided truth table.
-        If the DIMPLIES operation is negated, return the negation of its truth value.
-
-        - Parameters:
-            - truthTable: A dictionary representing the truth values of variables.
-
-        - Returns:
-            - True if the DIMPLIES operation's truth value is True, False otherwise.
-        """
-
-        result = self.letter1.checkTrue(truthTable) == self.letter2.checkTrue(truthTable)
-        return not result if self.is_Not else result
-
-def parse_formula(formula):
-    """
-    Driver function to parse a WFF and return a corresponding object.
-
-    - Parameters:
-        - formula: A string representing the WFF to be parsed.
-    
-    - Returns:
-        - An object representing the parsed WFF.
-    """
-
-    # Remove spaces and initialize a stack for parentheses
-    formula = formula.replace(" ", "")
-    stack = []
-    i = 0
-
-    # Iterate through the formula to handle grouping by parentheses
-    while i < len(formula):
-
-        # At the start of grouping, add the index to the stack
-        if formula[i] == '(':
-            stack.append(i)
-
-        # If we encounter a closing parenthesis, finish grouping, pop from the stack
-        elif formula[i] == ')':
-
-            start = stack.pop()
-
-            # If the stack is empty, we have a complete sub-formula
-            if not stack:
-                # Parse the sub-formula between the parentheses
-                sub_formula = formula[start + 1:i]
-
-                # Recursively parse the sub-formula and replace it in the original formula
-                parsed_sub_formula = parse_formula(sub_formula)
-                formula = formula[:start] + str(parsed_sub_formula) + formula[i + 1:]
-
-                # Adjust the index to continue parsing after the replaced sub-formula
-                i = start + len(str(parsed_sub_formula)) - 1
-
-        # Increment the index to continue parsing
-        i += 1
-
-    # Series of controls to check for the type of operation in the formula
-
-    # Check for implication (->)
-    if "->" in formula:
-
-        # Split the formula at the first occurrence of '->'
-        parts = formula.split("->")
-
-        # Parse the left and right parts of the implication
-        return IMPLIES(parse_formula(parts[0]), parse_formula(parts[1]))
-
-    # Check for disjunction/or (v or V)
-    elif "v" in formula or "V" in formula:
-
-        # Split the formula at the first occurrence of 'v' or 'V'
-        parts = formula.split("v") if "v" in formula else formula.split("V")
-
-        # Parse the left and right parts of the disjunction
-        return OR(parse_formula(parts[0]), parse_formula(parts[1]))
-
-    # Check for conjunction/and (^)
-    elif "^" in formula:
-
-        # Split the formula at the first occurrence of '^'
-        parts = formula.split("^")
-
-        # Parse the left and right parts of the conjunction
-        return AND(parse_formula(parts[0]), parse_formula(parts[1]))
-
-    # Check for iff/biconditional (<->)
-    elif "<>" in formula:
-
-        # Split the formula at the first occurrence of '<>'
-        parts = formula.split("<>")
-
-        # Parse the left and right parts of the biconditional
-        return DIMPLIES(parse_formula(parts[0]), parse_formula(parts[1]))
-
-    # Check for negation (not, ¬, ')
-    elif formula.startswith("not"):
-
-        # Remove the "not" prefix and parse the rest of the formula
-        return Letter(formula[3:].strip(), is_Not=True)
-    elif formula.startswith("¬"):
-
-        # Remove the "¬" prefix and parse the rest of the formula
-        return Letter(formula[1:].strip(), is_Not=True)
-    elif formula.endswith("'"):
-
-        # Remove the "'" suffix and parse the rest of the formula
-        return Letter(formula[:-1].strip(), is_Not=True)
-    else:
-
-        # If none of the above, it's a simple variable (like 'A', 'B', etc.)
-        return Letter(formula.strip())
-
-def solve(data):
-    """
-    Driver function solve a WFF and return a truth table.
-
-    - Parameters:
-        - data: A dictionary containing the WFF to be solved.
-    
-    - Returns:
-        - A JSON string representing the truth table of the WFF.
-    """
-
-    # Parse the formula from the input data
-    formula = parse_formula(data)
-
-    # Extract variables from the formula and sort them
-    variables = sorted(_extract_variables(formula))
-
-    # Define the headers/row for the truth table
-    headers = variables + [str(formula)]
-    rows = []
-
-    # Generate all combinations of truth values for the variables
-    for values in itertools.product([False, True], repeat=len(variables)):
-
-        # Create a truth table for the current combination of values
-        truthTable = dict(zip(variables, values))
-
-        # Evaluate the formula for the current truth table
-        row = ["T" if truthTable[var] else "F" for var in variables]
-
-        # Append the result of the formula evaluation
-        row.append("T" if formula.checkTrue(truthTable) else "F")
-
-        # Append the row to the result
-        rows.append(row)
-
-    # Convert the result to JSON format
-    result = {
-        "headers": headers,
-        "rows": rows
-    }
-
-    return json.dumps(result)
+import re
+import json
+
+def implies (p, q):
+    '''
+        Function to evaluate logical implication
+
+        Parameters
+        ----------
+        p (int): 
+            The antecedent of the implication
+        q (int):
+            The consequent of the implication
+
+        Returns
+        ----------
+        return: bool
+            True if p implies q, False otherwise.
+    '''
+    return not p or q
+
+
+def _parse_formula(formula):
+    '''
+        Function to parse a logical formula and replace logical operators 
+            with Python equivalents. Does this by converting to Python syntax and evaluating the formula.
+
+        Parameters
+        ----------
+        formula (str): 
+            The logical formula to parse
+
+        Returns
+        ----------
+        return: str
+            The parsed formula with Python equivalents of logical operators.
+    '''
+
+    # Replace unicode characters with ASCII equivalents
+    formula = formula.replace('¬', 'not ')
+    formula = formula.replace('∧', ' and ')
+    formula = formula.replace('∨', ' or ')
+    formula = formula.replace('→', ' <= ')
+    formula = formula.replace('↔', ' == ')
+
+    # Replace logical operators with Python equivalents
+    formula = formula.replace('v', ' or ')
+    formula = formula.replace('^', ' and ')
+    formula = formula.replace('<>', ' == ')
+    formula = formula.replace('->', ' <= ')
+    formula = re.sub(r"([A-Z])'", r'not \1', formula)
+
+    # Replace parentheses with brackets for easier parsing
+    formula = formula.replace('[', '(').replace(']', ')')
+
+    # Handle implies operator by adding parentheses around the expressions
+    # Python is really picky about order of operations, so just parse it out
+    # and add parentheses around the expressions
+    parts = formula.split('<=')
+    if len(parts) == 2:
+        left = parts[0].strip()
+        right = parts[1].strip()
+        if not left.startswith('('):
+            left = f'({left})'
+        if not right.startswith('('):
+            right = f'({right})'
+        formula = f'{left} <= {right}'
+
+    return formula
+
+def _extract_intermediate_expressions(formula):
+    '''
+        Function to extract intermediate expressions from a logical formula.
+            E.g. (A and B) or (C and D) would return ['A and B', 'C and D']
+
+        Parameters
+        ----------
+        formula (str): 
+            The logical formula to extract intermediate expressions from
+
+        Returns
+        ----------
+        return: list
+            A list of intermediate expressions extracted from the formula.
+    '''
+    # Extract intermediate expressions from the formula
+    intermediate_expressions = re.findall(r'\(([^()]+)\)', formula)
+    return intermediate_expressions
 
 def _extract_variables(formula):
-    """
-    Recursively extract variables from a formula.
+    '''
+        Function to extract unique variables (letters) from a logical formula.
 
-    - Parameters:
-        - formula: The formula object to extract variables from.
-    
-    - Returns:
-        - A set of variables present in the formula.
-    """
+        Parameters
+        ----------
+        formula (str): 
+            The logical formula to extract variables from
 
-    # Base case: if the formula is a letter, return its variable
-    if isinstance(formula, Letter):
-        return {formula.letter}
+        Returns
+        ----------
+        return: list
+            A sorted list of unique variables extracted from the formula.
+    '''
+    # Extract unique variables from the formula using a regular expression
+    return sorted(set(re.findall(r'\b[A-Z]\b', formula)))
 
-    # Recursive case: if the formula is a compound statement, extract variables from its components
-    elif isinstance(formula, (AND, OR, IMPLIES, DIMPLIES)):
-        return _extract_variables(formula.letter1) | _extract_variables(formula.letter2)
+def solve(formula):
+    '''
+        Function to solve a logical formula and generate a truth table.
 
-    # If the formula is not recognized, return an empty set
-    return set()
+        Parameters
+        ----------
+        formula (str): 
+            The logical formula to solve
+
+        Returns
+        ----------
+        return: json
+            A JSON object representing the truth table to return to the client.
+    '''
+
+    # Extract unique variables from the formula
+    variables = _extract_variables(formula)
+
+    # Extract intermediate expressions from the formula
+    intermediate_expressions = _extract_intermediate_expressions(formula)
+
+    # Generate all possible combinations of truth values for the variables
+    truth_values = list(itertools.product([False, True], repeat=len(variables)))
+
+    # Parse the formula to replace logical operators with Python equivalents
+    parsed_formula = _parse_formula(formula)
+
+    # Evaluate the formula for each combination of truth values
+    results = []
+    for values in truth_values:
+
+        # Create a dictionary to map variables to their truth values
+        env = dict(zip(variables, values))
+
+        # Add the implies function to the environment
+        env['implies'] = implies
+
+        # Create a row for the truth table
+        row = list(values)
+
+        # Evaluate intermediate expressions and the main formula
+        for expr in intermediate_expressions:
+
+            # Parse the intermediate expression to replace logical operators w/ Python equivalents
+            parsed_expr = _parse_formula(expr)
+
+            # Evaluate the intermediate expression via Python's eval function
+            row.append(eval(parsed_expr, {}, env))
+        
+        # Evaluate the main formula and append it to results
+        row.append(eval(parsed_formula, {}, env))
+        results.append(row)
+
+    # Generate the headers for the truth table
+    headers = variables + intermediate_expressions + [formula]
+
+    # Prepare the truth table as a JSON object
+    truth_table = {
+        "headers": headers,
+        "rows": []
+    }
+
+    # Add the rows to the truth table
+    for row in results:
+        truth_table["rows"].append(row)
+
+    return json.dumps(truth_table)
