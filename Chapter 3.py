@@ -29,6 +29,7 @@ if __name__ == "__main__":
         print("Invalid input. Please enter a valid integer.")
 
 '''
+'''
 # Program to output a specific f(n) number
 def evaluate_recursive(formula, base_case, n):
     """
@@ -57,6 +58,7 @@ def evaluate_recursive(formula, base_case, n):
         return result
 
     return f(n)
+
 
 if __name__ == "__main__":
     print("This program will output a specific f(n) number in the sequence.")
@@ -89,7 +91,7 @@ if __name__ == "__main__":
 
     except Exception as e:
         print(f"An error occurred: {e}")
-
+'''
 
 # Homework problems 1-12
 def evaluate_recursive(formula, base_case, n):
