@@ -46,8 +46,8 @@ export const solvePropositionalLogic = async (hypotheses, conclusion) => {
 };
 
 // Call recursion solver to the backend
-export const solveRecursion = async (input) => {
-    return await solve('recursive-definitions', { input });
+export const solveRecursion = async (formula, baseCase, n) => {
+    return await solve('recursive-definitions', { formula, baseCase, n });
 };
 
 // Call basic set functions solver to the backend
