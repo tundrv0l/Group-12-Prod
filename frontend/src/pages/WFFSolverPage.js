@@ -4,6 +4,7 @@ import { solveWFF } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import TruthTable from '../components/TruthTable';
 import Background from '../components/Background';
+import WFFOperationsTable from '../components/WFFOperationExample';
 
 /*
 * Name: WFFSolverPage.js
@@ -48,14 +49,14 @@ const WFFSolverPage = () => {
  
   const validateInput = (input) => {
     // Regular expression to validate WFF general form, including operators, NOT, parentheses, and brackets.
-    const wffRegex = /^(\(*\[*\s*(not\s*)?[A-Z]('|¬)?\s*\]*\)*(\s*(->|v|\^|<>)\s*\(*\[*\s*(not\s*)?[A-Z]('|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|¬)?|\[\s*.*\s*\]('|¬)?$/;
+    const wffRegex = /^(\(*\[*\s*(not\s*)?[A-Z]('|¬)?\s*\]*\)*(\s*(->|→|v|∨|\^|∧|<>|↔)\s*\(*\[*\s*(not\s*)?[A-Z]('|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|¬)?|\[\s*.*\s*\]('|¬)?$/;
   
     // Check for balanced parentheses and brackets
     const balancedParentheses = (input.match(/\(/g) || []).length === (input.match(/\)/g) || []).length;
     const balancedBrackets = (input.match(/\[/g) || []).length === (input.match(/\]/g) || []).length;
   
     // Check for at least one operator in the input
-    const containsOperator = /->|v|\^|<>|not/.test(input);
+    const containsOperator = /->|→|v|∨|\^|∧|<>|↔|not|¬/.test(input);
   
     // Reject single pair of parentheses or brackets. Backend doesn't handle input like: (A V B), but does support A V B
     const singlePairParentheses = /^\([^()]*\)$/.test(input);
@@ -96,8 +97,9 @@ const WFFSolverPage = () => {
           <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
             A truth table is a systematic way to list all possible truth values for a given logical expression. It shows how the truth value of the entire formula depends on the truth values of its components. Truth tables are especially useful for verifying tautologies (statements that are always true) or contradictions (statements that are always false).
           </Text>
+          <WFFOperationsTable />
           <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-            Enter your logical statement below to generate its truth table and analyze its properties! Use uppercase letters for variables (A-Z), logical operators (AND: ^, OR: v, IMPLIES: -{'>'}, IFF: {'<>'}), and parentheses for grouping. Negate expressions with ' or 'not'.
+            Enter your logical statement below, by using the list of symbols to generate its truth table and analyze its properties!
           </Text>
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
