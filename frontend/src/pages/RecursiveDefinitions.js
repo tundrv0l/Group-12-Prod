@@ -100,7 +100,7 @@ const RecursiveDefinitions = () => {
               A recursive definition is a way of defining a function or a sequence in terms of itself. It consists of base cases and recursive cases. The base cases provide the initial values, and the recursive cases define the values in terms of previous values.
             </Text>
             <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              By analyzing recursive definitions, we can understand how sequences and functions are constructed and how they behave. This tool allows you to input a recursive definition and generate the corresponding sequence or function values.
+             In this solver, you can enter your recursive formula, base cases, and the value of n to calculate. The solver will generate the values of the recursive function in terms of the recursive formula and base cases.
             </Text>
             <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
               Enter your recursive definition below to generate its values and analyze its properties!

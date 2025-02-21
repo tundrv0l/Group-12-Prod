@@ -99,3 +99,43 @@ export const solvePartialOrderings = async (input) => {
 export const solveHasseDiagram = async (input) => {
     return await solve('hasse-diagram', { input });
 }
+
+// Call critical paths solver to the backend
+export const solveCriticalPaths = async (input) => {
+    return await solve('critical-paths', { input });
+}
+
+// Call PERT Diagrams solver to the backend
+export const solvePERTDiagrams = async (input) => {
+    return await solve('pert-diagrams', { input });
+}
+
+// Call topological sorting solver to the backend
+export const solveTopologicalSorting = async (input) => {
+    return await solve('topological-sorting', { input });
+}
+
+// Call permutations of a cycle solver to the backend
+export const solvePermutationsCycle = async (input) => {
+    return await solve('permutations-cycle', { input });
+}
+
+// Call compositions of permutations solver to the backend
+export const solveCompositions = async (input) => {
+    return await solve('compositions', { input });
+}
+
+// Call disjoint cycles solver to the backend
+export const solveDisjointCycles = async (input) => {
+    return await solve('disjoint-cycles', { input });
+}
+
+// Call order of magnitude solver to the backend
+export const solveOrderOfMagnitude = async (input) => {
+    return await solve('order-of-magnitude', { input });
+}
+
+// Call the master theorem solver to the backend
+export const solveMasterTheorem = async (input) => {
+    return await solve('master-theorem', { input });
+}

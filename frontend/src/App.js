@@ -17,6 +17,14 @@ import ClosureAxioms from './pages/ClosureAxioms';
 import EquivalenceRelations from './pages/EquivalenceRelations';
 import PartialOrderings from './pages/PartialOrderings';
 import HasseDiagram from './pages/HasseDiagram';
+import CriticalPaths from './pages/CriticalPaths';
+import PERTDiagrams from './pages/PERTDiagrams';
+import TopologicalSorting from './pages/TopologicalSorting';
+import PermutationsOfACycle from './pages/PermutationsOfACycle';
+import CompositionOfPermutations from './pages/CompositionsOfPermutations';
+import DisjointCycles from './pages/DisjointCycles';
+import OrderOfMagnitude from './pages/OrderOfMagnitude';
+import MasterTheorem from './pages/MasterTheorem';
 
 const App = () => (
   <AppLayout>
@@ -37,6 +45,14 @@ const App = () => (
         <Route path="/equivalence-relations" element={<EquivalenceRelations />} />
         <Route path="/partial-orderings" element={<PartialOrderings />} />
         <Route path="/hasse-diagram" element={<HasseDiagram />} />
+        <Route path="/critical-path" element={<CriticalPaths />} />
+        <Route path="/pert-diagrams" element={<PERTDiagrams />} />
+        <Route path="/topological-sorting" element={<TopologicalSorting />} />
+        <Route path="/permutations-cycle" element={<PermutationsOfACycle />} />
+        <Route path="/compositions" element={<CompositionOfPermutations />} />
+        <Route path="/disjoint-cycles" element={<DisjointCycles />} />
+        <Route path="/order-of-magnitude" element={<OrderOfMagnitude />} />
+        <Route path="/master-theorem" element={<MasterTheorem />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

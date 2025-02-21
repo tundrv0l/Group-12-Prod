@@ -40,16 +40,16 @@ const SidebarMenu = () => (
       </AccordionPanel>
       <AccordionPanel label="5.2: Topological Sorting">
         <AccordionPanelContent content={[
-          { label: "Critical Path", path: "/topological-sorting/critical-path" },
-          { label: "PERT Diagrams", path: "/topological-sorting/pert-diagrams" },
-          { label: "Topological Sorting", path: "/topological-sorting/solver" }
+          { label: "Critical Path", path: "/critical-path" },
+          { label: "PERT Diagrams", path: "/pert-diagrams" },
+          { label: "Topological Sorting", path: "/topological-sorting" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="5.4: Functions">
         <AccordionPanelContent content={[
-          { label: "Permutations Of A Cycle", path: "/functions/permutations-cycle" },
-          { label: "Compositions of Permutations", path: "/functions/compositions" },
-          { label: "Permutations expressed as Disjoint Cycles", path: "/functions/disjoint-cycles" }
+          { label: "Permutations Of A Cycle", path: "permutations-cycle" },
+          { label: "Compositions of Permutations", path: "/compositions" },
+          { label: "Permutations Expressed As Disjoint Cycles", path: "/disjoint-cycles" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="5.5: Order of Magnitude">

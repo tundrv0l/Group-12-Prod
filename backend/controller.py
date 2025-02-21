@@ -91,6 +91,30 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'hasse-diagram':
         # Call the appropriate function for Hasse diagrams
         pass
+    elif solver_type == 'critical-paths':
+        # Call the appropriate function for Critical Paths
+        pass
+    elif solver_type == 'pert-diagrams':
+        # Call the appropriate function for PERT Diagrams
+        pass
+    elif solver_type == 'topological-sorting':
+        # Call the appropriate function for Topological Sorting
+        pass
+    elif solver_type == 'permutations-cycle':
+        # Call the appropriate function for Permutations of a Cycle
+        pass
+    elif solver_type == 'compositions':
+        # Call the appropriate function for Compositions
+        pass
+    elif solver_type == 'disjoint-cycles':
+        # Call the appropriate function for Disjoint Cycles
+        pass
+    elif solver_type == 'order-of-magnitude':
+        # Call the appropriate function for Order of Magnitude
+        pass
+    elif solver_type == 'master-theorem':
+        # Call the appropriate function for Master Theorem
+        pass
     else:
         return jsonify({'error': 'Unsupported solver type'}), 400
 

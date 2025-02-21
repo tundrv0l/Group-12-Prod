@@ -1,16 +1,16 @@
 import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
-import { solveHasseDiagram } from '../api';
+import { solveOrderOfMagnitude } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 
 /*
-* Name: HasseDiagram.js
+* Name: OrderOfMagnitude.js
 * Author: Parker Clark
-* Description: Solver page for hasse diagrams.
+* Description: Solver page for analyzing order of magnitude.
 */
 
-const HasseDiagram = () => {
+const OrderOfMagnitude = () => {
   const [input, setInput] = React.useState('');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
@@ -25,17 +25,17 @@ const HasseDiagram = () => {
     // Validate input
     const isValid = validateInput(input);
     if (!isValid) {
-      setError('Invalid input. Please enter a valid partial ordering.');
+      setError('Invalid input. Please enter a valid number.');
       setLoading(false);
       return;
     }
 
     setError('');
     try {
-      const result = await solveHasseDiagram(input);
+      const result = await solveOrderOfMagnitude(input);
       setOutput(result);
     } catch (err) {
-      setError('An error occurred while generating the Hasse Diagram.');
+      setError('An error occurred while generating the Order of Magnitdue.');
     } finally {
       setLoading(false);
     }
@@ -54,32 +54,32 @@ const HasseDiagram = () => {
         <PageContent align="center" skeleton={false}>
           <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
             <Text size="xxlarge" weight="bold">
-              Hasse Diagram Generator
+              Order Of Magnitude
             </Text>
           </Box>
           <Box align="center" justify="center">
             <Text size="large" margin="none" weight={500}>
-              Topic: Relations
+              Topic: Order of Magnitude
             </Text>
           </Box>
           <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
             <Text margin={{"bottom":"small"}} textAlign="center">
-              This tool helps you generate and analyze Hasse diagrams.
+            This tool helps you analyze the order of magnitude in discrete mathematics.
             </Text>
             <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              A Hasse diagram is a graphical representation of a finite partially ordered set, where an edge between two elements indicates that one element covers the other. This tool allows you to input a partial ordering and generate its corresponding Hasse diagram.
+            The order of magnitude is a way to express the scale or size of a value in powers of ten. This tool allows you to input a number and determine its order of magnitude.
             </Text>
             <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              By analyzing Hasse diagrams, you can visualize the hierarchical structure of a partial ordering, identify minimal and maximal elements, and understand the comparability of elements. This tool allows you to input a relation and generate the Hasse diagram to explore its properties.
+            By analyzing the order of magnitude, you can understand the relative size of numbers and compare values on a logarithmic scale. This is useful in various applications such as scientific notation, data analysis, and computational complexity. This tool allows you to input a number and explore its order of magnitude.
             </Text>
             <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-              Enter your relation below to generate and analyze the Hasse diagram!
+            Enter your number below to generate and analyze its order of magnitude!
             </Text>
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
               <TextInput 
-                placeholder="Example: Enter your partial ordering here (e.g., {(1, 2), (2, 3)})"
+                placeholder="Example: Enter your number here (e.g., 3)"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
               />
@@ -108,4 +108,4 @@ const HasseDiagram = () => {
   );
 };
 
-export default HasseDiagram;
+export default OrderOfMagnitude;
