@@ -139,3 +139,13 @@ export const solveOrderOfMagnitude = async (input) => {
 export const solveMasterTheorem = async (input) => {
     return await solve('master-theorem', { input });
 }
+
+// Solve boolean matrices to the backend
+export const solveBooleanMatrices = async (matrix1, matrix2) => {
+    return await solve('boolean-matrices', { matrix1, matrix2 });
+}
+
+// Solve boolean matrices to the backend
+export const solveBooleanMatricesOperations = async (matrix1, matrix2) => {
+    return await solve('matrice-operations', { matrix1, matrix2 });
+}

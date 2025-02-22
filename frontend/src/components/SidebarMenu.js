@@ -60,8 +60,8 @@ const SidebarMenu = () => (
       </AccordionPanel>
       <AccordionPanel label="5.7: Matrices">
         <AccordionPanelContent content={[
-          { label: "Boolean Matrices", path: "/matrices/boolean" },
-          { label: "Boolean Matrice Operations (Meet, Join, Product)", path: "/matrices/operations" }
+          { label: "Boolean Matrices", path: "/boolean-matrices" },
+          { label: "Boolean Matrice Operations (Meet, Join, Product)", path: "/matrice-operations" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="6.1: Graphs and Their Representations">

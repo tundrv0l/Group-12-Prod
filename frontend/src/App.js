@@ -25,6 +25,8 @@ import CompositionOfPermutations from './pages/CompositionsOfPermutations';
 import DisjointCycles from './pages/DisjointCycles';
 import OrderOfMagnitude from './pages/OrderOfMagnitude';
 import MasterTheorem from './pages/MasterTheorem';
+import BooleanMatrices from './pages/BooleanMatrices';
+import BooleanMatriceOperations from './pages/BooleanMatriceOperations';
 
 const App = () => (
   <AppLayout>
@@ -53,6 +55,8 @@ const App = () => (
         <Route path="/disjoint-cycles" element={<DisjointCycles />} />
         <Route path="/order-of-magnitude" element={<OrderOfMagnitude />} />
         <Route path="/master-theorem" element={<MasterTheorem />} />
+        <Route path="/boolean-matrices" element={<BooleanMatrices />} />
+        <Route path="/matrice-operations" element={<BooleanMatriceOperations />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

@@ -115,6 +115,12 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'master-theorem':
         # Call the appropriate function for Master Theorem
         pass
+    elif solver_type == 'boolean-matrices':
+        # Call the appropriate function for Boolean Matrices
+        pass
+    elif solver_type == 'matrice-operations':\
+        # Call the appropriate function for Matrice Operations
+        pass
     else:
         return jsonify({'error': 'Unsupported solver type'}), 400
 
