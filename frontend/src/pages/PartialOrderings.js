@@ -3,6 +3,7 @@ import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Bu
 import { solvePartialOrderings } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
+import HomeButton from '../components/HomeButton';
 
 /*
 * Name: PartialOrderings.js
@@ -51,6 +52,9 @@ const PartialOrderings = () => {
     <Page>
       <Background />
       <PageContent align="center" skeleton={false}>
+        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
+          <HomeButton />
+        </Box>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
             Partial Orderings

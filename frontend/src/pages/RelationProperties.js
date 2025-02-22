@@ -3,6 +3,7 @@ import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Bu
 import { solvePropertiesOfRelations } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
+import HomeButton from '../components/HomeButton';
 
 /*
 * Name: RelationProperties.js
@@ -55,6 +56,9 @@ const RelationProperties = () => {
       <Background />
       <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
       <PageContent align="center" skeleton={false}>
+        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
+          <HomeButton />
+        </Box>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
             Properties of Relations
@@ -98,6 +102,7 @@ const RelationProperties = () => {
                 onChange={(event) => setRelation(event.target.value)}
               />
             </Box>
+            {error && <Text color="status-critical">{error}</Text>}
           </CardBody>
           <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
             <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />

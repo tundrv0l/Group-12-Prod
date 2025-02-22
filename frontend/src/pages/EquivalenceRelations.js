@@ -2,6 +2,7 @@ import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
 import { solveEquivalenceRelations } from '../api';
 import ReportFooter from '../components/ReportFooter';
+import HomeButton from '../components/HomeButton';
 
 /*
 * Name: EquivalenceRelations.js
@@ -49,6 +50,9 @@ const EquivalenceRelations = () => {
   return (
     <Page>
       <PageContent align="center" skeleton={false}>
+        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
+            <HomeButton />
+        </Box>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
             Equivalence Relations

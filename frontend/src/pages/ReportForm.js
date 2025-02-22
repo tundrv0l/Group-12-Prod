@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Page, PageContent, PageHeader, Box, Text, TextInput, Button, TextArea } from 'grommet';
 import { reportProblem } from '../api';
+import HomeButton from '../components/HomeButton';
 
 /*
 * Name: ReportForm.js
@@ -45,6 +46,9 @@ const ReportForm = () => {
     return (
         <Page>
             <PageContent align="center" skeleton={false} justify="center">
+            <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
+                <HomeButton />
+            </Box>
                 <Box align="center" justify="center">
                     <PageHeader title="Problem Report Contact Page" level="2" margin="small" />
                 </Box>
