@@ -78,6 +78,18 @@ Before you begin, ensure you have the following installed on your system:
     ```
     - This will automatically start the flask server on port 5000 under localhost, or at http://localhost:5000 
     - 2/10 - Be careful about changing this configuration, since the call path to this point is hardcoded in the frontend api as of right now.
+  
+### Running in Docker
+1. Install [Docker Compose](https://docs.docker.com/compose/install/).
+2. From the top directory of the project, do
+   ```sh
+   docker compose up --build
+   ```
+3. When you are done, do
+   ```
+   docker compose down
+   ```
+4. On Linux, you have to run the commands with sudo. So, on Windows, it might require an elevated terminal.
 
 ## API Endpoints & Architecture
 So, we have a defined frontend and backend as two different spheres (or folders) of code that does different things. To bridge this gap and allow them to communicate we have something called *API Endpoints*, which are single points (or ports) defined that the software can use them. I am going to break down a bit on our endpoints:
