@@ -2,7 +2,13 @@
 # Author: Jacob Warren
 # Solves: 5.1.11 and 5.1.12
 
-from util import strings
+import sys
+import os
+import json
+
+# Do some funky appendin' to get the parent directory on the path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from solvers.util import strings
 
 '''
 ==========
@@ -22,7 +28,8 @@ result
 [bool, bool, bool, bool, bool, bool]: a list of bools representing the respective properties
                                       of the relation on the set
 '''
-def solve(data):
+def solve(input_set, relation):
+    data = [input_set, relation]
     set_list, relation = strings.is_a_relation(data[0], data[1])
     set_ = {i for i in range(0, len(set_list))}
     
@@ -56,4 +63,14 @@ def solve(data):
             if b == c and (a,d) not in relation:
                 transitive = False
 
-    return [reflexive, irreflexive, symmetric, asymmetric, antisymmetric, transitive]
+    # Return the result as json
+    result = {
+        "Reflexive": reflexive,
+        "Irreflexive": irreflexive,
+        "Symmetric": symmetric,
+        "Asymmetric": asymmetric,
+        "Antisymmetric": antisymmetric,
+        "Transitive": transitive
+    }
+
+    return json.dumps(result)

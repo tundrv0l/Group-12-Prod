@@ -24,16 +24,16 @@ const RelationProperties = () => {
     setOutput('');
     setError('');
 
-    // Validate input TODO: NEED TO ADD TWO VALIDATES
-    const isValidRelation = validateInput(relation);
-    const isValidSet = validateInput(set);
+    // Validate input
+    const isValidSet = validateSet(set);
+    const isValidRelation = validateRelation(relation, set);
     
     if (!isValidRelation || !isValidSet) {
       setError('Invalid input. Please enter a valid relations.');
       setLoading(false);
       return;
-    }
-
+    } 
+    
     setError('');
     try {
       const result = await solvePropertiesOfRelations({relation, set});
@@ -45,11 +45,46 @@ const RelationProperties = () => {
     }
   }
 
-  const validateInput = (input) => {
-    // TODO: Change regex here based on input pattern
-    const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
-    return wffRegex.test(input);
-  }
+  // Validate that set conforms to format
+  const validateSet = (input) => {
+
+    // Tests if input is in the form {a, b, c, 23}
+    const setRegex = /^\{([a-zA-Z0-9]+,)*[a-zA-Z0-9]+\}$/;
+    return setRegex.test(input);
+  };
+
+  // Validate that relation conforms to format
+  const validateRelation = (input, set) => {
+
+    // Tests if input is in the form {(a, b), (23, c)}
+    const relationRegex = /^\{(\([a-zA-Z0-9]+,[a-zA-Z0-9]+\),)*\([a-zA-Z0-9]+,[a-zA-Z0-9]+\)\}$/;
+    if (!relationRegex.test(input)) {
+      return false;
+    }
+    
+    // Checks if all elements in the relation are in the set
+    const setElements = set.replace(/[{}]/g, '').split(',');
+    const relationElements = input.replace(/[{}()]/g, '').split(',');
+  
+    return relationElements.every(element => setElements.includes(element));
+  };
+
+  // Pretty print the output
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here!";
+    }
+
+    // Parse out json object and return out elements one by one
+    const parsedOutput = JSON.parse(output);
+    return (
+      <Box>
+        {Object.entries(parsedOutput).map(([key, value]) => (
+          <Text key={key}>{`${key}: ${value}`}</Text>
+        ))}
+      </Box>
+    );
+  };
 
   return (
     <Page>
@@ -115,7 +150,7 @@ const RelationProperties = () => {
             </Text>
             <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
               <Text>
-                {output ? JSON.stringify(output) : "Output will be displayed here!"}
+                {renderOutput()}
               </Text>
             </Box>
           </CardBody>

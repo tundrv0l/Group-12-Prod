@@ -10,6 +10,7 @@ from flask import Blueprint, request, jsonify
 from backend.solvers import wff_solver
 from backend.solvers import propositional_solver
 from backend.solvers import recursion_solver
+from backend.solvers import properties_solver
 from backend.reporter import send_email
 
 # Define a Blueprint for the controller
@@ -77,8 +78,8 @@ def solve_algorithim(solver_type, data):
         # Call the appropriate function for cartesian products
         pass
     elif solver_type == 'properties-of-relations':
-        # Call the appropriate function for properties of relations
-        pass
+        data = data["set"]
+        return properties_solver.solve(data["set"], data["relation"])
     elif solver_type == 'closure-axioms':
         # Call the appropriate function for closure axioms
         pass
