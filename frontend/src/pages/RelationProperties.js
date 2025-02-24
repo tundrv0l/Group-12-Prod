@@ -29,14 +29,14 @@ const RelationProperties = () => {
     const isValidRelation = validateRelation(relation, set);
     
     if (!isValidRelation || !isValidSet) {
-      setError('Invalid input. Please enter a valid relations.');
+      setError('Invalid input. Please enter a valid relation/set.');
       setLoading(false);
       return;
     } 
     
     setError('');
     try {
-      const result = await solvePropertiesOfRelations({relation, set});
+      const result = await solvePropertiesOfRelations(relation, set);
       setOutput(result);
     } catch (err) {
       setError('An error occurred while analyzing the relation properties.');
@@ -49,7 +49,7 @@ const RelationProperties = () => {
   const validateSet = (input) => {
 
     // Tests if input is in the form {a, b, c, 23}
-    const setRegex = /^\{([a-zA-Z0-9]+,)*[a-zA-Z0-9]+\}$/;
+    const setRegex = /^\{(\s*[a-zA-Z0-9]+\s*,)*\s*[a-zA-Z0-9]+\s*\}$/;
     return setRegex.test(input);
   };
 
@@ -57,14 +57,14 @@ const RelationProperties = () => {
   const validateRelation = (input, set) => {
 
     // Tests if input is in the form {(a, b), (23, c)}
-    const relationRegex = /^\{(\([a-zA-Z0-9]+,[a-zA-Z0-9]+\),)*\([a-zA-Z0-9]+,[a-zA-Z0-9]+\)\}$/;
+    const relationRegex = /^\{(\s*\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*,)*\s*\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*\}$/;
     if (!relationRegex.test(input)) {
       return false;
     }
     
     // Checks if all elements in the relation are in the set
-    const setElements = set.replace(/[{}]/g, '').split(',');
-    const relationElements = input.replace(/[{}()]/g, '').split(',');
+    const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/);
+    const relationElements = input.replace(/[{}()]/g, '').split(/\s*,\s*/);
   
     return relationElements.every(element => setElements.includes(element));
   };
@@ -113,12 +113,14 @@ const RelationProperties = () => {
             </Text>
             <Box margin={{"bottom":"small"}} textAlign="start" weight="normal">
                 <Text>- Reflexive if every element is related to itself, i.e., (a, a) ∈ R for all a ∈ A.</Text>
+                <Text>- Irreflexive if no element is related to itself, i.e., (a, a) ∉ R for all a ∈ A.</Text>
                 <Text>- Symmetric if for every (a, b) ∈ R, (b, a) ∈ R.</Text>
-                <Text>- Transitive if for every (a, b) ∈ R and (b, c) ∈ R, (a, c) ∈ R.</Text>
+                <Text>- Asymmetric if for every (a, b) ∈ R, (b, a) ∉ R.</Text>
                 <Text>- Antisymmetric if for every (a, b) ∈ R and (b, a) ∈ R, a = b.</Text>
+                <Text>- Transitive if for every (a, b) ∈ R and (b, c) ∈ R, (a, c) ∈ R.</Text>
             </Box>
             <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-                Enter your relation below to analyze its properties and determine if it is reflexive, symmetric, transitive, or antisymmetric!
+            Enter your relation below to analyze its properties and determine if it is reflexive, irreflexive, symmetric, asymmetric, antisymmetric, or transitive!
             </Text>
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>

@@ -7,10 +7,17 @@
 
 #---Imports---#
 from flask import Blueprint, request, jsonify
+
+#---Imports for the solvers---#
 from backend.solvers import wff_solver
 from backend.solvers import propositional_solver
 from backend.solvers import recursion_solver
 from backend.solvers import properties_solver
+from backend.solvers import closures_solver
+from backend.solvers import equivalence_solver
+from backend.solvers import special_solver
+
+#---Imports for the reporter---#
 from backend.reporter import send_email
 
 # Define a Blueprint for the controller
@@ -78,17 +85,13 @@ def solve_algorithim(solver_type, data):
         # Call the appropriate function for cartesian products
         pass
     elif solver_type == 'properties-of-relations':
-        data = data["set"]
         return properties_solver.solve(data["set"], data["relation"])
     elif solver_type == 'closure-axioms':
-        # Call the appropriate function for closure axioms
-        pass
+        return closures_solver.solve(data["set"], data["relation"])
     elif solver_type == 'equivalence-relations':
-        # Call the appropriate function for equivalence relations
-        pass
+        return equivalence_solver.solve(data["set"], data["relation"])
     elif solver_type == 'partial-orderings':
-        # Call the appropriate function for partial orderings
-        pass
+        return special_solver.solve(data["set"], data["relation"])
     elif solver_type == 'hasse-diagram':
         # Call the appropriate function for Hasse diagrams
         pass

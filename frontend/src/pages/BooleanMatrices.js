@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Select } from 'grommet';
 import { solveBooleanMatrices } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
@@ -17,6 +17,7 @@ import HomeButton from '../components/HomeButton';
 const BooleanMatrices = () => {
   const [matrix1, setMatrix1] = React.useState([['']]);
   const [matrix2, setMatrix2] = React.useState([['']]);
+  const [operation, setOperation] = React.useState('AND');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
@@ -28,15 +29,15 @@ const BooleanMatrices = () => {
     setError('');
 
     // Validate input
-    if (!validateMatrices(matrix1, matrix2)) {
-        setError('Invalid input. Please ensure both matrices only contain only 0s and 1s.');
+    if (!validateMatrices(matrix1, matrix2, operation)) {
+        setError('Invalid input. Please ensure both matrices only contain only 0s and 1s. If you are using AND/OR ensure the matrices are the same size. If you are using MULTIPLY ensure the number of columns in the first matrix is equal to the number of rows in the second matrix.');
         setLoading(false);
         return;
     }
 
     setError('');
     try {
-      const result = await solveBooleanMatrices(matrix1, matrix2);
+      const result = await solveBooleanMatrices(matrix1, matrix2, operation);
       setOutput(result);
     } catch (err) {
       setError('An error occurred while generating the matrix.');
@@ -45,12 +46,20 @@ const BooleanMatrices = () => {
     }
   }
 
-  const validateMatrices = (matrix1, matrix2) => {
-    if (matrix1.length !== matrix2.length || matrix1[0].length !== matrix2[0].length) {
+  const validateMatrices = (matrix1, matrix2, operation) => {
+    const isValidMatrix = matrix => matrix.every(row => row.every(cell => cell === '0' || cell === '1'));
+
+    console.log(operation);
+
+    if (!isValidMatrix(matrix1) || !isValidMatrix(matrix2)) {
       return false;
     }
-    const isValid = matrix => matrix.every(row => row.every(cell => cell === '0' || cell === '1'));
-    return isValid(matrix1) && isValid(matrix2);
+
+    if (operation === 'MULTIPLY') {
+      return matrix1[0].length === matrix2.length;
+    }
+
+    return matrix1.length === matrix2.length && matrix1[0].length === matrix2[0].length;
   };
 
   return (
@@ -88,9 +97,17 @@ const BooleanMatrices = () => {
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
                 <MatrixTable label="Boolean Matrix 1" matrix={matrix1} setMatrix={setMatrix1} />
+                <MatrixToolbar matrix={matrix1} setMatrix={setMatrix1} />
                 <MatrixTable label="Boolean Matrix 2" matrix={matrix2} setMatrix={setMatrix2} />
+                <MatrixToolbar matrix={matrix2} setMatrix={setMatrix2} />
             </CardBody>
-            <MatrixToolbar matrix1={matrix1} setMatrix1={setMatrix1} matrix2={matrix2} setMatrix2={setMatrix2} />
+            <Box align="center" justify="center" pad={{ vertical: 'small' }}>
+              <Select
+                options={['AND', 'OR', 'MULTIPLY']}
+                value={operation}
+                onChange={({ option }) => setOperation(option)}
+              />
+            </Box>
             <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
               <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
             </CardFooter>

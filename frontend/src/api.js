@@ -81,18 +81,34 @@ export const solvePropertiesOfRelations = async (set, relation) => {
 }
 
 // Call closure axioms solver to the backend
-export const solveClosureAxioms = async (input) => {
-    return await solve('closure-axioms', { input });
+export const solveClosureAxioms = async (set, relation) => {
+    try {
+        const response = await solve('closure-axioms', { set, relation });
+        if (response.error) {
+            throw new Error(response.error);
+        }
+        return response;
+    } catch (error) {
+        throw new Error(error.message);
+    }
 }
 
 // Call equivalence relations solver to the backend
-export const solveEquivalenceRelations = async (input) => {
-    return await solve('equivalence-relations', { input });
-}
+export const solveEquivalenceRelations = async (set, relation) => {
+    try {
+        const response = await solve('equivalence-relations', { set, relation });
+        if (response.error) {
+            throw new Error(response.error);
+        }
+        return response;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
 
 // Call partial orderings solver to the backend
-export const solvePartialOrderings = async (input) => {
-    return await solve('partial-orderings', { input });
+export const solvePartialOrderings = async (set, relation) => {
+    return await solve('partial-orderings', { set, relation });
 }
 
 // Call hasse diagram solver to the backend
@@ -141,8 +157,8 @@ export const solveMasterTheorem = async (input) => {
 }
 
 // Solve boolean matrices to the backend
-export const solveBooleanMatrices = async (matrix1, matrix2) => {
-    return await solve('boolean-matrices', { matrix1, matrix2 });
+export const solveBooleanMatrices = async (matrix1, matrix2, operation) => {
+    return await solve('boolean-matrices', { matrix1, matrix2, operation });
 }
 
 // Solve boolean matrices to the backend

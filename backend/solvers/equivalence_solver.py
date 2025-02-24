@@ -2,7 +2,14 @@
 # Author: Jacob Warren
 # Solves: 5.1.51
 
-from util import strings
+import os 
+import sys
+import json
+
+
+# Append the parent directory to the path so we can import in utility
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from solvers.util import strings
 
 '''
 ==========
@@ -23,40 +30,50 @@ result
 [string, string, string, string]: a list of strings representing the respective special
                                   elements and sets of elements
 '''
-def solve(data):
-    set_list = strings.parse_set(data[0])
-    partition_list = strings.parse_set(data[1])
-    set_ = {i for i in range(0, len(set_list))}
-    partition = []
-    
-    for piece_string in partition_list:
-        piece_string = strings.parse_set(piece_string)
-        piece = set()
+def solve(input_set, relations):
 
-        for a in piece_string:
-            try:
-                piece.add(set_list.index(a))
-            except ValueError:
-                raise ValueError(f"Element {a} is not in the set.")
+    try:
+        data = [input_set, relations]
+        set_list = strings.parse_set(data[0])
+        partition_list = strings.parse_set(data[1])
+        set_ = {i for i in range(0, len(set_list))}
+        partition = []
         
-        partition.append(piece)
+        for piece_string in partition_list:
+            piece_string = strings.parse_set(piece_string)
+            piece = set()
 
-    relation_string = "{"
-    collection = set()
+            for a in piece_string:
+                try:
+                    piece.add(set_list.index(a))
+                except ValueError:
+                    raise ValueError(f"Element {a} is not in the set.")
+            
+            partition.append(piece)
 
-    for piece in partition:
-        collection |= piece
+        relation_string = "{"
+        collection = set()
 
-        for a in piece:
-            for b in piece:
-                relation_string += f"({set_list[a]}, {set_list[b]}), "
+        for piece in partition:
+            collection |= piece
 
-    if collection != set_:
-        raise ValueError(f"Partition is missing elements.")
+            for a in piece:
+                for b in piece:
+                    relation_string += f"({set_list[a]}, {set_list[b]}), "
 
-    relation_string += "}"
+        if collection != set_:
+            raise ValueError(f"Partition is missing elements.")
 
-    if relation_string != "{}":
-        relation_string = relation_string[:-2]
+        # Remove the last comma and space
+        if relation_string.endswith(", "):
+            relation_string = relation_string[:-2]
+        relation_string += "}"
 
-    return relation_string
+        # Convert the relation_string to JSON
+        result = {
+            "Equivalence Relation": relation_string
+        }
+        return json.dumps(result)
+    
+    except Exception as e:
+        return json.dumps({"Calculation Error": str(e)})
