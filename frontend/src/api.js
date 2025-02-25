@@ -102,6 +102,91 @@ export const solveClosureAxioms = async (set, relation) => {
 }
 
 // Call equivalence relations solver to the backend
-export const solveEquivalenceRelations = async (input) => {
-    return await solve('equivalence-relations', { input });
+export const solveEquivalenceRelations = async (set, relation) => {
+    return await solve('equivalence-relations', { set, relation });
+}
+
+// Call adjacency matrices and lists solver to the backend
+export const solveAdjacencyMatricesLists = async (input) => {
+    return await solve('adjacency-matrices-lists', { input });
+}
+
+// Call array to tree solver to the backend
+export const solveArrayToTree = async (input) => {
+    return await solve('array-to-tree', { input });
+}
+
+// Call binary trees solver to the backend
+export const solveBinaryTrees = async (input) => {
+    return await solve('binary-trees', { input });
+}
+
+// Call boolean matrices solver to the backend
+export const solveBooleanMatrices = async (input) => {
+    return await solve('boolean-matrices', { input });
+}
+
+// Call compositions of permutations solver to the backend
+export const solveCompositions = async (input) => {
+    return await solve('compositions', { input });
+}
+
+// Call critical paths solver to the backend
+export const solveCriticalPaths = async (input) => {
+    return await solve('critical-paths', { input });
+}
+
+// Call disjoint cycles solver to the backend
+export const solveDisjointCycles = async (input) => {
+    return await solve('disjoint-cycles', { input });
+}
+
+// Call graphs solver to the backend
+export const solveGraphs = async (input) => {
+    return await solve('graphs', { input });
+}
+
+// Call Hasse diagram solver to the backend
+export const solveHasseDiagram = async (input) => {
+    return await solve('hasse-diagram', { input });
+}
+
+// Call order of magnitude solver to the backend
+export const solveOrderOfMagnitude = async (input) => {
+    return await solve('order-of-magnitude', { input });
+}
+
+// Call PERT diagrams solver to the backend
+export const solvePERTDiagrams = async (input) => {
+    return await solve('pert-diagrams', { input });
+}
+
+// Call partial orderings solver to the backend
+export const solvePartialOrderings = async (input) => {
+    return await solve('partial-orderings', { input });
+}
+
+// Call permutations of a cycle solver to the backend
+export const solvePermutationsCycle = async (input) => {
+    return await solve('permutations-cycle', { input });
+}
+
+// Call topological sorting solver to the backend
+export const solveTopologicalSorting = async (input) => {
+    return await solve('topological-sorting', { input });
+}
+
+// Call tree to array solver to the backend
+export const solveTreeToArray = async (input) => {
+    return await solve('tree-to-array', { input });
+}
+
+// Call Warshall's algorithm solver to the backend
+export const solveWarshallsAlgorithm = async (input) => {
+    return await solve('warshalls-algorithm', { input });
+}
+
+// Call weighted graphs solver to the backend
+export const solveWeightedGraphs = async (input) => {
+    return await solve('weighted-graphs', { input });
 }
