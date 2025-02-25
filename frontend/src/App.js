@@ -15,6 +15,27 @@ import CartesianProducts from './pages/CartesianProducts';
 import RelationProperties from './pages/RelationProperties';
 import ClosureAxioms from './pages/ClosureAxioms';
 import EquivalenceRelations from './pages/EquivalenceRelations';
+import PartialOrderings from './pages/PartialOrderings';
+import HasseDiagram from './pages/HasseDiagram';
+import CriticalPaths from './pages/CriticalPaths';
+import PERTDiagrams from './pages/PERTDiagrams';
+import TopologicalSorting from './pages/TopologicalSorting';
+import PermutationsOfACycle from './pages/PermutationsOfACycle';
+import CompositionOfPermutations from './pages/CompositionsOfPermutations';
+import DisjointCycles from './pages/DisjointCycles';
+import OrderOfMagnitude from './pages/OrderOfMagnitude';
+import MasterTheorem from './pages/MasterTheorem';
+import BooleanMatrices from './pages/BooleanMatrices';
+import BooleanMatriceOperations from './pages/BooleanMatriceOperations';
+import GraphsPage from './pages/GraphsPage';
+import AdjacencyMatricesLists from './pages/AdjacencyMatricesLists';
+import WeightedGraphRepresentations from './pages/WeightedGraphRepresentations';
+import BinaryTrees from './pages/BinaryTrees';
+import ArrayToTree from './pages/ArrayToTree';
+import TreeToArray from './pages/TreeToArray';
+import TreeNotation from './pages/TreeNotation';
+import WarshallsAlgorithm from './pages/WarshallsAlgorithm';
+
 
 const App = () => (
   <AppLayout>
@@ -33,6 +54,26 @@ const App = () => (
         <Route path="/properties-of-relations" element={<RelationProperties />} />
         <Route path="/closure-axioms" element={<ClosureAxioms />} />
         <Route path="/equivalence-relations" element={<EquivalenceRelations />} />
+        <Route path="/partial-orderings" element={<PartialOrderings />} />
+        <Route path="/hasse-diagram" element={<HasseDiagram />} />
+        <Route path="/critical-path" element={<CriticalPaths />} />
+        <Route path="/pert-diagrams" element={<PERTDiagrams />} />
+        <Route path="/topological-sorting" element={<TopologicalSorting />} />
+        <Route path="/permutations-cycle" element={<PermutationsOfACycle />} />
+        <Route path="/compositions" element={<CompositionOfPermutations />} />
+        <Route path="/disjoint-cycles" element={<DisjointCycles />} />
+        <Route path="/order-of-magnitude" element={<OrderOfMagnitude />} />
+        <Route path="/master-theorem" element={<MasterTheorem />} />
+        <Route path="/boolean-matrices" element={<BooleanMatrices />} />
+        <Route path="/matrice-operations" element={<BooleanMatriceOperations />} />
+        <Route path="/graphs" element={<GraphsPage />} />
+        <Route path="/adjacency-matrices-lists" element={<AdjacencyMatricesLists />} />
+        <Route path="/weighted-graphs" element={<WeightedGraphRepresentations />} />
+        <Route path="/binary-trees" element={<BinaryTrees />} />
+        <Route path="/array-to-tree" element={<ArrayToTree />} />
+        <Route path="/tree-to-array" element={<TreeToArray />} />
+        <Route path="/tree-notation" element={<TreeNotation />} />
+        <Route path="/warshalls-algorithm" element={<WarshallsAlgorithm />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

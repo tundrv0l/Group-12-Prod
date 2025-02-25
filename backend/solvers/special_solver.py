@@ -1,11 +1,15 @@
 # File: special_solver.py
 # Author: Jacob Warren
 # Solves: 5.1.32
+import os
+import sys
+import json
 
-import properties_solver
-
-from util import methods
-from util import strings
+# Append the parent directory to the path so we can import in utility
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from solvers.util import strings
+from solvers.util import methods
+from solvers.properties_solver import solve as properties_solver
 
 '''
 ==========
@@ -25,8 +29,11 @@ result
 [string, string, string, string]: a list of strings representing the respective special
                                   elements and sets of elements
 '''
-def solve(data):
-    properties = properties_solver.solve(data)
+def solve(input_set, relation):
+    
+    properties = properties_solver(input_set, relation)
+
+    data = [input_set, relation]
 
     if not properties[0] or not properties[4] or not properties[5]:
         raise ValueError(f"Not a partial order.")
@@ -78,4 +85,21 @@ def solve(data):
 
     maximals_string += "}"
 
-    return [least_string, greatest_string, minimals_string, maximals_string]
+    # Convert sets that arent there to None for display
+    if not least_string:
+        least_string = "None"
+    if not greatest_string:
+        greatest_string = "None"
+    if not minimals_string:
+        minimals_string = "None"
+    if not maximals_string:
+        maximals_string = "None"
+
+    # Convert the response to json
+    result = {
+        "Least Element": least_string,
+        "Greatest Element": greatest_string,
+        "Minimal Element": minimals_string,
+        "Maximal Element": maximals_string
+    }
+    return json.dumps(result)

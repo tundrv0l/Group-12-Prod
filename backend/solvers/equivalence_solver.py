@@ -2,7 +2,14 @@
 # Author: Jacob Warren
 # Solves: 5.1.51
 
-from util import strings
+import os 
+import sys
+import json
+
+
+# Append the parent directory to the path so we can import in utility
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from solvers.util import strings
 
 '''
 ==========
@@ -23,7 +30,9 @@ result
 [string, string, string, string]: a list of strings representing the respective special
                                   elements and sets of elements
 '''
-def solve(data):
+def solve(input_set, relations):
+
+    data = [input_set, relations]
     set_list = strings.parse_set(data[0])
     partition_list = strings.parse_set(data[1])
     set_ = {i for i in range(0, len(set_list))}
@@ -54,9 +63,13 @@ def solve(data):
     if collection != set_:
         raise ValueError(f"Partition is missing elements.")
 
+    # Remove the last comma and space
+    if relation_string.endswith(", "):
+        relation_string = relation_string[:-2]
     relation_string += "}"
 
-    if relation_string != "{}":
-        relation_string = relation_string[:-2]
-
-    return relation_string
+    # Convert the relation_string to JSON
+    result = {
+        "Equivalence Relation": relation_string
+    }
+    return json.dumps(result)

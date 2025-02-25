@@ -2,10 +2,15 @@
 # Author: Jacob Warren
 # Solves: 5.1.31
 
-import properties_solver
+import os
+import sys
+import json
 
-from util import methods
-from util import strings
+# Append the parent directory to the path so we can import in utility
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from solvers.util import strings
+from solvers.util import methods
+from solvers.properties_solver import solve as properties_solver
 
 '''
 ==========
@@ -25,8 +30,12 @@ result
 string: a string representing the filtered relation that can be used to generate
         a Hasse diagram directly
 '''
-def solve(data):
-    properties = properties_solver.solve(data)
+def solve(set, relation):
+
+    # TODO: Fix for Jacob
+    _, properties = properties_solver(set, relation)
+
+    data = [set, relation]
 
     if not properties[0] or not properties[4] or not properties[5]:
         raise ValueError(f"Not a partial order.")
@@ -46,5 +55,9 @@ def solve(data):
         hasse_string = hasse_string[:-2]
 
     hasse_string += "}"
+    print(hasse_string)
+    result = { 
+        "Hasse Diagram": hasse_string 
+        }
 
-    return hasse_string
+    return json.dumps(result)
