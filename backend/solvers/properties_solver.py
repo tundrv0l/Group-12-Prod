@@ -29,6 +29,8 @@ result
                                       of the relation on the set
 '''
 def solve(input_set, relation):
+
+    
     data = [input_set, relation]
     set_list, relation = strings.is_a_relation(data[0], data[1])
     set_ = {i for i in range(0, len(set_list))}
@@ -73,4 +75,7 @@ def solve(input_set, relation):
         "Transitive": transitive
     }
 
-    return json.dumps(result)
+
+    result_list = [reflexive, irreflexive, symmetric, asymmetric, antisymmetric, transitive]
+
+    return json.dumps(result), result_list

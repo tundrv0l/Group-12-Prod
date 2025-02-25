@@ -36,14 +36,28 @@ const RelationProperties = () => {
     
     setError('');
     try {
-      const result = await solvePropertiesOfRelations(relation, set);
-      setOutput(result);
-    } catch (err) {
-      setError('An error occurred while analyzing the relation properties.');
-    } finally {
-      setLoading(false);
-    }
-  }
+          let result = await solvePropertiesOfRelations(set, relation);
+    
+          // Parse result if it is a string
+          if (typeof result === 'string') {
+            result = JSON.parse(result);
+          }
+    
+          // Check if there is an error key in the result
+          const errorKey = Object.keys(result).find(key => key.toLowerCase().includes('error'));
+          console.log(errorKey);
+          if (errorKey) {
+            setError(result[errorKey]);
+          } else {
+            setOutput(result);
+          }
+        } catch (err) {
+          console.log(err);
+          setError('An error occurred while analyzing the relations.');
+        } finally {
+          setLoading(false);
+        }
+      }
 
   // Validate that set conforms to format
   const validateSet = (input) => {
@@ -76,10 +90,9 @@ const RelationProperties = () => {
     }
 
     // Parse out json object and return out elements one by one
-    const parsedOutput = JSON.parse(output);
     return (
       <Box>
-        {Object.entries(parsedOutput).map(([key, value]) => (
+        {Object.entries(output).map(([key, value]) => (
           <Text key={key}>{`${key}: ${value}`}</Text>
         ))}
       </Box>

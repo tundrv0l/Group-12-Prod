@@ -16,6 +16,7 @@ from backend.solvers import properties_solver
 from backend.solvers import closures_solver
 from backend.solvers import equivalence_solver
 from backend.solvers import special_solver
+from backend.solvers import hasse_solver
 
 #---Imports for the reporter---#
 from backend.reporter import send_email
@@ -38,11 +39,16 @@ def solve(solver_type):
         result: json
             Returned the serialized json of the result and return to the client.
     '''
-    data = request.json
-    print(data)
+    try:
+        data = request.json
+        print(data)
+        
+        result = solve_algorithim(solver_type, data)
+        return(jsonify(result))
     
-    result = solve_algorithim(solver_type, data)
-    return(jsonify(result))
+    # If the solver encounters a defined error, return the error message to the user.
+    except Exception as e:
+        return jsonify({'Calculation Error': str(e)})
 
 
 def solve_algorithim(solver_type, data):
@@ -70,8 +76,7 @@ def solve_algorithim(solver_type, data):
         data = data["formula"]
         return recursion_solver.solve(data['formula'], data['baseCase'], data['n'])
     elif solver_type == 'basic-set-functions':
-        # Call the appropriate function for basic set functions
-        pass
+        return hasse_solver.solve(data["set"], data["relation"])
     elif solver_type == 'power-set':
         # Call the appropriate function for power set
         pass
@@ -92,9 +97,8 @@ def solve_algorithim(solver_type, data):
         return equivalence_solver.solve(data["set"], data["relation"])
     elif solver_type == 'partial-orderings':
         return special_solver.solve(data["set"], data["relation"])
-    elif solver_type == 'hasse-diagram':
-        # Call the appropriate function for Hasse diagrams
-        pass
+    elif solver_type == 'hasse-diagrams':
+        return hasse_solver.solve(data["set"], data["relation"])
     elif solver_type == 'critical-paths':
         # Call the appropriate function for Critical Paths
         pass
@@ -122,8 +126,32 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'boolean-matrices':
         # Call the appropriate function for Boolean Matrices
         pass
-    elif solver_type == 'matrice-operations':\
+    elif solver_type == 'matrice-operations':
         # Call the appropriate function for Matrice Operations
+        pass
+    elif solver_type == 'graphs':
+        # Call the appropriate function for Graphs
+        pass
+    elif solver_type == 'adjacency-matrices-lists':
+        # Call the appropriate function for Adjacency Matrices and Lists
+        pass
+    elif solver_type == 'weighted-graphs':
+        # Call the appropriate function for Weighted Graphs
+        pass
+    elif solver_type == 'binary-trees':
+        # Call the appropriate function for Binary Trees
+        pass
+    elif solver_type == 'array-to-tree':
+        # Call the appropriate function for Array to Tree
+        pass
+    elif solver_type == 'tree-to-array':
+        # Call the appropriate function for Array to Tree
+        pass
+    elif solver_type == 'tree-notation':
+        # Call the appropriate function for Tree Notation
+        pass
+    elif solver_type == 'warshalls-algorithm':
+        # Call the appropriate function for Warshalls
         pass
     else:
         return jsonify({'error': 'Unsupported solver type'}), 400

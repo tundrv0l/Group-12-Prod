@@ -147,7 +147,7 @@ const PartialOrderings = () => {
             </Text>
             <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
               <Text>
-                {}
+                {renderOutput()}
               </Text>
             </Box>
           </CardBody>

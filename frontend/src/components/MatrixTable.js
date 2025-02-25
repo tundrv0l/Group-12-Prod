@@ -22,7 +22,7 @@ const MatrixTable = ({ label, matrix, setMatrix }) => {
     <Box>
       <Box margin={{ bottom: 'medium' }}>
         {Array.isArray(matrix) && matrix.map((row, rowIndex) => (
-          <Box key={rowIndex} direction="row" gap="small">
+          <Box key={rowIndex} direction="row" gap="small" margin={{ bottom: 'xsmall' }}>
             {Array.isArray(row) && row.map((cell, colIndex) => (
               <TextInput
                 key={colIndex}

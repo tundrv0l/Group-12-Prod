@@ -67,16 +67,16 @@ const SidebarMenu = () => (
       <AccordionPanel label="6.1: Graphs and Their Representations">
         <AccordionPanelContent content={[
           { label: "Graphs", path: "/graphs" },
-          { label: "Adjacency Matrixes & Adjacency Lists", path: "/graphs/adjacency" },
-          { label: "Weighted Graph Representations", path: "/graphs/weighted" }
+          { label: "Adjacency Matrixes & Adjacency Lists", path: "/adjacency-matrices-lists" },
+          { label: "Weighted Graph Representations", path: "/weighted-graphs" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="6.2: Trees and Their Representations">
         <AccordionPanelContent content={[
-          { label: "Binary Trees and their Properties", path: "/trees/binary" },
-          { label: "Array To Tree", path: "/trees/array-to-tree" },
-          { label: "Tree To Array", path: "/trees/tree-to-array" },
-          { label: "Prefix, Postfix, In-Fix Notation", path: "/trees/notation" }
+          { label: "Binary Trees and Their Properties", path: "/binary-trees" },
+          { label: "Array To Tree", path: "/array-to-tree" },
+          { label: "Tree To Array", path: "/tree-to-array" },
+          { label: "Prefix, Postfix, In-Fix Notation", path: "/tree-notation" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="7.1: Directed Graphs, Binary Relations and Warshall's Algorithm">

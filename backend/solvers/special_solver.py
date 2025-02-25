@@ -31,69 +31,75 @@ result
 '''
 def solve(input_set, relation):
     
-    try:
-        properties = properties_solver(input_set, relation)
+    properties = properties_solver(input_set, relation)
 
-        data = [input_set, relation]
+    data = [input_set, relation]
 
-        if not properties[0] or not properties[4] or not properties[5]:
-            raise ValueError(f"Not a partial order.")
+    if not properties[0] or not properties[4] or not properties[5]:
+        raise ValueError(f"Not a partial order.")
 
-        set_list, relation = strings.is_a_relation(data[0], data[1])
-        set_ = {i for i in range(0, len(set_list))}
+    set_list, relation = strings.is_a_relation(data[0], data[1])
+    set_ = {i for i in range(0, len(set_list))}
 
-        least = methods.least_element(set_, relation)
-        greatest = methods.greatest_element(set_, relation)
-        minimals = set()
-        maximals = set()
-        
-        least_string = ""
-        greatest_string = ""
-        minimals_string = "{"
-        maximals_string = "{"
+    least = methods.least_element(set_, relation)
+    greatest = methods.greatest_element(set_, relation)
+    minimals = set()
+    maximals = set()
+    
+    least_string = ""
+    greatest_string = ""
+    minimals_string = "{"
+    maximals_string = "{"
 
-        # the existance of least or greatest elements implied there is only one
-        # minimal or maximal element respectively
-        if least != None:
-            minimals = {least}
-            least_string = set_list[least]
-            minimals_string += least_string
-        else:
-            minimals = methods.minimal_elements(set_, relation)
+    # the existance of least or greatest elements implied there is only one
+    # minimal or maximal element respectively
+    if least != None:
+        minimals = {least}
+        least_string = set_list[least]
+        minimals_string += least_string
+    else:
+        minimals = methods.minimal_elements(set_, relation)
 
-            for m in minimals:
-                minimals_string += set_list[m]
-                minimals_string += ", "
+        for m in minimals:
+            minimals_string += set_list[m]
+            minimals_string += ", "
 
-            if minimals:
-                minimals_string = minimals_string[:-2]
+        if minimals:
+            minimals_string = minimals_string[:-2]
 
-        minimals_string += "}"
+    minimals_string += "}"
 
-        if greatest != None:
-            maximals = {greatest}
-            greatest_string = set_list[greatest]
-            maximals_string += greatest_string
-        else:
-            maximals = methods.maximal_elements(set_, relation)
+    if greatest != None:
+        maximals = {greatest}
+        greatest_string = set_list[greatest]
+        maximals_string += greatest_string
+    else:
+        maximals = methods.maximal_elements(set_, relation)
 
-            for m in maximals:
-                maximals_string += set_list[m]
-                maximals_string += ", "
+        for m in maximals:
+            maximals_string += set_list[m]
+            maximals_string += ", "
 
-            if maximals:
-                maximals_string = maximals_string[:-2]
+        if maximals:
+            maximals_string = maximals_string[:-2]
 
-        maximals_string += "}"
+    maximals_string += "}"
 
-        # Convert the response to json
-        result = {
-            "Least Element": least_string,
-            "Greatest Element": greatest_string,
-            "Minimal Element": minimals_string,
-            "Maximal Element": maximals_string
-        }
-        return json.dumps(result)
+    # Convert sets that arent there to None for display
+    if not least_string:
+        least_string = "None"
+    if not greatest_string:
+        greatest_string = "None"
+    if not minimals_string:
+        minimals_string = "None"
+    if not maximals_string:
+        maximals_string = "None"
 
-    except Exception as e:
-        return json.dumps({"Calculation Error": str(e)})
+    # Convert the response to json
+    result = {
+        "Least Element": least_string,
+        "Greatest Element": greatest_string,
+        "Minimal Element": minimals_string,
+        "Maximal Element": maximals_string
+    }
+    return json.dumps(result)

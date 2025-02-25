@@ -12,7 +12,8 @@ import HomeButton from '../components/HomeButton';
 */
 
 const HasseDiagram = () => {
-  const [input, setInput] = React.useState('');
+  const [set, setSet] = React.useState('');
+  const [relation, setRelation] = React.useState('');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
@@ -24,16 +25,18 @@ const HasseDiagram = () => {
     setError('');
 
     // Validate input
-    const isValid = validateInput(input);
-    if (!isValid) {
-      setError('Invalid input. Please enter a valid partial ordering.');
+    const isValidSet = validateSet(set);
+    const isValidRelation = validateRelation(relation, set);
+    
+    if (!isValidRelation || !isValidSet) {
+      setError('Invalid input. Please enter a valid relation/set.');
       setLoading(false);
       return;
     }
 
     setError('');
     try {
-      const result = await solveHasseDiagram(input);
+      const result = await solveHasseDiagram(set, relation);
       setOutput(result);
     } catch (err) {
       setError('An error occurred while generating the Hasse Diagram.');
@@ -42,11 +45,46 @@ const HasseDiagram = () => {
     }
   }
 
-  const validateInput = (input) => {
-    // TODO: Change regex here based on input pattern
-    const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
-    return wffRegex.test(input);
-  }
+   // Validate that set conforms to format
+   const validateSet = (input) => {
+
+    // Tests if input is in the form {a, b, c, 23}
+    const setRegex = /^\{(\s*[a-zA-Z0-9]+\s*,)*\s*[a-zA-Z0-9]+\s*\}$/;
+    return setRegex.test(input);
+  };
+
+  // Validate that relation conforms to format
+  const validateRelation = (input, set) => {
+
+    // Tests if input is in the form {(a, b), (23, c)}
+    const relationRegex = /^\{(\s*\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*,)*\s*\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*\}$/;
+    if (!relationRegex.test(input)) {
+      return false;
+    }
+    
+    // Checks if all elements in the relation are in the set
+    const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/);
+    const relationElements = input.replace(/[{}()]/g, '').split(/\s*,\s*/);
+  
+    return relationElements.every(element => setElements.includes(element));
+  };
+
+  // Pretty print the output
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here!";
+    }
+
+    // Parse out json object and return out elements one by one
+    const parsedOutput = JSON.parse(output);
+    return (
+      <Box>
+        {Object.entries(parsedOutput).map(([key, value]) => (
+          <Text key={key}>{`${key}: ${value}`}</Text>
+        ))}
+      </Box>
+    );
+  };
 
   return (
     <Page>
@@ -82,11 +120,20 @@ const HasseDiagram = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
-              <TextInput 
-                placeholder="Example: Enter your partial ordering here (e.g., {(1, 2), (2, 3)})"
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-              />
+              <Box margin={{bottom : "small" }}>
+                <TextInput 
+                  placeholder="Example: Enter your set here (e.g., {a, b, c, 23})"
+                  value={set}
+                  onChange={(event) => setSet(event.target.value)}
+                />
+              </Box>
+              <Box margin={{top : "small" }}>
+                <TextInput 
+                  placeholder="Example: Enter your relation here (e.g., {(a, b), (23, c)})"
+                  value={relation}
+                  onChange={(event) => setRelation(event.target.value)}
+                />
+              </Box>
               {error && <Text color="status-critical">{error}</Text>}
             </CardBody>
             <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
@@ -100,7 +147,7 @@ const HasseDiagram = () => {
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
                 <Text>
-                  {output ? JSON.stringify(output) : "Output will be displayed here!"}
+                  {renderOutput()}
                 </Text>
               </Box>
             </CardBody>

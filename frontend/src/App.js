@@ -27,6 +27,15 @@ import OrderOfMagnitude from './pages/OrderOfMagnitude';
 import MasterTheorem from './pages/MasterTheorem';
 import BooleanMatrices from './pages/BooleanMatrices';
 import BooleanMatriceOperations from './pages/BooleanMatriceOperations';
+import GraphsPage from './pages/GraphsPage';
+import AdjacencyMatricesLists from './pages/AdjacencyMatricesLists';
+import WeightedGraphRepresentations from './pages/WeightedGraphRepresentations';
+import BinaryTrees from './pages/BinaryTrees';
+import ArrayToTree from './pages/ArrayToTree';
+import TreeToArray from './pages/TreeToArray';
+import TreeNotation from './pages/TreeNotation';
+import WarshallsAlgorithm from './pages/WarshallsAlgorithm';
+
 
 const App = () => (
   <AppLayout>
@@ -57,6 +66,14 @@ const App = () => (
         <Route path="/master-theorem" element={<MasterTheorem />} />
         <Route path="/boolean-matrices" element={<BooleanMatrices />} />
         <Route path="/matrice-operations" element={<BooleanMatriceOperations />} />
+        <Route path="/graphs" element={<GraphsPage />} />
+        <Route path="/adjacency-matrices-lists" element={<AdjacencyMatricesLists />} />
+        <Route path="/weighted-graphs" element={<WeightedGraphRepresentations />} />
+        <Route path="/binary-trees" element={<BinaryTrees />} />
+        <Route path="/array-to-tree" element={<ArrayToTree />} />
+        <Route path="/tree-to-array" element={<TreeToArray />} />
+        <Route path="/tree-notation" element={<TreeNotation />} />
+        <Route path="/warshalls-algorithm" element={<WarshallsAlgorithm />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

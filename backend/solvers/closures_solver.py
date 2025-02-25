@@ -30,49 +30,47 @@ result
                           additions as relations
 '''
 def solve(set, relation):
-    try:
-        data = [set, relation]
-        set_list, relation = strings.is_a_relation(data[0], data[1])
-        set_ = {i for i in range(0, len(set_list))}
 
-        reflexive_diff = methods.reflexive_closure(set_, relation) - relation
-        symmetric_diff = methods.symmetric_closure(relation) - relation
-        transitive_diff = methods.transitive_closure(relation) - relation
+    data = [set, relation]
+    set_list, relation = strings.is_a_relation(data[0], data[1])
+    set_ = {i for i in range(0, len(set_list))}
 
-        reflexive_string = "{"
-        symmetric_string = "{"
-        transitive_string = "{"
+    reflexive_diff = methods.reflexive_closure(set_, relation) - relation
+    symmetric_diff = methods.symmetric_closure(relation) - relation
+    transitive_diff = methods.transitive_closure(relation) - relation
 
-        for pair in reflexive_diff:
-            reflexive_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
+    reflexive_string = "{"
+    symmetric_string = "{"
+    transitive_string = "{"
 
-        for pair in symmetric_diff:
-            symmetric_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
+    for pair in reflexive_diff:
+        reflexive_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
 
-        for pair in transitive_diff:
-            transitive_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
+    for pair in symmetric_diff:
+        symmetric_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
 
-        if reflexive_diff:
-            reflexive_string = reflexive_string[:-2]
+    for pair in transitive_diff:
+        transitive_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
 
-        if symmetric_diff:
-            symmetric_string = symmetric_string[:-2]
+    if reflexive_diff:
+        reflexive_string = reflexive_string[:-2]
 
-        if transitive_diff:
-            transitive_string = transitive_string[:-2]
-        
-        reflexive_string += "}"
-        symmetric_string += "}"
-        transitive_string += "}"
+    if symmetric_diff:
+        symmetric_string = symmetric_string[:-2]
+
+    if transitive_diff:
+        transitive_string = transitive_string[:-2]
+    
+    reflexive_string += "}"
+    symmetric_string += "}"
+    transitive_string += "}"
 
 
-        # Return the result as json
-        result = {
-            "Reflexive Closure": reflexive_string,
-            "Symmetric Closure": symmetric_string,
-            "Transitive Closure": transitive_string,
-        }
+    # Return the result as json
+    result = {
+        "Reflexive Closure": reflexive_string,
+        "Symmetric Closure": symmetric_string,
+        "Transitive Closure": transitive_string,
+    }
 
-        return json.dumps(result)
-    except Exception as e:
-        return json.dumps({"Calculation Error": str(e)})
+    return json.dumps(result)

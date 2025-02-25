@@ -63,24 +63,24 @@ const EquivalenceRelations = () => {
 
   // Validate that set conforms to format
   const validateSet = (input) => {
-
     // Tests if input is in the form {a, b, c, 23}
     const setRegex = /^\{(\s*[a-zA-Z0-9]+\s*,)*\s*[a-zA-Z0-9]+\s*\}$/;
     return setRegex.test(input);
   };
 
   // Validate that relation conforms to format
+  // Validate that relation conforms to format
   const validateRelation = (input, set) => {
-
-    // Tests if input is in the form {(a, b), (23, c)}
-    const relationRegex = /^\{(\s*\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*,)*\s*\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*\}$/;
+    // Tests if input is in the form {{a,b},{c,23}} or {{a,b}} or {{a}}
+    const relationRegex = /^\{(\s*\{\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\}\s*,)*\s*\{\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\}\s*\}$/;
+  
     if (!relationRegex.test(input)) {
       return false;
     }
-    
+  
     // Checks if all elements in the relation are in the set
     const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/);
-    const relationElements = input.replace(/[{}()]/g, '').split(/\s*,\s*/);
+    const relationElements = input.replace(/[{}]/g, '').split(/\s*,\s*/);
   
     return relationElements.every(element => setElements.includes(element));
   };
@@ -146,7 +146,7 @@ const EquivalenceRelations = () => {
             </Box>
             <Box margin={{top : "small" }}>
               <TextInput 
-                placeholder="Example: Enter your relation here (e.g., {(a, b), (23, c)})"
+                placeholder="Example: Enter your set of sets here (e.g., {{a, b}, {23, c}})"
                 value={relation}
                 onChange={(event) => setRelation(event.target.value)}
               />
