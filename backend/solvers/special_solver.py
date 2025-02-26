@@ -10,6 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from solvers.util import strings
 from solvers.util import methods
 from solvers.properties_solver import solve as properties_solver
+from solvers.util import exceptions
 
 '''
 ==========
@@ -36,7 +37,7 @@ def solve(input_set, relation):
     data = [input_set, relation]
 
     if not properties[0] or not properties[4] or not properties[5]:
-        raise ValueError(f"Not a partial order.")
+        raise exceptions.CalculateError(f"Not a partial order.")
 
     set_list, relation = strings.is_a_relation(data[0], data[1])
     set_ = {i for i in range(0, len(set_list))}

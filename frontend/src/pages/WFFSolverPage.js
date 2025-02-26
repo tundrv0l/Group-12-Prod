@@ -50,14 +50,14 @@ const WFFSolverPage = () => {
  
   const validateInput = (input) => {
     // Regular expression to validate WFF general form, including operators, NOT, parentheses, and brackets.
-    const wffRegex = /^(\(*\[*\s*(not\s*)?[A-Z]('|¬)?\s*\]*\)*(\s*(->|→|v|∨|\^|∧|<>|↔)\s*\(*\[*\s*(not\s*)?[A-Z]('|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|¬)?|\[\s*.*\s*\]('|¬)?$/;
+    const wffRegex = /^(\(*\[*\s*(not\s*)?[A-Z]('|¬)?\s*\]*\)*(\s*(->|→|v|∨|V|\^|∧|<>|↔)\s*\(*\[*\s*(not\s*)?[A-Z]('|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|¬)?|\[\s*.*\s*\]('|¬)?$/;
   
     // Check for balanced parentheses and brackets
     const balancedParentheses = (input.match(/\(/g) || []).length === (input.match(/\)/g) || []).length;
     const balancedBrackets = (input.match(/\[/g) || []).length === (input.match(/\]/g) || []).length;
   
     // Check for at least one operator in the input
-    const containsOperator = /->|→|v|∨|\^|∧|<>|↔|not|¬/.test(input);
+    const containsOperator = /->|→|v|∨|V|\^|∧|<>|↔|not|¬/.test(input);
   
     // Reject single pair of parentheses or brackets. Backend doesn't handle input like: (A V B), but does support A V B
     const singlePairParentheses = /^\([^()]*\)$/.test(input);

@@ -54,6 +54,7 @@ def _parse_formula(formula):
 
     # Replace logical operators with Python equivalents
     formula = formula.replace('v', ' or ')
+    formula = formula.replace('V', ' or ')
     formula = formula.replace('^', ' and ')
     formula = formula.replace('<>', ' == ')
     formula = formula.replace('->', ' <= ')
@@ -111,7 +112,8 @@ def _extract_variables(formula):
             A sorted list of unique variables extracted from the formula.
     '''
     # Extract unique variables from the formula using a regular expression
-    return sorted(set(re.findall(r'\b[A-Z]\b', formula)))
+    #   (excluding V, which is a logical operator in this context)
+    return sorted(set(re.findall(r'\b(?!V\b)[A-Z]\b', formula)))
 
 def solve(formula):
     '''

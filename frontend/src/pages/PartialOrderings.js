@@ -35,15 +35,30 @@ const PartialOrderings = () => {
     }
 
     setError('');
-    try {
-      const result = await solvePartialOrderings(set, relation);
-      setOutput(result);
+    try { 
+      // Do some conversion to display any backend errors
+      let result = await solvePartialOrderings(set, relation);
+
+      // Parse result if it is a string
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      
+      // Check if there is an error key in the result
+      const errorKey = Object.keys(result).find(key => key.toLowerCase().includes('error'));
+      console.log(errorKey);
+      if (errorKey) {
+        setError(result[errorKey]);
+      } else {
+        setOutput(result);
+      }
     } catch (err) {
-      setError('An error occurred while analyzing the partial ordering.');
+      console.log(err);
+      setError('An error occurred while generating the Hasse Diagram.');
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   // Validate that set conforms to format
   const validateSet = (input) => {
