@@ -22,34 +22,34 @@ const SidebarMenu = () => (
       </AccordionPanel>
       <AccordionPanel label="4.1: Sets">
         <AccordionPanelContent content={[
-          { label: "Basic Set Functions", path: "/sets/basic-functions" },
-          { label: "Power Set", path: "/sets/power-set" },
-          { label: "Set Complement", path: "/sets/set-complement" },
-          { label: "Binary/Unary Operators", path: "/sets/binary-unary-operators" },
-          { label: "Cartesian Products", path: "/sets/cartesian-products" }
+          { label: "Basic Set Functions", path: "/basic-set-functions" },
+          { label: "Power Set", path: "/power-set" },
+          { label: "Set Complement", path: "/set-complement" },
+          { label: "Binary/Unary Operators", path: "/binary-unary-operators" },
+          { label: "Cartesian Products", path: "/cartesian-products" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="5.1: Relations">
         <AccordionPanelContent content={[
-          { label: "Property Of Relations", path: "/relations/property" },
-          { label: "Closure Axioms", path: "/relations/closure-axioms" },
-          { label: "Equivalence Relations", path: "/relations/equivalence" },
-          { label: "Partial Orderings", path: "/relations/partial-orderings" },
-          { label: "Hasse Diagram", path: "/relations/hasse-diagram" }
+          { label: "Property Of Relations", path: "/properties-of-relations" },
+          { label: "Closure Axioms", path: "/closure-axioms" },
+          { label: "Equivalence Relations", path: "/equivalence-relations" },
+          { label: "Partial Orderings", path: "/partial-orderings" },
+          { label: "Hasse Diagram", path: "/hasse-diagram" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="5.2: Topological Sorting">
         <AccordionPanelContent content={[
-          { label: "Critical Path", path: "/topological-sorting/critical-path" },
-          { label: "PERT Diagrams", path: "/topological-sorting/pert-diagrams" },
-          { label: "Topological Sorting", path: "/topological-sorting/solver" }
+          { label: "Critical Path", path: "/critical-path" },
+          { label: "PERT Diagrams", path: "/pert-diagrams" },
+          { label: "Topological Sorting", path: "/topological-sorting" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="5.4: Functions">
         <AccordionPanelContent content={[
-          { label: "Permutations Of A Cycle", path: "/functions/permutations-cycle" },
-          { label: "Compositions of Permutations", path: "/functions/compositions" },
-          { label: "Permutations expressed as Disjoint Cycles", path: "/functions/disjoint-cycles" }
+          { label: "Permutations Of A Cycle", path: "permutations-cycle" },
+          { label: "Compositions of Permutations", path: "/compositions" },
+          { label: "Permutations Expressed As Disjoint Cycles", path: "/disjoint-cycles" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="5.5: Order of Magnitude">
@@ -60,23 +60,23 @@ const SidebarMenu = () => (
       </AccordionPanel>
       <AccordionPanel label="5.7: Matrices">
         <AccordionPanelContent content={[
-          { label: "Boolean Matrices", path: "/matrices/boolean" },
-          { label: "Boolean Matrice Operations (Meet, Join, Product)", path: "/matrices/operations" }
+          { label: "Boolean Matrices", path: "/boolean-matrices" },
+          { label: "Boolean Matrice Operations (Meet, Join, Product)", path: "/matrice-operations" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="6.1: Graphs and Their Representations">
         <AccordionPanelContent content={[
           { label: "Graphs", path: "/graphs" },
-          { label: "Adjacency Matrixes & Adjacency Lists", path: "/graphs/adjacency" },
-          { label: "Weighted Graph Representations", path: "/graphs/weighted" }
+          { label: "Adjacency Matrixes & Adjacency Lists", path: "/adjacency-matrices-lists" },
+          { label: "Weighted Graph Representations", path: "/weighted-graphs" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="6.2: Trees and Their Representations">
         <AccordionPanelContent content={[
-          { label: "Binary Trees and their Properties", path: "/trees/binary" },
-          { label: "Array To Tree", path: "/trees/array-to-tree" },
-          { label: "Tree To Array", path: "/trees/tree-to-array" },
-          { label: "Prefix, Postfix, In-Fix Notation", path: "/trees/notation" }
+          { label: "Binary Trees and Their Properties", path: "/binary-trees" },
+          { label: "Array To Tree", path: "/array-to-tree" },
+          { label: "Tree To Array", path: "/tree-to-array" },
+          { label: "Prefix, Postfix, In-Fix Notation", path: "/tree-notation" }
         ]} />
       </AccordionPanel>
       <AccordionPanel label="7.1: Directed Graphs, Binary Relations and Warshall's Algorithm">

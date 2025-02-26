@@ -2,6 +2,9 @@ import React from 'react';
 import ReportFooter from '../components/ReportFooter';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
 import { solvePropositionalLogic } from '../api';
+import Background from '../components/Background';
+import HomeButton from '../components/HomeButton';
+
 
 /*
 * Name: PropositionalLogicSolver.js
@@ -44,31 +47,37 @@ const PropositionalLogicSolver = () => {
   }
 
   const validateInput = (input) => {
-    // Updated regular expression to match well-formed formulas (WFFs) with the new symbol mappings.
-    const wffRegex = /^([\[\(]*\s*(not\s*)?[A-Z]('|′|¬)?\s*[\]\)]*)(\s*(->|>|S|v|~|\^|`|V)\s*[\[\(]*\s*(not\s*)?[A-Z]('|′|¬)?[\]\)]*)*(\s*(->|>|S|v|~|\^|`|V)\s*[\[\(]*\s*(not\s*)?[A-Z]('|′|¬)?[\]\)]*)*|([\[\(]\s*.*\s*[\]\)])('|′|¬)?$/;
+    // AI Generated regex to match well-formed formulas (WFFs) in propositional logic. Includes some other functions to validate proper form.
 
-    // Check for balanced parentheses, treating [] as ()
-    const balancedParentheses = (input.match(/[\[\(]/g) || []).length === (input.match(/[\]\)]/g) || []).length;
+    // Regular expression to validate WFF general form, including operators, NOT, and parentheses.
+    // Will match input like: (A v B) -> (C ^ D), A v B, A -> B, not A, A', (A v not B) ^ (C ^ D'), etc.
+    const wffRegex = /^(\(*\s*(not\s*)?[A-Z]('|¬)?\s*\)*(\s*(->|v|\^|<>|V)\s*\(*\s*(not\s*)?[A-Z]('|¬)?\s*\)*)*(\s*(->|v|\^|<>|V)\s*\(*\s*(not\s*)?[A-Z]('|¬)?\s*\)*)*)+|\(\s*.*\s*\)('|¬)$/;
+    // Check for balanced parentheses and at least one operator
+    const balancedParentheses = (input.match(/\(/g) || []).length === (input.match(/\)/g) || []).length;
 
-    // Check for at least one logical operator in the input
-    const containsOperator = /->|>|S|v|~|\^|`|V|>|not/.test(input);
+    // Check for at least one operator in the input
+    const containsOperator = /->|v|\^|<>|V|not/.test(input);
 
-    // Reject single pair of parentheses or brackets
-    const singlePairParentheses = /^([\[\(])[^()[\]]*([\]\)])$/.test(input);
+    // Reject single pair of parentheses. Backend doesn't handle input like: (A V B), but does support A V B
+    const singlePairParentheses = /^\([^()]*\)$/.test(input);
 
     // Allow single negated variables like ¬A, A', and not A
-    const singleNegatedVariable = /^(not\s*)?[A-Z]('|′|¬)?$/.test(input);
+    const singleNegatedVariable = /^(not\s*)?[A-Z]('|¬)?$/.test(input);
 
-    // Allow negated expressions with parentheses or brackets like (A V B)'
-    const negatedExpressionWithParentheses = /^([\[\(]\s*.*\s*[\]\)])(′|'|¬)?$/.test(input);
+    // Allow negated expressions with parentheses like (A V B)'
+    const negatedExpressionWithParentheses = /^\(\s*.*\s*\)('|¬)$/.test(input);
 
-    // Return true if the input is a valid WFF based on the conditions
     return (wffRegex.test(input) && balancedParentheses && containsOperator && !singlePairParentheses) || singleNegatedVariable || negatedExpressionWithParentheses;
-}
+ }
 
   return (
     <Page>
+      <Background />
+      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
       <PageContent align="center" skeleton={false}>
+        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
+          <HomeButton />
+        </Box>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
             Propositional Logic Validator
@@ -129,6 +138,7 @@ const PropositionalLogicSolver = () => {
         </Card>
         <ReportFooter />
       </PageContent>
+      </Box>
     </Page>
   );
 };
