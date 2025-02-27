@@ -5,6 +5,7 @@ import { solvePropositionalLogic } from '../api';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 
+
 /*
 * Name: PropositionalLogicSolver.js
 * Author: Parker Clark
@@ -129,8 +130,8 @@ const PropositionalLogicSolver = () => {
               Output:
             </Text>
             <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-              <Text>
-                {output ? JSON.stringify(output) : "Output will be displayed here!"}
+              <Text style={{ whiteSpace: 'pre-wrap' }}>
+                {output ? output: "Output will be displayed here!"}
               </Text>
             </Box>
           </CardBody>
