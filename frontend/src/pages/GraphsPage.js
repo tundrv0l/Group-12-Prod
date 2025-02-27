@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select } from 'grommet';
 import { solveGraphs } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
@@ -14,6 +14,7 @@ import HomeButton from '../components/HomeButton';
 const GraphsPage = () => {
   const [input, setInput] = React.useState('');
   const [output, setOutput] = React.useState('');
+  const [type, setType] = React.useState('UNDIRECTED');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
 
@@ -33,7 +34,7 @@ const GraphsPage = () => {
 
     setError('');
     try {
-      const result = await solveGraphs(input);
+      const result = await solveGraphs(input, type);
       setOutput(result);
     } catch (err) {
       setError('An error occurred while generating the graph.');
@@ -47,6 +48,20 @@ const GraphsPage = () => {
     const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
     return wffRegex.test(input);
   }
+
+  // Convert base64 image string to image element
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here!";
+    }
+
+    // Parse out json object and return out elements one by one
+    return (
+      <Box>
+        <img src={`data:image/png;base64,${output}`} alt="Hasse Diagram" />
+      </Box>
+    );
+  };
 
   return (
     <Page>
@@ -89,6 +104,13 @@ const GraphsPage = () => {
               />
               {error && <Text color="status-critical">{error}</Text>}
             </CardBody>
+            <Box align="center" justify="center" pad={{ vertical: 'small' }}>
+              <Select
+                options={['UNDIRECTED', 'DIRECTED']}
+                value={type}
+                onChange={({ option }) => setType(option)}
+              />
+            </Box>
             <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
               <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
             </CardFooter>
@@ -100,7 +122,7 @@ const GraphsPage = () => {
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
                 <Text>
-                  {output ? JSON.stringify(output) : "Output will be displayed here!"}
+                  {renderOutput()}
                 </Text>
               </Box>
             </CardBody>

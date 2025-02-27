@@ -75,7 +75,7 @@ def solve(set, relation):
 
     img_data =_generate_diagram(relation, set_list)
 
-    result = { 
+    result = {
         "Hasse Diagram": img_data 
     }
 

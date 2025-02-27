@@ -84,7 +84,7 @@ const HasseDiagram = () => {
     return relationElements.every(element => setElements.includes(element));
   };
 
-  // Pretty print the output
+  // Convert base64 image string to image element
   const renderOutput = () => {
     if (!output) {
       return "Output will be displayed here!";
@@ -129,7 +129,7 @@ const HasseDiagram = () => {
             <Text textAlign="start" weight="normal" margin={{"bottom":"small"}}>
               Enter your relation below to generate and analyze the Hasse diagram!
             </Text>
-            <Text color="#17A2B8 " margin={{"bottom":"small"}} justify="center" align="center">
+            <Text color="#17A2B8" margin={{"bottom":"small"}} justify="center" align="center">
               Please allow a few seconds for the diagram to generate.
             </Text>
           </Box>

@@ -150,8 +150,8 @@ export const solveDisjointCycles = async (input) => {
 }
 
 // Call graphs solver to the backend
-export const solveGraphs = async (input) => {
-    return await solve('graphs', { input });
+export const solveGraphs = async (pairs, type) => {
+    return await solve('graphs', { pairs, type });
 }
 
 // Call Hasse diagram solver to the backend
@@ -213,4 +213,9 @@ export const solveWarshallsAlgorithm = async (input) => {
 // Call weighted graphs solver to the backend
 export const solveWeightedGraphs = async (input) => {
     return await solve('weighted-graphs', { input });
+}
+
+// Solve tree notation to the backend
+export const solveTreeNotation = async (input) => {
+    return await solve('tree-notation', { input });
 }
