@@ -150,8 +150,8 @@ export const solveDisjointCycles = async (input) => {
 }
 
 // Call graphs solver to the backend
-export const solveGraphs = async (pairs, type) => {
-    return await solve('graphs', { pairs, type });
+export const solveGraphs = async (pairs, type, isIsomorphic, secondInput) => {
+    return await solve('graphs', { pairs, type, isIsomorphic, secondInput });
 }
 
 // Call Hasse diagram solver to the backend
