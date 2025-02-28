@@ -2,6 +2,8 @@ import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
 import { solveBinaryUnaryOperators } from '../api';
 import ReportFooter from '../components/ReportFooter';
+import Background from '../components/Background';
+import HomeButton from '../components/HomeButton';
 
 /*
 * Name: BinaryUnaryOperators.js
@@ -48,7 +50,12 @@ const BinaryUnaryOperators = () => {
 
   return (
     <Page>
+      <Background />
+      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
       <PageContent align="center" skeleton={false}>
+        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
+          <HomeButton />
+        </Box>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
             Binary & Unary Operators
@@ -100,6 +107,7 @@ const BinaryUnaryOperators = () => {
         </Card>
         <ReportFooter />
       </PageContent>
+      </Box>
     </Page>
   );
 };

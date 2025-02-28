@@ -2,6 +2,9 @@ import React from 'react';
 import ReportFooter from '../components/ReportFooter';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
 import { solvePropositionalLogic } from '../api';
+import Background from '../components/Background';
+import HomeButton from '../components/HomeButton';
+
 
 /*
 * Name: PropositionalLogicSolver.js
@@ -44,14 +47,37 @@ const PropositionalLogicSolver = () => {
   }
 
   const validateInput = (input) => {
-    // TODO: Change regex here based on input pattern
-    const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
-    return wffRegex.test(input);
-  }
+    // AI Generated regex to match well-formed formulas (WFFs) in propositional logic. Includes some other functions to validate proper form.
+
+    // Regular expression to validate WFF general form, including operators, NOT, and parentheses.
+    // Will match input like: (A v B) -> (C ^ D), A v B, A -> B, not A, A', (A v not B) ^ (C ^ D'), etc.
+    const wffRegex = /^(\(*\s*(not\s*)?[A-Z]('|¬)?\s*\)*(\s*(->|v|\^|<>|V)\s*\(*\s*(not\s*)?[A-Z]('|¬)?\s*\)*)*(\s*(->|v|\^|<>|V)\s*\(*\s*(not\s*)?[A-Z]('|¬)?\s*\)*)*)+|\(\s*.*\s*\)('|¬)$/;
+    // Check for balanced parentheses and at least one operator
+    const balancedParentheses = (input.match(/\(/g) || []).length === (input.match(/\)/g) || []).length;
+
+    // Check for at least one operator in the input
+    const containsOperator = /->|v|\^|<>|V|not/.test(input);
+
+    // Reject single pair of parentheses. Backend doesn't handle input like: (A V B), but does support A V B
+    const singlePairParentheses = /^\([^()]*\)$/.test(input);
+
+    // Allow single negated variables like ¬A, A', and not A
+    const singleNegatedVariable = /^(not\s*)?[A-Z]('|¬)?$/.test(input);
+
+    // Allow negated expressions with parentheses like (A V B)'
+    const negatedExpressionWithParentheses = /^\(\s*.*\s*\)('|¬)$/.test(input);
+
+    return (wffRegex.test(input) && balancedParentheses && containsOperator && !singlePairParentheses) || singleNegatedVariable || negatedExpressionWithParentheses;
+ }
 
   return (
     <Page>
+      <Background />
+      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
       <PageContent align="center" skeleton={false}>
+        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
+          <HomeButton />
+        </Box>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
             Propositional Logic Validator
@@ -104,14 +130,15 @@ const PropositionalLogicSolver = () => {
               Output:
             </Text>
             <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-              <Text>
-                {output ? JSON.stringify(output) : "Output will be displayed here!"}
+              <Text style={{ whiteSpace: 'pre-wrap' }}>
+                {output ? output: "Output will be displayed here!"}
               </Text>
             </Box>
           </CardBody>
         </Card>
         <ReportFooter />
       </PageContent>
+      </Box>
     </Page>
   );
 };

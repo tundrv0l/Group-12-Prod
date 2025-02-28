@@ -7,6 +7,17 @@ printedH = []
 HsPrinted = 0
 hypothesi = []
 
+def fixString(inputString):
+    instr = inputString.replace(" ", "")
+    instr = instr.replace("->", ">")
+    instr = instr.replace("′", "'")
+    instr = instr.replace("`", "^")
+    instr = instr.replace("~", "v")
+    instr = instr.replace("S", ">")
+    instr = instr.replace("[", "(")
+    return instr.replace("]", ")")
+
+
 class Letter:
     def __init__(self, letter, parent1, parent2, typeOfGetThere, is_Not, istrue):
         self.letter = letter
@@ -15,6 +26,7 @@ class Letter:
         self.parent1 = parent1
         self.parent2 = parent2
         self.type = typeOfGetThere
+        self.pnumb = 0
     
     def __eq__(self, value):
         # Check if the value is a Letter object or a string
@@ -60,7 +72,11 @@ class Letter:
             if p1:
                 for h in hypothesi:
                     if h >= self.parent1:
-                        outputString += ", " + str(h.pnumb)
+                        try:
+                            outputString += ", " + str(h.pnumb)
+                        except:
+                            print("Got error from trying this. here's the current output")
+                            print(outputString)
             if p2:
                 for h in hypothesi:
                     if h >= self.parent2:
@@ -82,6 +98,7 @@ class OR:
         self.parent2 = parent2
         self.type = typeOfGetThere
         self.is_Not = is_Not
+        self.pnumb = 0
 
     def __str__(self):
         if not self.is_Not:
@@ -142,8 +159,13 @@ class IMPLIES:
         self.parent2 = parent2
         self.type = typeOfGetThere
         self.is_Not = is_Not
+        self.pnumb = 0
 
     def __str__(self):
+        if isinstance(self.letter1, IMPLIES):
+            return f"({self.letter1}) implies {self.letter2}"
+        if isinstance(self.letter2, IMPLIES):
+            return f"{self.letter1} implies that {self.letter2}"
         return f"{self.letter1} implies {self.letter2}"
     
     def __eq__(self, value):
@@ -199,6 +221,7 @@ class AND:
         self.parent2 = parent2
         self.type = typeOfGetThere
         self.is_Not = is_Not
+        self.pnumb = 0
 
     def __str__(self):
         base_str = f"{self.letter1} and {self.letter2}"
@@ -279,8 +302,19 @@ class AND:
 
 # Input hypothesis
 def solve(hypothisis, conclusionn):
-    hypothisis = hypothisis.replace(" ", "")
+    global outputString
+    global hypothesi
+    global printedH
+    global HsPrinted
+    global letters
+
+    hypothisis = fixString(hypothisis)
     hypothisises = []
+    hypothesi.clear()
+    outputString = ""
+    letters.clear()
+    printedH.clear()
+    HsPrinted = 0
 
     parserString = ""
     inThing = 0
@@ -357,7 +391,6 @@ def solve(hypothisis, conclusionn):
         return result
 
     for i in hypothisises:
-
         if "(" in i and ")" in i:
             newEye = split_logic_string(i)
             if newEye.__len__() > 1:
@@ -453,13 +486,13 @@ def solve(hypothisis, conclusionn):
                 is_not_1 = "'" in letter1
                 base_letter1 = letter1.replace("'", "")
                 letter_obj1 = Letter(base_letter1, "hypothesis", "hypothesis", "none",  is_not_1, "unknown")
-                if letter_obj1 not in letters:
+                if letter_obj1 not in letters and isinstance(letter_obj1, Letter):
                     letters.append(letter_obj1)
 
                 is_not_2 = "'" in letter2
                 base_letter2 = letter2.replace("'", "")
                 letter_obj2 = Letter(base_letter2, "hypothesis", "hypothesis", "none",  is_not_2, "unknown")
-                if letter_obj2 not in letters:
+                if letter_obj2 not in letters and isinstance(letter_obj2, Letter):
                     letters.append(letter_obj2)
 
                 conclusion = AND(letter_obj1, letter_obj2, "conclusion", "conclusion", "none", False)
@@ -467,7 +500,7 @@ def solve(hypothisis, conclusionn):
                 is_not = "'" in i
                 base_letter = i.replace("'", "")
                 newLetter = Letter(base_letter, "hypothesis", "hypothesis", "none",  is_not, not is_not)  # True for positive, False for negative
-                if newLetter not in letters:
+                if newLetter not in letters and isinstance(newLetter, Letter):
                     letters.append(newLetter)
                 else:  # Update `istrue` if the letter already exists
                     for letter in letters:
@@ -476,7 +509,7 @@ def solve(hypothisis, conclusionn):
                 hypothesi.append(newLetter)
 
     # Input conclusion (optional)
-    solve = conclusionn
+    solve = fixString(conclusionn)
 
     conclusion = ""
 
@@ -528,13 +561,13 @@ def solve(hypothisis, conclusionn):
                 is_not_1 = "'" in letter1
                 base_letter1 = letter1.replace("'", "")
                 letter_obj1 = Letter(base_letter1, "hypothesis", "hypothesis", "none",  is_not_1, "unknown")
-                if letter_obj1 not in letters:
+                if letter_obj1 not in letters and isinstance(letter_obj1, Letter):
                     letters.append(letter_obj1)
 
                 is_not_2 = "'" in letter2
                 base_letter2 = letter2.replace("'", "")
                 letter_obj2 = Letter(base_letter2, "hypothesis", "hypothesis", "none", is_not_2,  "unknown")
-                if letter_obj2 not in letters:
+                if letter_obj2 not in letters and isinstance(letter_obj2, Letter):
                     letters.append(letter_obj2)
 
                 conclusion = OR(letter_obj1, letter_obj2, "conclusion", "conclusion", "none", wholeNot)
@@ -547,13 +580,13 @@ def solve(hypothisis, conclusionn):
                 is_not_1 = "'" in letter1
                 base_letter1 = letter1.replace("'", "")
                 letter_obj1 = Letter(base_letter1, "hypothesis", "hypothesis", "none",  is_not_1, "unknown")
-                if letter_obj1 not in letters:
+                if letter_obj1 not in letters and isinstance(letter_obj1, Letter):
                     letters.append(letter_obj1)
 
                 is_not_2 = "'" in letter2
                 base_letter2 = letter2.replace("'", "")
                 letter_obj2 = Letter(base_letter2, "hypothesis", "hypothesis", "none",  is_not_2, "unknown")
-                if letter_obj2 not in letters:
+                if letter_obj2 not in letters and isinstance(letter_obj2, Letter):
                     letters.append(letter_obj2)
 
                 conclusion = IMPLIES(letter_obj1, letter_obj2, "conclusion", "conclusion", "none", wholeNot)
@@ -566,13 +599,13 @@ def solve(hypothisis, conclusionn):
                 is_not_1 = "'" in letter1
                 base_letter1 = letter1.replace("'", "")
                 letter_obj1 = Letter(base_letter1, "hypothesis", "hypothesis", "none",  is_not_1, "unknown")
-                if letter_obj1 not in letters:
+                if letter_obj1 not in letters and isinstance(letter_obj1, Letter):
                     letters.append(letter_obj1)
 
                 is_not_2 = "'" in letter2
                 base_letter2 = letter2.replace("'", "")
                 letter_obj2 = Letter(base_letter2, "hypothesis", "hypothesis", "none",  is_not_2, "unknown")
-                if letter_obj2 not in letters:
+                if letter_obj2 not in letters and isinstance(letter_obj2, Letter):
                     letters.append(letter_obj2)
 
                 conclusion = AND(letter_obj1, letter_obj2, "conclusion", "conclusion", "none", wholeNot)
@@ -581,7 +614,7 @@ def solve(hypothisis, conclusionn):
                 is_not = "'" in solve
                 base_letter = solve.replace("'", "")
                 letter_obj = Letter(base_letter, "hypothesis", "hypothesis", "none",  is_not, "unknown")
-                if letter_obj not in letters:
+                if letter_obj not in letters and isinstance(letter_obj, Letter):
                     letters.append(letter_obj)
                 else:
                     for letter in letters:
@@ -607,6 +640,8 @@ def solve(hypothisis, conclusionn):
         conclusion.letter1.parent1 = "hypothesis"
         hypothesi.append(conclusion.letter1)
         conclusion = conclusion.letter2
+                    
+    print([str(h) for h in hypothesi])
 
     # Add transitive implications to the hypotheses
     # Add transitive implications to the hypotheses
@@ -849,11 +884,11 @@ def solve(hypothisis, conclusionn):
                                 if newH2 not in hypothesi:
                                     hypothesi.append(newH2)
 
-            if isinstance(h1, OR) and isinstance(h1.letter1, Letter) and isinstance(h1.letter2, Letter) and isinstance(h2, Letter) and not h1.is_Not:
+            if isinstance(h1, OR) and isinstance(h1.letter1, Letter) and isinstance(h1.letter2, Letter) and isinstance(h2, Letter) and not h1.is_Not and not h2 == h1.letter1 and not h2 == h1.letter2:
                 newOREO = OR(AND(h1.letter1.clone(), h2.clone(), h1.clone(), h2.clone(), "Distributive", False), AND(h1.letter2.clone(), h2.clone(), h1.clone(), h2.clone(), "Distributive", False), h1, h2, "Distributive", False)
                 if newOREO not in hypothesi:
                     hypothesi.append(newOREO)
-            if isinstance(h2, OR) and isinstance(h2.letter1, Letter) and isinstance(h2.letter2, Letter) and isinstance(h1, Letter) and not h2.is_Not:
+            if isinstance(h2, OR) and isinstance(h2.letter1, Letter) and isinstance(h2.letter2, Letter) and isinstance(h1, Letter) and not h2.is_Not and not h1 == h2.letter1 and not h1 == h2.letter2:
                 newOREY = OR(AND(h1.clone(), h2.letter1.clone(), h1.clone(), h2.clone(), "Distributive", False), AND(h1.clone(), h2.letter2.clone(), h1.clone(), h2.clone(), "Distributive", False), h1, h2, "Distributive", False)
                 if newOREY not in hypothesi:
                     hypothesi.append(newOREY)
@@ -867,9 +902,9 @@ def solve(hypothisis, conclusionn):
                     l1s.type = h2.type
                     l2s.parent1 = h2
                     l2s.type = h2.type
-                    if l1s not in letters:
+                    if l1s not in letters and isinstance(l1s, Letter):
                         letters.append(l1s)
-                    if l2s not in letters:
+                    if l2s not in letters and isinstance(l2s, Letter):
                         letters.append(l2s)
                     for letter in letters:
                         if letter == l1s:
@@ -953,7 +988,7 @@ def solve(hypothisis, conclusionn):
                                 newH2.type = "Motus Ponens"
                                 if newH2 not in hypothesi:
                                     hypothesi.append(newH2)
-            if isinstance(h1, Letter) and isinstance(h2, Letter):
+            if isinstance(h1, Letter) and isinstance(h2, Letter) and not h1 == h2:
                 newAND = AND(h1.clone(), h2.clone(), h1, h2, "Conjunction", False)
                 if newAND not in hypothesi:
                     hypothesi.append(newAND)
@@ -963,9 +998,18 @@ def solve(hypothisis, conclusionn):
         if not (isinstance(h, IMPLIES) and h.letter1 == h.letter2)
     ]
 
+    
+    print([str(h) for h in hypothesi])
+
         # Check the conclusion
+    hasntThing = True
     for i in hypothesi:
         if i >= conclusion:
+            hasntThing = False
             i.printParent()
+
+    if hasntThing:
+        outputString = "Unfortunatly, your inputted hypothesis does not derive this conclusion"
+
 
     return outputString

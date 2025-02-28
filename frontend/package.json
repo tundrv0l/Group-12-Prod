@@ -11,6 +11,8 @@
     "@babel/plugin-transform-optional-catch-binding": "^7.25.9",
     "@babel/plugin-transform-unicode-property-regex": "^7.25.9",
     "@sideway/address": "^5.0.0",
+    "@tsparticles/engine": "^3.8.1",
+    "@tsparticles/react": "^3.0.0",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "eslint-webpack-plugin": "^4.2.0",
@@ -21,7 +23,9 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.29.0",
     "react-scripts": "^5.0.1",
+    "react-tsparticles": "^2.12.2",
     "styled-components": "^6.1.14",
+    "tsparticles": "^3.8.1",
     "uuid": "^11.0.5",
     "web-vitals": "^4.2.4"
   },
