@@ -20,9 +20,8 @@ set_string: a string containing the inputted set
                     a list
 partition_string: a string containing the inputted partition
     - example: "{{a, b}, {c, 23}}"
-    - restrictions: the elements must all be sets, the elements of each element must be
-                    in the set, the union of all elements must be equal to
-                    the set, and the elements must be disjoint
+    - restrictions: the elements must all be sets, the union of all elements 
+                    must be equal to the set, and the elements must be disjoint
 ======
 result
 ======
