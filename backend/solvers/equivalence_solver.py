@@ -10,6 +10,7 @@ import json
 # Append the parent directory to the path so we can import in utility
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from solvers.util import strings
+from solvers.util import exceptions
 
 '''
 ==========
@@ -46,7 +47,7 @@ def solve(input_set, relations):
             try:
                 piece.add(set_list.index(a))
             except ValueError:
-                raise ValueError(f"Element {a} is not in the set.")
+                raise exceptions.CalculateError(f"Element {a} is not in the set.")
         
         partition.append(piece)
 
@@ -61,7 +62,7 @@ def solve(input_set, relations):
                 relation_string += f"({set_list[a]}, {set_list[b]}), "
 
     if collection != set_:
-        raise ValueError(f"Partition is missing elements.")
+        raise exceptions.CalculateError(f"Partition is missing elements.")
 
     # Remove the last comma and space
     if relation_string.endswith(", "):

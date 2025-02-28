@@ -103,7 +103,15 @@ export const solveClosureAxioms = async (set, relation) => {
 
 // Call equivalence relations solver to the backend
 export const solveEquivalenceRelations = async (set, relation) => {
-    return await solve('equivalence-relations', { set, relation });
+    try {
+        const response = await solve('equivalence-relations', { set, relation });
+        if (response.error) {
+            throw new Error(response.error);
+        }
+        return response;
+    } catch (error) {
+        throw new Error(error.message);
+    }
 }
 
 // Call adjacency matrices and lists solver to the backend
@@ -142,13 +150,21 @@ export const solveDisjointCycles = async (input) => {
 }
 
 // Call graphs solver to the backend
-export const solveGraphs = async (input) => {
-    return await solve('graphs', { input });
+export const solveGraphs = async (pairs, type, isIsomorphic, secondInput) => {
+    return await solve('graphs', { pairs, type, isIsomorphic, secondInput });
 }
 
 // Call Hasse diagram solver to the backend
-export const solveHasseDiagram = async (input) => {
-    return await solve('hasse-diagram', { input });
+export const solveHasseDiagram = async (set, relation) => {
+    try {
+        const response = await solve('hasse-diagrams', { set, relation });
+        if (response.error) {
+            throw new Error(response.error);
+        }
+        return response;
+    } catch (error) {
+        throw new Error(error.message);
+    }
 }
 
 // Call order of magnitude solver to the backend
@@ -162,8 +178,16 @@ export const solvePERTDiagrams = async (input) => {
 }
 
 // Call partial orderings solver to the backend
-export const solvePartialOrderings = async (input) => {
-    return await solve('partial-orderings', { input });
+export const solvePartialOrderings = async (set, relation) => {
+    try {
+        const response = await solve('partial-orderings', { set, relation });
+        if (response.error) {
+            throw new Error(response.error);
+        }
+        return response;
+    } catch (error) {
+        throw new Error(error.message);
+    }
 }
 
 // Call permutations of a cycle solver to the backend
@@ -189,4 +213,9 @@ export const solveWarshallsAlgorithm = async (input) => {
 // Call weighted graphs solver to the backend
 export const solveWeightedGraphs = async (input) => {
     return await solve('weighted-graphs', { input });
+}
+
+// Solve tree notation to the backend
+export const solveTreeNotation = async (input) => {
+    return await solve('tree-notation', { input });
 }
