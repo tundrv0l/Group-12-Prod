@@ -17,6 +17,7 @@ from backend.solvers import closures_solver
 from backend.solvers import partition_solver
 from backend.solvers import special_solver
 from backend.solvers import hasse_solver
+from solvers.util import exceptions
 
 #---Imports for the reporter---#
 from backend.reporter import send_email
@@ -44,10 +45,11 @@ def solve(solver_type):
         print(data)
         
         result = solve_algorithim(solver_type, data)
-        return(jsonify(result))
+        print(f"Result: {result}")
+        return jsonify(result)
     
     # If the solver encounters a defined error, return the error message to the user.
-    except Exception as e:
+    except exceptions.CalculateError as e:
         return jsonify({'Calculation Error': str(e)})
 
 
@@ -154,7 +156,7 @@ def solve_algorithim(solver_type, data):
         # Call the appropriate function for Warshalls
         pass
     else:
-        return jsonify({'error': 'Unsupported solver type'}), 400
+        return {'error': 'Unsupported solver type'}, 400
 
 @controller_bp.route('/report-problem', methods=['POST'])
 def report_problem():

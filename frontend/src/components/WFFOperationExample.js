@@ -30,7 +30,7 @@ const WFFOperationsTable = () => {
               <Text>AND</Text>
             </TableCell>
             <TableCell>
-              <Text>^</Text>
+              <Text>^ | ∧ | `</Text>
             </TableCell>
             <TableCell>
               <Text>Logical conjunction</Text>
@@ -41,7 +41,7 @@ const WFFOperationsTable = () => {
               <Text>OR</Text>
             </TableCell>
             <TableCell>
-              <Text>v</Text>
+              <Text>v | ∨ | ~ </Text>
             </TableCell>
             <TableCell>
               <Text>Logical disjunction</Text>
@@ -52,7 +52,7 @@ const WFFOperationsTable = () => {
               <Text>NOT</Text>
             </TableCell>
             <TableCell>
-              <Text>' or not</Text>
+              <Text>' | ¬ | ′</Text>
             </TableCell>
             <TableCell>
               <Text>Logical negation</Text>
@@ -63,7 +63,7 @@ const WFFOperationsTable = () => {
               <Text>IMPLIES</Text>
             </TableCell>
             <TableCell>
-              <Text>-{'>'}</Text>
+              <Text>-{'>'} | → | S </Text>
             </TableCell>
             <TableCell>
               <Text>Logical implication</Text>
@@ -74,7 +74,7 @@ const WFFOperationsTable = () => {
               <Text>IFF</Text>
             </TableCell>
             <TableCell>
-              <Text>{'<>'}</Text>
+              <Text>{'<>'} | ↔ | 4 </Text>
             </TableCell>
             <TableCell>
               <Text>Logical biconditional</Text>

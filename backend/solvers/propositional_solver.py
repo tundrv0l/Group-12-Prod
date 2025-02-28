@@ -66,7 +66,7 @@ class Letter:
                 if h >= self:
                     h.pnumb = HsPrinted
             global outputString
-            outputString += str(HsPrinted) + " " + str(self)
+            outputString += str(HsPrinted) + ". " + str(self)
             if self.parent1 == "hypothesis" or self.parent1 == "Hypothesis":
                 outputString += ", Hypothesis"
             if p1:
@@ -132,7 +132,7 @@ class OR:
                 if h >= self:
                     h.pnumb = HsPrinted
             global outputString
-            outputString += str(HsPrinted) + " " + str(self)
+            outputString += str(HsPrinted) + ". " + str(self)
             if self.parent1 == "hypothesis" or self.parent1 == "Hypothesis":
                 outputString += ", Hypothesis"
             if p1:
@@ -193,7 +193,7 @@ class IMPLIES:
                 if h >= self:
                     h.pnumb = HsPrinted
             global outputString
-            outputString += str(HsPrinted) + " " + str(self)
+            outputString += str(HsPrinted) + ". " + str(self)
             if self.parent1 == "hypothesis" or self.parent1 == "Hypothesis":
                 outputString += ", Hypothesis"
             if p1:
@@ -253,7 +253,7 @@ class AND:
                 if h >= self:
                     h.pnumb = HsPrinted
             global outputString
-            outputString += str(HsPrinted) + " " + str(self)
+            outputString += str(HsPrinted) + ". " + str(self)
             if self.parent1 == "hypothesis" or self.parent1 == "Hypothesis":
                 outputString += ", Hypothesis"
             if p1:
@@ -302,6 +302,7 @@ class AND:
 
 # Input hypothesis
 def solve(hypothisis, conclusionn):
+
     global outputString
     global hypothesi
     global printedH
@@ -1009,7 +1010,7 @@ def solve(hypothisis, conclusionn):
             i.printParent()
 
     if hasntThing:
-        outputString = "Unfortunatly, your inputted hypothesis does not derive this conclusion"
+        outputString = "Unfortunately, your inputted hypothesis does not derive this conclusion"
 
 
     return outputString
