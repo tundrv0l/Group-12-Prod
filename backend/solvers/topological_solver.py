@@ -2,6 +2,8 @@
 # Author: Jacob Warren
 # Solves: 5.2.9-5.2.14
 
+import json
+
 import table_solver
 
 from util import methods
@@ -37,7 +39,12 @@ def solve(table):
 
     relation_string += "}"
 
-    return relation_string
+    # json stuff
+    result = {
+        "Relation": relation_string 
+    }
+
+    return result
 
 def not_string(table):
     set_list, relation = table_solver.not_string(table) 

@@ -2,6 +2,8 @@
 # Author: Jacob Warren
 # Solves: 5.2.5 and 5.2.6
 
+import json
+
 import topological_solver
 
 '''
@@ -19,9 +21,9 @@ table: a table of timed tasks represented by
 ======
 result
 ======
-string: a string that is a comma-separated list of the
+critical_string: a string that is a comma-separated list of the
                  of the ciritcal path, in order
-int: the time it takes for the critical path
+latest_finish[sorted_tasks[-1]]: the time it takes for the critical path
 '''
 def solve(table):
     if not table:
@@ -59,4 +61,10 @@ def solve(table):
     if critical_path:
         critical_string = critical_string[:-2]
 
-    return critical_string, latest_finish[sorted_tasks[-1]]
+    # json stuff
+    result = {
+        "Critical Path": critical_string,
+        "Minimum Time": latest_finish[sorted_tasks[-1]]
+    }
+
+    return result

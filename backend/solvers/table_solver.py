@@ -2,6 +2,8 @@
 # Author: Jacob Warren
 # Solves: 5.2.3 and 5.2.4
 
+import json
+
 '''
 ==========
 parameters
@@ -13,7 +15,7 @@ table: a table of timed tasks represented by
     - example: {"ADB": ({"1"}, 3), "1": ({}, 4)}
     - restrictions: the prereqs must be pulled from the other tasks
                     in the table, task times must be non-negative, and
-                    untimed tables are represented by all 0 time tasks
+                    untimed tables are represented by having all 0-time tasks
 ======
 result
 ======
@@ -31,8 +33,13 @@ def solve(table):
         relation_string = relation_string[:-2]
 
     relation_string += "}"
+    
+    # json stuff
+    result = {
+        "Relation": relation_string 
+    }
 
-    return relation_string
+    return result
 
 def not_string(table):
     set_list = list(table.keys())
