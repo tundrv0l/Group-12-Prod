@@ -39,7 +39,7 @@ def solve(table):
         "Relation": relation_string 
     }
 
-    return result
+    return json.dumps(result)
 
 def not_string(table):
     set_list = list(table.keys())

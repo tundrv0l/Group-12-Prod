@@ -23,7 +23,7 @@ result
 ======
 critical_string: a string that is a comma-separated list of the
                  of the ciritcal path, in order
-latest_finish[sorted_tasks[-1]]: the time it takes for the critical path
+minimum_time: the time it takes for the critical path
 '''
 def solve(table):
     if not table:
@@ -61,10 +61,12 @@ def solve(table):
     if critical_path:
         critical_string = critical_string[:-2]
 
+    minimum_time = latest_finish[sorted_tasks[-1]]
+
     # json stuff
     result = {
         "Critical Path": critical_string,
-        "Minimum Time": latest_finish[sorted_tasks[-1]]
+        "Minimum Time": minimum_time
     }
 
-    return result
+    return json.dumps(result)
