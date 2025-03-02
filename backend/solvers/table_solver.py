@@ -4,6 +4,8 @@
 
 import json
 
+from util import exceptions
+
 '''
 ==========
 parameters
@@ -47,15 +49,15 @@ def not_string(table):
 
     for task in table:
         if table[task][1] < 0:
-            raise ValueError(f"{task} has a negative time.")
+            raise exceptions.CalculateError(f"{task} has a negative time.")
 
         for prereq in table[task][0]:
             if prereq == task:
-                raise ValueError(f"{task} can not be its own prereq.")
+                raise exceptions.CalculateError(f"{task} can not be its own prereq.")
             
             try:
                 relation.add((set_list.index(prereq), set_list.index(task)))
             except ValueError:
-                raise ValueError(f"{task} has a non-existent prereq.")
+                raise exceptions.CalculateError(f"{task} has a non-existent prereq.")
 
     return set_list, relation
