@@ -14,7 +14,7 @@ from backend.solvers import propositional_solver
 from backend.solvers import recursion_solver
 from backend.solvers import properties_solver
 from backend.solvers import closures_solver
-from backend.solvers import equivalence_solver
+from backend.solvers import partition_solver
 from backend.solvers import special_solver
 from backend.solvers import hasse_solver
 from solvers.util import exceptions
@@ -96,7 +96,7 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'closure-axioms':
         return closures_solver.solve(data["set"], data["relation"])
     elif solver_type == 'equivalence-relations':
-        return equivalence_solver.solve(data["set"], data["relation"])
+        return partition_solver.solve(data["set"], data["relation"])
     elif solver_type == 'partial-orderings':
         return special_solver.solve(data["set"], data["relation"])
     elif solver_type == 'hasse-diagrams':

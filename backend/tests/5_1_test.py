@@ -8,7 +8,7 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'solvers'))
 
 import closures_solver
-import equivalence_solver
+import partition_solver
 import hasse_solver
 import properties_solver
 import special_solver
@@ -34,11 +34,11 @@ def main():
 
     for (set_, indices) in problems:
         for i in indices:
-            print(f"Properties {set_} {i}:", properties_solver.solve([set_, relations[i]]))
+            print(f"Properties {set_} {i}:", properties_solver.solve(set_, relations[i]))
 
     for (set_, indices) in problems:
         for i in indices:
-            print(f"Closures {set_} {i}:", closures_solver.solve([set_, relations[i]]))
+            print(f"Closures {set_} {i}:", closures_solver.solve(set_, relations[i]))
 
     # test cases for Hasse diagram and special elements
     problems = [
@@ -48,11 +48,11 @@ def main():
         ("{}", "{}")                                                          # edge case
     ]
 
-    for (set_, relation) in problems:
-        print(f"Hasse Diagram {problems.index((set_, relation))}:", hasse_solver.solve([set_, relation]))
+#    for (set_, relation) in problems:
+#        print(f"Hasse Diagram {problems.index((set_, relation))}:", hasse_solver.solve(set_, relation))
 
     for (set_, relation) in problems:
-        print(f"Special Elements {problems.index((set_, relation))}:", special_solver.solve([set_, relation]))
+        print(f"Special Elements {problems.index((set_, relation))}:", special_solver.solve(set_, relation))
 
     # test cases for partitions -> equivalence relations
     problems = [
@@ -62,7 +62,7 @@ def main():
     ]
 
     for (set_, partition) in problems:
-        print(f"Equivalence Relation {problems.index((set_, partition))}:", equivalence_solver.solve([set_, partition]))
+        print(f"Equivalence Relation {problems.index((set_, partition))}:", partition_solver.solve(set_, partition))
 
 if __name__ == "__main__":
     main()
