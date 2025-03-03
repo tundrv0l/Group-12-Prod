@@ -1,21 +1,26 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, Collapsible } from 'grommet';
 import { solveWeightedGraphs } from '../api';
+import { CircleInformation } from 'grommet-icons';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
+import AdjacencyMatrix from '../components/AdjacencyMatrix';
+import AdjacencyList from '../components/AdjacencyList';
 
 /*
 * Name: WeightedGraphRepresentations.js
 * Author: Parker Clark
-* Description: Solver page for weighted graphs.
+* Description: Solver page for weighted graphs. Also includes AdjacencyMatrix and AdjacencyList component
 */
 
 const WeightedGraphRepresentations = () => {
   const [input, setInput] = React.useState('');
   const [output, setOutput] = React.useState('');
+  const [type, setType] = React.useState('UNDIRECTED');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -32,21 +37,66 @@ const WeightedGraphRepresentations = () => {
     }
 
     setError('');
-    try {
-      const result = await solveWeightedGraphs(input);
-      setOutput(result);
+    try { 
+      // Do some conversion to display any backend errors
+      let result = await solveWeightedGraphs(input, type);
+
+      // Parse result if it is a string
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      
+      // Check if there is an error key in the result
+      const errorKey = Object.keys(result).find(key => key.toLowerCase().includes('error'));
+      console.log(errorKey);
+      if (errorKey) {
+        setError(result[errorKey]);
+      } else {
+        setOutput(result);
+      }
     } catch (err) {
-      setError('An error occurred while generating the graph.');
+      console.log(err);
+      setError('An error occurred while generating the weighted graph.');
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const validateInput = (input) => {
-    // TODO: Change regex here based on input pattern
-    const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
-    return wffRegex.test(input);
+    // Regular expression to match 'coordinate' pairs with weights in the form of {(x1, y1; w1), (x2, y2; w2), ...}
+    const graphRegex = /^\{\s*(\(\s*\d+\s*,\s*\d+\s*;\s*\d+\s*\)\s*,\s*)*(\(\s*\d+\s*,\s*\d+\s*;\s*\d+\s*\))\s*\}$/;
+    return graphRegex.test(input);
   }
+
+  // Render output for graph image, adjacency matrix, and adjacency list
+  const renderOutput = () => {
+
+    if (!output.Graph && !output.Matrix && !output.List) {
+      return "Output will be displayed here!";
+    }
+
+    return (
+      <Box>
+        {output.Graph && (
+          <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'light-3' }} round="xsmall">
+            <img src={`data:image/png;base64,${output.Graph}`} alt="Graph" style={{ maxWidth: '100%', height: 'auto' }} />
+          </Box>
+        )}
+        {output.Matrix && (
+          <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'light-3' }} round="xsmall">
+            <Text>Matrix Representation:</Text>
+            <AdjacencyMatrix matrix={output.Matrix} />
+          </Box>
+        )}
+        {output.List && (
+          <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'light-3' }} round="xsmall">
+            <Text>List Representation:</Text>
+            <AdjacencyList list={output.List} />
+          </Box>
+        )}
+      </Box>
+    );
+  };
 
   return (
     <Page>
@@ -85,13 +135,39 @@ const WeightedGraphRepresentations = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
+              <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+                <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+              </Box>
+              <Collapsible open={showHelp}>
+                <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                  <Text>
+                    To input a weighted graph, use the following format:
+                  </Text>
+                  <Text>
+                    <strong>{'{(x1, y1; w1), (x2, y2: w2), ...}'}</strong>
+                  </Text>
+                  <Text>
+                    For example: <strong>{'{(0, 1: 4), (1, 2; 2), (2, 0; 3)}'}</strong>
+                  </Text>
+                  <Text>
+                    Each tuple represents a connection between two vertices with a weight. So (0, 1; 4) represents an edge between vertex 0 and vertex 1 with a weight of 4.
+                  </Text>
+                </Box>
+              </Collapsible>
               <TextInput 
-                placeholder="Example: Enter your graph here (e.g., {A, B, C}, {(A, B), (B, C), (C, A)})"
+                placeholder="Example: Enter your graph here (e.g., {(0, 1; 5), (1, 2; 3), (2, 0; 2)})"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
               />
               {error && <Text color="status-critical">{error}</Text>}
             </CardBody>
+            <Box align="center" justify="center" pad={{ vertical: 'small' }}>
+              <Select
+                options={['UNDIRECTED', 'DIRECTED']}
+                value={type}
+                onChange={({ option }) => setType(option)}
+              />
+            </Box>
             <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
               <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
             </CardFooter>
@@ -103,7 +179,7 @@ const WeightedGraphRepresentations = () => {
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
                 <Text>
-                  {output ? JSON.stringify(output) : "Output will be displayed here!"}
+                  {renderOutput()}
                 </Text>
               </Box>
             </CardBody>
