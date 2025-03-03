@@ -17,6 +17,11 @@ from backend.solvers import closures_solver
 from backend.solvers import equivalence_solver
 from backend.solvers import special_solver
 from backend.solvers import hasse_solver
+<<<<<<< Updated upstream
+=======
+from backend.solvers import Warshall_solver
+from solvers.util import exceptions
+>>>>>>> Stashed changes
 
 #---Imports for the reporter---#
 from backend.reporter import send_email
@@ -151,8 +156,7 @@ def solve_algorithim(solver_type, data):
         # Call the appropriate function for Tree Notation
         pass
     elif solver_type == 'warshalls-algorithm':
-        # Call the appropriate function for Warshalls
-        pass
+        return Warshall_solver.solve(data["input"])
     else:
         return jsonify({'error': 'Unsupported solver type'}), 400
 

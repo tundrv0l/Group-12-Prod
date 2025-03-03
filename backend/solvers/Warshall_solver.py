@@ -24,6 +24,7 @@ def solve(matrix):
 
     # Prepare the truth table as a JSON object
     truth_table = {
+<<<<<<< Updated upstream
         "matricies": []
     }
 
@@ -50,3 +51,14 @@ for n in ms:
         tempList = []
 
 print(solve(matr))
+=======
+    }
+
+    # Add the rows to the truth table
+    noOfMatrix = 1
+    for row in matriix:
+        truth_table["Matrix" + str(noOfMatrix)] = row
+        noOfMatrix += 1
+
+    return json.dumps(truth_table)
+>>>>>>> Stashed changes
