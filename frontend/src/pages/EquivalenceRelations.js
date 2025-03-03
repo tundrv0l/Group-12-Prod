@@ -1,6 +1,7 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
 import { solveEquivalenceRelations } from '../api';
+import { CircleInformation } from 'grommet-icons';
 import ReportFooter from '../components/ReportFooter';
 import HomeButton from '../components/HomeButton';
 import Background from '../components/Background';
@@ -17,6 +18,7 @@ const EquivalenceRelations = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -111,7 +113,7 @@ const EquivalenceRelations = () => {
         </Box>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
-            Equivalence Relations
+            Paritions
           </Text>
         </Box>
         <Box align="center" justify="center">
@@ -137,7 +139,31 @@ const EquivalenceRelations = () => {
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
-            <Box margin={{bottom : "small" }}>
+            <Box margin={{bottom : "small" }}><Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+              <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+            </Box>
+            <Collapsible open={showHelp}>
+              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                <Text>
+                  To input a set, use the following format:
+                </Text>
+                <Text>
+                  <strong>{'{a,b,c}'}</strong>
+                </Text>
+                <Text>
+                  For example: <strong>{'{a,b,f,23}'}</strong>
+                </Text>
+                <Text>
+                  To input a set of sets, use the following format:
+                </Text>
+                <Text>
+                  <strong>{'{{a,b},{b,c},{c,a}}'}</strong>
+                </Text>
+                <Text>
+                  For example: <strong>{'{{a,b},{b,f},{f,23},{a,a}}'}</strong>
+                </Text>
+              </Box>
+            </Collapsible>
               <TextInput 
                 placeholder="Example: Enter your set here (e.g., {a, b, c, 23})"
                 value={set}

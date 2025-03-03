@@ -138,8 +138,8 @@ export const solveBinaryTrees = async (input) => {
 }
 
 // Call boolean matrices solver to the backend
-export const solveBooleanMatrices = async (input) => {
-    return await solve('boolean-matrices', { input });
+export const solveBooleanMatrices = async (matrix1, matrix2, operation) => {
+    return await solve('boolean-matrices', { matrix1, matrix2, operation });
 }
 
 // Call compositions of permutations solver to the backend

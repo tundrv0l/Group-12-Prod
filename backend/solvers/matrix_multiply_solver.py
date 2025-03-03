@@ -3,8 +3,12 @@
 # Solves: 5.7.47-5.7.50
 
 import json
+import os
+import sys
 
-from util import exceptions
+# Append the parent directory to the path so we can import in utility
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from solvers.util import exceptions
 
 '''
 ==========

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Select } from 'grommet';
 import { solveBooleanMatrices } from '../api';
+import MatrixOutput from '../components/MatrixOutput';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import MatrixTable from '../components/MatrixTable';
@@ -17,7 +18,7 @@ import HomeButton from '../components/HomeButton';
 const BooleanMatrices = () => {
   const [matrix1, setMatrix1] = React.useState([['']]);
   const [matrix2, setMatrix2] = React.useState([['']]);
-  const [operation, setOperation] = React.useState('AND');
+  const [operation, setOperation] = React.useState('MEET/JOIN');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
@@ -62,6 +63,21 @@ const BooleanMatrices = () => {
     return matrix1.length === matrix2.length && matrix1[0].length === matrix2[0].length;
   };
 
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here.";
+    }
+    
+    try {
+      // Parse output if it's a JSON string
+      const matrices = typeof output === 'string' ? JSON.parse(output) : output;
+      return <MatrixOutput matrices={matrices} />;
+    } catch (e) {
+      console.error("Error rendering matrix output:", e);
+      return "Error rendering matrices.";
+    }
+  };
+
   return (
     <Page>
       <Background />
@@ -103,7 +119,7 @@ const BooleanMatrices = () => {
             </CardBody>
             <Box align="center" justify="center" pad={{ vertical: 'small' }}>
               <Select
-                options={['AND', 'OR', 'MULTIPLY']}
+                options={['MEET/JOIN', 'PRODUCT']}
                 value={operation}
                 onChange={({ option }) => setOperation(option)}
               />
@@ -124,7 +140,7 @@ const BooleanMatrices = () => {
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
                 <Text>
-                  {output ? JSON.stringify(output) : "Output will be displayed here!"}
+                  {renderOutput()}
                 </Text>
               </Box>
             </CardBody>

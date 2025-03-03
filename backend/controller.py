@@ -20,6 +20,8 @@ from backend.solvers import hasse_solver
 from backend.solvers import graph_solver
 from backend.solvers import adjacency_solver
 from backend.solvers import weighted_graph_solver
+from backend.solvers import matrix_solver
+from backend.solvers import matrix_multiply_solver
 from solvers.util import exceptions
 
 #---Imports for the reporter---#
@@ -129,11 +131,11 @@ def solve_algorithim(solver_type, data):
         # Call the appropriate function for Master Theorem
         pass
     elif solver_type == 'boolean-matrices':
-        # Call the appropriate function for Boolean Matrices
-        pass
-    elif solver_type == 'matrice-operations':
-        # Call the appropriate function for Matrice Operations
-        pass
+        print(data)
+        if data["operation"] == "MEET/JOIN":
+            return matrix_solver.solve(data["matrix1"], data["matrix2"])
+        else:
+            return matrix_multiply_solver.solve(data["matrix1"], data["matrix2"])
     elif solver_type == 'graphs':
         return graph_solver.solve(data["pairs"], data["type"], data["isIsomorphic"], data["secondInput"])
     elif solver_type == 'adjacency-matrices-lists':

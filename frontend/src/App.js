@@ -26,7 +26,6 @@ import DisjointCycles from './pages/DisjointCycles';
 import OrderOfMagnitude from './pages/OrderOfMagnitude';
 import MasterTheorem from './pages/MasterTheorem';
 import BooleanMatrices from './pages/BooleanMatrices';
-import BooleanMatriceOperations from './pages/BooleanMatriceOperations';
 import GraphsPage from './pages/GraphsPage';
 import AdjacencyMatricesLists from './pages/AdjacencyMatricesLists';
 import WeightedGraphRepresentations from './pages/WeightedGraphRepresentations';
@@ -65,7 +64,6 @@ const App = () => (
         <Route path="/order-of-magnitude" element={<OrderOfMagnitude />} />
         <Route path="/master-theorem" element={<MasterTheorem />} />
         <Route path="/boolean-matrices" element={<BooleanMatrices />} />
-        <Route path="/matrice-operations" element={<BooleanMatriceOperations />} />
         <Route path="/graphs" element={<GraphsPage />} />
         <Route path="/adjacency-matrices-lists" element={<AdjacencyMatricesLists />} />
         <Route path="/weighted-graphs" element={<WeightedGraphRepresentations />} />
