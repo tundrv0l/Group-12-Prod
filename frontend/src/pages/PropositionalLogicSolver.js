@@ -60,7 +60,7 @@ const PropositionalLogicSolver = () => {
   
     // Reject single pair of parentheses or brackets. Backend doesn't handle input like: (A V B), but does support A V B
     const singlePairParentheses = /^\([^()]*\)$/.test(input);
-    const singlePairBrackets = /^\[[^\[\]]*\]$/.test(input);
+    const singlePairBrackets = /^\[[^[\]]*\]$/.test(input);
   
     // Allow single negated variables like ¬A, A', and not A
     const singleNegatedVariable = /^(not\s*)?[A-Z]('|′|¬)?$/.test(input);
