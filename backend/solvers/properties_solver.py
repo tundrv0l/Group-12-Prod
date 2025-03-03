@@ -14,25 +14,37 @@ from solvers.util import strings
 ==========
 parameters
 ==========
-data[0]: a string containing the inputted set
+set_string: a string containing the inputted set
     - example: "{a, b, c, 23}" 
     - restrictions: if the element has commas in it, it must either be a set, a tuple, or 
                     a list
-data[1]: a string containing the inputted relation
+relation_string: a string containing the inputted relation
     - example: "{(a, b), (23, c)}"
     - restrictions: the elements must all be pairs, and the elements in the pairs must come 
-                    from data[0]
+                    from the set
 ======
 result
 ======
-[bool, bool, bool, bool, bool, bool]: a list of bools representing the respective properties
+bool[6]: a list of bools representing the respective properties
                                       of the relation on the set
 '''
-def solve(input_set, relation):
+def solve(set_string, relation_string):
+    result_list = not_string(set_string, relation_string)
 
-    
-    data = [input_set, relation]
-    set_list, relation = strings.is_a_relation(data[0], data[1])
+    # Return the result as json
+    result = {
+        "Reflexive": result_list[0],
+        "Irreflexive": result_list[1],
+        "Symmetric": result_list[2],
+        "Asymmetric": result_list[3],
+        "Antisymmetric": result_list[4],
+        "Transitive": result_list[5]
+    }
+
+    return json.dumps(result)
+
+def not_string(set_string, relation_string):
+    set_list, relation = strings.is_a_relation(set_string, relation_string)
     set_ = {i for i in range(0, len(set_list))}
     
     reflexive = True
@@ -65,17 +77,4 @@ def solve(input_set, relation):
             if b == c and (a,d) not in relation:
                 transitive = False
 
-    # Return the result as json
-    result = {
-        "Reflexive": reflexive,
-        "Irreflexive": irreflexive,
-        "Symmetric": symmetric,
-        "Asymmetric": asymmetric,
-        "Antisymmetric": antisymmetric,
-        "Transitive": transitive
-    }
-
-
-    result_list = [reflexive, irreflexive, symmetric, asymmetric, antisymmetric, transitive]
-
-    return json.dumps(result), result_list
+    return [reflexive, irreflexive, symmetric, asymmetric, antisymmetric, transitive]

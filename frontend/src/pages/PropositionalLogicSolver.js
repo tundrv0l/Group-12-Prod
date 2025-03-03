@@ -47,28 +47,30 @@ const PropositionalLogicSolver = () => {
   }
 
   const validateInput = (input) => {
-    // AI Generated regex to match well-formed formulas (WFFs) in propositional logic. Includes some other functions to validate proper form.
-
-    // Regular expression to validate WFF general form, including operators, NOT, and parentheses.
-    // Will match input like: (A v B) -> (C ^ D), A v B, A -> B, not A, A', (A v not B) ^ (C ^ D'), etc.
-    const wffRegex = /^(\(*\s*(not\s*)?[A-Z]('|¬)?\s*\)*(\s*(->|v|\^|<>|V)\s*\(*\s*(not\s*)?[A-Z]('|¬)?\s*\)*)*(\s*(->|v|\^|<>|V)\s*\(*\s*(not\s*)?[A-Z]('|¬)?\s*\)*)*)+|\(\s*.*\s*\)('|¬)$/;
-    // Check for balanced parentheses and at least one operator
+    // Regular expression to validate WFF general form, including operators, NOT, parentheses, and brackets.
+    // Regex accomodates for symbols used in unicode, keyboard and book format. To see a mapping of this check /backend/solvers/wff_solver.py
+    const wffRegex = /^(\(*\[*\s*(not\s*)?[A-Z]('|′|¬)?\s*\]*\)*(\s*(->|→|v|∨|V|~|S|`|\^|∧|>)\s*\(*\[*\s*(not\s*)?[A-Z]('|′|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|′|¬)?|\[\s*.*\s*\]('|′|¬)?$/;
+  
+    // Check for balanced parentheses and brackets
     const balancedParentheses = (input.match(/\(/g) || []).length === (input.match(/\)/g) || []).length;
-
+    const balancedBrackets = (input.match(/\[/g) || []).length === (input.match(/\]/g) || []).length;
+  
     // Check for at least one operator in the input
-    const containsOperator = /->|v|\^|<>|V|not/.test(input);
-
-    // Reject single pair of parentheses. Backend doesn't handle input like: (A V B), but does support A V B
+    const containsOperator = /->|→|v|∨|V|~|S|`|>|\^|∧|not|¬|′/.test(input);
+  
+    // Reject single pair of parentheses or brackets. Backend doesn't handle input like: (A V B), but does support A V B
     const singlePairParentheses = /^\([^()]*\)$/.test(input);
-
+    const singlePairBrackets = /^\[[^\[\]]*\]$/.test(input);
+  
     // Allow single negated variables like ¬A, A', and not A
-    const singleNegatedVariable = /^(not\s*)?[A-Z]('|¬)?$/.test(input);
-
-    // Allow negated expressions with parentheses like (A V B)'
-    const negatedExpressionWithParentheses = /^\(\s*.*\s*\)('|¬)$/.test(input);
-
-    return (wffRegex.test(input) && balancedParentheses && containsOperator && !singlePairParentheses) || singleNegatedVariable || negatedExpressionWithParentheses;
- }
+    const singleNegatedVariable = /^(not\s*)?[A-Z]('|′|¬)?$/.test(input);
+  
+    // Allow negated expressions with parentheses or brackets like (A V B)' or [A V B]'
+    const negatedExpressionWithParentheses = /^\(\s*.*\s*\)('|′|¬)?$/.test(input);
+    const negatedExpressionWithBrackets = /^\[\s*.*\s*\]('|′|¬)?$/.test(input);
+  
+    return (wffRegex.test(input) && balancedParentheses && balancedBrackets && containsOperator && !singlePairParentheses && !singlePairBrackets) || singleNegatedVariable || negatedExpressionWithParentheses || negatedExpressionWithBrackets;
+  };
 
   return (
     <Page>

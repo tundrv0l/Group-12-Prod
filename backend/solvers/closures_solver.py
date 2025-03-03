@@ -15,24 +15,26 @@ from solvers.util import strings
 ==========
 parameters
 ==========
-data[0]: a string containing the inputted set
+set_string: a string containing the inputted set
     - example: "{a, b, c, 23}" 
     - restrictions: if the element has commas in it, it must either be a set, a tuple, or 
                     a list
-data[1]: a string containing the inputted relation
+relation_string: a string containing the inputted relation
     - example: "{(a, b), (23, c)}"
     - restrictions: the elements must all be pairs, and the elements in the pairs must come 
-                    from data[0]
+                    from the set
 ======
 result
 ======
-[string, string, string]: a list of strings representing the respective closure
-                          additions as relations
+reflexive_string: a string representing the added elements of the reflexive
+                  closure
+symmetric_string: a string representing the added elements of the symmetric
+                  closure
+transitive_string: a string representing the added elements of the transitive
+                  closure
 '''
-def solve(set, relation):
-
-    data = [set, relation]
-    set_list, relation = strings.is_a_relation(data[0], data[1])
+def solve(set_string, relation_string):
+    set_list, relation = strings.is_a_relation(set_string, relation_string)
     set_ = {i for i in range(0, len(set_list))}
 
     reflexive_diff = methods.reflexive_closure(set_, relation) - relation

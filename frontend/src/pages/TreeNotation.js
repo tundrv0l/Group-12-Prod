@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
-import { solveArrayToTree } from '../api';
+import { solveTreeNotation } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
@@ -33,7 +33,7 @@ const TreeNotation = () => {
 
     setError('');
     try {
-      const result = await solveArrayToTree(input);
+      const result = await solveTreeNotation(input);
       setOutput(result);
     } catch (err) {
       setError('An error occurred while generating the notation.');

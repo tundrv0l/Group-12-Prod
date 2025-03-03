@@ -5,40 +5,45 @@ import os
 import sys
 import json
 
+
+
 # Append the parent directory to the path so we can import in utility
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from solvers.util import strings
 from solvers.util import methods
-from solvers.properties_solver import solve as properties_solver
+from solvers.util import exceptions
+from solvers import properties_solver
 
 '''
 ==========
 parameters
 ==========
-data[0]: a string containing the inputted set
+set_string: a string containing the inputted set
     - example: "{a, b}" 
     - restrictions: if the element has commas in it, it must either be a set, a tuple, or 
                     a list
-data[1]: a string containing the inputted relation
+relation: a string containing the inputted relation
     - example: "{(a, a), (b, b)}"
     - restrictions: the elements must all be pairs, the elements in the pairs must come 
-                    from data[0], and the relation must be a partial order
+                    from the set, and the relation must be a partial order
 ======
 result
 ======
-[string, string, string, string]: a list of strings representing the respective special
-                                  elements and sets of elements
+least_string: a string representing the least element in the partial order (if it exists)
+greatest_string: a string representing the greatest element in the partial order (if it   
+                 exists)
+minimals_string: a string representing the set of all minimal elements in the partial
+                 order
+maximals_string: a string representing the set of all maximal elements in the partial
+                 order
 '''
-def solve(input_set, relation):
-    
-    properties = properties_solver(input_set, relation)
-
-    data = [input_set, relation]
+def solve(set_string, relation_string):
+    properties = properties_solver.not_string(set_string, relation_string)
 
     if not properties[0] or not properties[4] or not properties[5]:
-        raise ValueError(f"Not a partial order.")
+        raise exceptions.CalculateError(f"Not a partial order.")
 
-    set_list, relation = strings.is_a_relation(data[0], data[1])
+    set_list, relation = strings.is_a_relation(set_string, relation_string)
     set_ = {i for i in range(0, len(set_list))}
 
     least = methods.least_element(set_, relation)
@@ -51,7 +56,7 @@ def solve(input_set, relation):
     minimals_string = "{"
     maximals_string = "{"
 
-    # the existance of least or greatest elements implied there is only one
+    # the existance of least or greatest elements implies there is only one
     # minimal or maximal element respectively
     if least != None:
         minimals = {least}
@@ -85,15 +90,10 @@ def solve(input_set, relation):
 
     maximals_string += "}"
 
-    # Convert sets that arent there to None for display
     if not least_string:
-        least_string = "None"
+        least_string = "N/A"
     if not greatest_string:
-        greatest_string = "None"
-    if not minimals_string:
-        minimals_string = "None"
-    if not maximals_string:
-        maximals_string = "None"
+        greatest_string = "N/A"
 
     # Convert the response to json
     result = {
@@ -102,4 +102,5 @@ def solve(input_set, relation):
         "Minimal Element": minimals_string,
         "Maximal Element": maximals_string
     }
+
     return json.dumps(result)

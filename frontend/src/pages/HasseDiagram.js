@@ -35,15 +35,30 @@ const HasseDiagram = () => {
     }
 
     setError('');
-    try {
-      const result = await solveHasseDiagram(set, relation);
-      setOutput(result);
+    try { 
+      // Do some conversion to display any backend errors
+      let result = await solveHasseDiagram(set, relation);
+
+      // Parse result if it is a string
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      
+      // Check if there is an error key in the result
+      const errorKey = Object.keys(result).find(key => key.toLowerCase().includes('error'));
+      console.log(errorKey);
+      if (errorKey) {
+        setError(result[errorKey]);
+      } else {
+        setOutput(result["Hasse Diagram"]);
+      }
     } catch (err) {
+      console.log(err);
       setError('An error occurred while generating the Hasse Diagram.');
     } finally {
       setLoading(false);
     }
-  }
+  };
 
    // Validate that set conforms to format
    const validateSet = (input) => {
@@ -69,19 +84,16 @@ const HasseDiagram = () => {
     return relationElements.every(element => setElements.includes(element));
   };
 
-  // Pretty print the output
+  // Convert base64 image string to image element
   const renderOutput = () => {
     if (!output) {
       return "Output will be displayed here!";
     }
 
     // Parse out json object and return out elements one by one
-    const parsedOutput = JSON.parse(output);
     return (
       <Box>
-        {Object.entries(parsedOutput).map(([key, value]) => (
-          <Text key={key}>{`${key}: ${value}`}</Text>
-        ))}
+        <img src={`data:image/png;base64,${output}`} alt="Hasse Diagram" />
       </Box>
     );
   };
@@ -114,8 +126,11 @@ const HasseDiagram = () => {
             <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
               By analyzing Hasse diagrams, you can visualize the hierarchical structure of a partial ordering, identify minimal and maximal elements, and understand the comparability of elements. This tool allows you to input a relation and generate the Hasse diagram to explore its properties.
             </Text>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+            <Text textAlign="start" weight="normal" margin={{"bottom":"small"}}>
               Enter your relation below to generate and analyze the Hasse diagram!
+            </Text>
+            <Text color="#17A2B8" margin={{"bottom":"small"}} justify="center" align="center">
+              Please allow a few seconds for the diagram to generate.
             </Text>
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>

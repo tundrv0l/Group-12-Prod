@@ -44,6 +44,12 @@ def _parse_formula(formula):
         return: str
             The parsed formula with Python equivalents of logical operators.
     '''
+    # Replace characters from the book copy n paste format
+    formula = formula.replace('`', ' and ')
+    formula = formula.replace('~', ' or ')
+    formula = formula.replace('S', ' <= ')
+    formula = formula.replace('4', ' == ')
+    formula = re.sub(r"([A-Z])′", r'not \1', formula)
 
     # Replace unicode characters with ASCII equivalents
     formula = formula.replace('¬', 'not ')
@@ -54,9 +60,11 @@ def _parse_formula(formula):
 
     # Replace logical operators with Python equivalents
     formula = formula.replace('v', ' or ')
+    formula = formula.replace('V', ' or ')
     formula = formula.replace('^', ' and ')
     formula = formula.replace('<>', ' == ')
     formula = formula.replace('->', ' <= ')
+    formula = formula.replace('>', ' <= ')
     formula = re.sub(r"([A-Z])'", r'not \1', formula)
 
     # Replace parentheses with brackets for easier parsing
@@ -65,15 +73,12 @@ def _parse_formula(formula):
     # Handle implies operator by adding parentheses around the expressions
     # Python is really picky about order of operations, so just parse it out
     # and add parentheses around the expressions
-    parts = formula.split('<=')
-    if len(parts) == 2:
-        left = parts[0].strip()
-        right = parts[1].strip()
-        if not left.startswith('('):
-            left = f'({left})'
-        if not right.startswith('('):
-            right = f'({right})'
-        formula = f'{left} <= {right}'
+    parts = re.split(r'(\s<=\s|\s==\s)', formula)
+    for i in range(len(parts)):
+        part = parts[i].strip()
+        if part not in ['<=', '=='] and not part.startswith('(') and not part.endswith(')'):
+            parts[i] = f'({part})'
+    formula = ''.join(parts)
 
     return formula
 
@@ -111,7 +116,41 @@ def _extract_variables(formula):
             A sorted list of unique variables extracted from the formula.
     '''
     # Extract unique variables from the formula using a regular expression
-    return sorted(set(re.findall(r'\b[A-Z]\b', formula)))
+    #   (excluding V, which is a logical operator in this context)
+    return sorted(set(re.findall(r'\b(?!V|S\b)[A-Z]\b', formula)))
+
+def _post_process_formula(headers):
+    '''
+        Function to sub in common operators for output. Just to make it look nice.
+
+        Parameters
+        ----------
+        headers (str): 
+            Headers in the truth table
+
+        Returns
+        ----------
+        return: headers (list)
+            A list of headers for the truth table, updated with operators
+            
+    '''
+
+    # Replace characters in the header with ascii equivalents
+    for i in range(len(headers)):
+        headers[i] = headers[i].replace('^', '∧')
+        headers[i] = headers[i].replace('`', '∧')
+        headers[i] = headers[i].replace('->', '→')
+        headers[i] = headers[i].replace('>', '→')
+        headers[i] = headers[i].replace('<>', '↔')
+        headers[i] = headers[i].replace('v', '∨')
+        headers[i] = headers[i].replace('V', '∨')
+        headers[i] = headers[i].replace('~', '∨')
+        headers[i] = headers[i].replace('<=', '→')
+        headers[i] = headers[i].replace('S', '→')
+        headers[i] = headers[i].replace('==', '↔')
+        headers[i] = headers[i].replace('4', '↔')
+
+    return headers
 
 def solve(formula):
     '''
@@ -169,6 +208,8 @@ def solve(formula):
     # Generate the headers for the truth table
     headers = variables + intermediate_expressions + [formula]
 
+    headers = _post_process_formula(headers)
+    
     # Prepare the truth table as a JSON object
     truth_table = {
         "headers": headers,

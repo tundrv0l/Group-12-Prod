@@ -50,25 +50,26 @@ const WFFSolverPage = () => {
  
   const validateInput = (input) => {
     // Regular expression to validate WFF general form, including operators, NOT, parentheses, and brackets.
-    const wffRegex = /^(\(*\[*\s*(not\s*)?[A-Z]('|¬)?\s*\]*\)*(\s*(->|→|v|∨|\^|∧|<>|↔)\s*\(*\[*\s*(not\s*)?[A-Z]('|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|¬)?|\[\s*.*\s*\]('|¬)?$/;
+    // Regex accomodates for symbols used in unicode, keyboard and book format. To see a mapping of this check /backend/solvers/wff_solver.py
+    const wffRegex = /^(\(*\[*\s*(not\s*)?[A-Z]('|′|¬)?\s*\]*\)*(\s*(->|→|v|∨|V|~|S|`|\^|∧|>|<>|4|↔)\s*\(*\[*\s*(not\s*)?[A-Z]('|′|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|′|¬)?|\[\s*.*\s*\]('|′|¬)?$/;
   
     // Check for balanced parentheses and brackets
     const balancedParentheses = (input.match(/\(/g) || []).length === (input.match(/\)/g) || []).length;
     const balancedBrackets = (input.match(/\[/g) || []).length === (input.match(/\]/g) || []).length;
   
     // Check for at least one operator in the input
-    const containsOperator = /->|→|v|∨|\^|∧|<>|↔|not|¬/.test(input);
+    const containsOperator = /->|→|v|∨|V|~|S|`|>|\^|∧|<>|↔|4|not|¬|′/.test(input);
   
     // Reject single pair of parentheses or brackets. Backend doesn't handle input like: (A V B), but does support A V B
     const singlePairParentheses = /^\([^()]*\)$/.test(input);
     const singlePairBrackets = /^\[[^[\]]*\]$/.test(input);
   
     // Allow single negated variables like ¬A, A', and not A
-    const singleNegatedVariable = /^(not\s*)?[A-Z]('|¬)?$/.test(input);
+    const singleNegatedVariable = /^(not\s*)?[A-Z]('|′|¬)?$/.test(input);
   
     // Allow negated expressions with parentheses or brackets like (A V B)' or [A V B]'
-    const negatedExpressionWithParentheses = /^\(\s*.*\s*\)('|¬)?$/.test(input);
-    const negatedExpressionWithBrackets = /^\[\s*.*\s*\]('|¬)?$/.test(input);
+    const negatedExpressionWithParentheses = /^\(\s*.*\s*\)('|′|¬)?$/.test(input);
+    const negatedExpressionWithBrackets = /^\[\s*.*\s*\]('|′|¬)?$/.test(input);
   
     return (wffRegex.test(input) && balancedParentheses && balancedBrackets && containsOperator && !singlePairParentheses && !singlePairBrackets) || singleNegatedVariable || negatedExpressionWithParentheses || negatedExpressionWithBrackets;
   };
@@ -101,8 +102,11 @@ const WFFSolverPage = () => {
           <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
             A truth table is a systematic way to list all possible truth values for a given logical expression. It shows how the truth value of the entire formula depends on the truth values of its components. Truth tables are especially useful for verifying tautologies (statements that are always true) or contradictions (statements that are always false).
           </Text>
+          <Text color="#17A2B8" margin={{"bottom":"small"}} textAlign="center" weight="normal">
+            Use the symbols from the table below to create your wff. In the symbol column, from left to right, the solver supports keyboard, unicode, and book syntax.
+          </Text>
           <WFFOperationsTable />
-          <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+          <Text textAlign="center" weight="normal" margin={{"bottom":"medium"}}>
             Enter your logical statement below, by using the list of symbols to generate its truth table and analyze its properties!
           </Text>
         </Box>
