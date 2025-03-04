@@ -56,7 +56,7 @@ const BooleanMatrices = () => {
       return false;
     }
 
-    if (operation === 'MULTIPLY') {
+    if (operation === 'PRODUCT') {
       return matrix1[0].length === matrix2.length;
     }
 

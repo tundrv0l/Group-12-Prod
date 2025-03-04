@@ -28,6 +28,8 @@ C: a 2D array representing their boolean multiplication (m-by-k)
 def solve(A, B):
     if len(A[0]) != len(B):
         raise exceptions.CalculateError(f"Bad dimensions.")
+    
+    A, B = _preprocess_input(A, B)
 
     C = [[0 for j in range(0, len(B[0]))] for i in range(0, len(A))]
 
@@ -37,9 +39,12 @@ def solve(A, B):
                 C[i][j] += min(A[i][k], B[k][j])
 
     result = {
-        "A × B": C
+        "Product (A × B)": C
     }
 
     return json.dumps(result)
 
-
+def _preprocess_input(A,B):
+    A = [[int(j) for j in i] for i in A]
+    B = [[int(j) for j in i] for i in B]
+    return A, B
