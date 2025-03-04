@@ -17,11 +17,8 @@ from backend.solvers import closures_solver
 from backend.solvers import partition_solver
 from backend.solvers import special_solver
 from backend.solvers import hasse_solver
-<<<<<<< Updated upstream
-=======
 from backend.solvers import Warshall_solver
 from solvers.util import exceptions
->>>>>>> Stashed changes
 from backend.solvers import graph_solver
 from backend.solvers import adjacency_solver
 from backend.solvers import weighted_graph_solver
