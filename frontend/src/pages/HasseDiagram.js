@@ -1,6 +1,7 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
 import { solveHasseDiagram } from '../api';
+import { CircleInformation } from 'grommet-icons';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
@@ -17,6 +18,7 @@ const HasseDiagram = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -135,13 +137,40 @@ const HasseDiagram = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
-              <Box margin={{bottom : "small" }}>
-                <TextInput 
-                  placeholder="Example: Enter your set here (e.g., {a, b, c, 23})"
-                  value={set}
-                  onChange={(event) => setSet(event.target.value)}
-                />
+              <Box margin={{bottom : "small" }}><Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+                <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
               </Box>
+              <Collapsible open={showHelp}>
+                <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                  <Text>
+                    To input a set, use the following format:
+                  </Text>
+                  <Text>
+                    <strong>{'{a,b,c}'}</strong>
+                  </Text>
+                  <Text>
+                    For example: <strong>{'{a,b,f}'}</strong>
+                  </Text>
+                  <Text>
+                    To input a relation, use the following format:
+                  </Text>
+                  <Text>
+                    <strong>{'{(a,b),(b,c),(c,a)}'}</strong>
+                  </Text>
+                  <Text>
+                    For example: <strong>{'{(a,b),(b,f),(a,f),(a,a),(b,b),(f,f)}'}</strong>
+                  </Text>
+                  <Text style={{ fontStyle: 'italic' }}>
+                    The set and relation must form a partial ordering, that is, they must be reflexive, antisymmetric, and transitive.
+                  </Text>
+                </Box>
+              </Collapsible>
+              <TextInput 
+                placeholder="Example: Enter your set here (e.g., {a, b, c, 23})"
+                value={set}
+                onChange={(event) => setSet(event.target.value)}
+              />
+            </Box>
               <Box margin={{top : "small" }}>
                 <TextInput 
                   placeholder="Example: Enter your relation here (e.g., {(a, b), (23, c)})"

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, CheckBox } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, CheckBox, Collapsible } from 'grommet';
 import { solveGraphs } from '../api';
+import { CircleInformation } from 'grommet-icons';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
@@ -19,6 +20,7 @@ const GraphsPage = () => {
   const [loading, setLoading] = React.useState(false);
   const [isIsomorphic, setIsIsomorphic] = React.useState(false);
   const [secondInput, setSecondInput] = React.useState('');
+  const [showHelp, setShowHelp] = React.useState(false);
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -44,22 +46,36 @@ const GraphsPage = () => {
       }
     }
 
-
     setError('');
-    try {
-      const result = await solveGraphs(input, type, isIsomorphic, secondInput);
-      setOutput(result);
+    try { 
+      // Do some conversion to display any backend errors
+      let result = await solveGraphs(input, type, isIsomorphic, secondInput);
+
+      // Parse result if it is a string
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      
+      // Check if there is an error key in the result
+      const errorKey = Object.keys(result).find(key => key.toLowerCase().includes('error'));
+      console.log(errorKey);
+      if (errorKey) {
+        setError(result[errorKey]);
+      } else {
+        setOutput(result["Graph"]);
+      }
     } catch (err) {
-      setError('An error occurred while generating the graph.');
+      console.log(err);
+      setError('An error occurred while generating the Graph.');
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const validateInput = (input) => {
-    // TODO: Change regex here based on input pattern
-    const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
-    return wffRegex.test(input);
+    // Regular expression to match 'coordinate' pairs in the form of {(x1, y1), (x2, y2), ...}
+    const graphRegex = /^\{\s*(\(\s*\d+\s*,\s*\d+\s*\)\s*,\s*)*(\(\s*\d+\s*,\s*\d+\s*\))\s*\}$/;
+    return graphRegex.test(input);
   }
 
   // Convert base64 image string to image element
@@ -71,7 +87,7 @@ const GraphsPage = () => {
     // Parse out json object and return out elements one by one
     return (
       <Box>
-        <img src={`data:image/png;base64,${output}`} alt="Hasse Diagram" />
+        <img src={`data:image/png;base64,${output}`} alt="Graph" style={{ maxWidth: '100%', height: 'auto' }} />
       </Box>
     );
   };
@@ -109,16 +125,35 @@ const GraphsPage = () => {
           </Text>
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
-            <CardBody pad="small">
+          <CardBody pad="small">
+            <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+              <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+            </Box>
+            <Collapsible open={showHelp}>
+              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                <Text>
+                  To input a graph, use the following format:
+                </Text>
+                <Text>
+                  <strong>{'{(x1, y1), (x2, y2), ...}'}</strong>
+                </Text>
+                <Text>
+                  For example: <strong>{'{(0, 1), (1, 2), (2, 0)}'}</strong>
+                </Text>
+                <Text>
+                  Each tuple represents a connection between two vertices. So (0, 1) represents an edge between vertex 0 and vertex 1.
+                </Text>
+              </Box>
+            </Collapsible>
               <TextInput 
-                placeholder="Example: Enter your graph here (e.g., {(A, B), (B, C), (C, A)})"
+                placeholder="Example: Enter your graph here (e.g., {(0, 1), (1, 2), (2, 0)})"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
               />
               {isIsomorphic && (
               <Box margin={{ top: 'small' }}>
                 <TextInput
-                  placeholder="Example: Enter your second graph here (e.g., {(X, Y), (Y, Z), (Z, X)})"
+                  placeholder="Example: Enter your second graph here (e.g., {(0, 1), (1, 2), (2, 0)})"
                   value={secondInput}
                   onChange={(event) => setSecondInput(event.target.value)}
                 />

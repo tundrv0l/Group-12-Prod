@@ -23,42 +23,12 @@ def solve(matrix):
         matriix.append(newMatr)
 
     # Prepare the truth table as a JSON object
-    truth_table = {
-<<<<<<< Updated upstream
-        "matricies": []
-    }
+    truth_table = {}
 
-    # Add the rows to the truth table
-    for row in matriix:
-        truth_table["matricies"].append(row)
-
-    return json.dumps(truth_table)
-
-m = input("you know the deal")
-ms = m.replace(" ","").split(",")
-matr = []
-tempList = []
-
-x=0
-y=0
-for n in ms:
-    tempList.append(n)
-    y += 1
-    if y == math.sqrt(ms.__len__()):
-        y = 0
-        x += 1
-        matr.append(tempList)
-        tempList = []
-
-print(solve(matr))
-=======
-    }
-
-    # Add the rows to the truth table
     noOfMatrix = 1
+    # Add the rows to the truth table
     for row in matriix:
         truth_table["Matrix" + str(noOfMatrix)] = row
         noOfMatrix += 1
 
     return json.dumps(truth_table)
->>>>>>> Stashed changes

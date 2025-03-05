@@ -62,6 +62,7 @@ const WFFSolverPage = () => {
   
     // Reject single pair of parentheses or brackets. Backend doesn't handle input like: (A V B), but does support A V B
     const singlePairParentheses = /^\([^()]*\)$/.test(input);
+    // eslint-disable-next-line
     const singlePairBrackets = /^\[[^\[\]]*\]$/.test(input);
   
     // Allow single negated variables like ¬A, A', and not A

@@ -6,6 +6,7 @@ import Background from '../components/Background';
 import MatrixTable from '../components/MatrixTable';
 import MatrixToolbar from '../components/MatrixToolbar';
 import HomeButton from '../components/HomeButton';
+import MatrixOutput from '../components/MatrixOutput';
 
 /*
 * Name: WarshallsAlgorithm.js
@@ -24,6 +25,15 @@ const WarshallsAlgorithm = () => {
     setOutput('');
     setError('');
 
+
+    // Validate input
+    if (!validateMatrices(matrix)) {
+      setError('Invalid input. Please ensure both matrix only contain only 0s and 1s and is square.');
+      setLoading(false);
+      return;
+    }
+
+
     try {
       const result = await solveWarshallsAlgorithm(matrix);
       setOutput(result);
@@ -33,6 +43,38 @@ const WarshallsAlgorithm = () => {
       setLoading(false);
     }
   }
+
+  const validateMatrices = (matrix) => {
+
+    // Check for empty matrix
+    if (!matrix || matrix.length === 0) {
+      return false;
+    }
+    
+    // Check if the matrix is square
+    const columns = matrix[0].length;
+    const isSquareMatrix = matrix.length === columns;
+
+    // Check to make sure all cells are either 0 or 1
+    const isValidMatrix = matrix.every(row => row.every(cell => cell === '0' || cell === '1'));
+
+    return isSquareMatrix && isValidMatrix;
+  };
+
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here.";
+    }
+    
+    try {
+      // Parse output if it's a JSON string
+      const matrices = typeof output === 'string' ? JSON.parse(output) : output;
+      return <MatrixOutput matrices={matrices} />;
+    } catch (e) {
+      console.error("Error rendering matrix output:", e);
+      return "Error rendering matrices.";
+    }
+  };
 
   return (
     <Page>
@@ -90,7 +132,7 @@ const WarshallsAlgorithm = () => {
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
                 <Text>
-                  {output ? JSON.stringify(output) : "Output will be displayed here!"}
+                  {renderOutput()}
                 </Text>
               </Box>
             </CardBody>
