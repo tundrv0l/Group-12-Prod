@@ -2,6 +2,8 @@
 # Author: Jacob Warren
 # Description: Chapter 5 string parsing stuff
 
+from . import exceptions
+
 def parse_set(set_string):
     set_string_ = set_string.strip()
     set_string_ = set_string_[1:-1]
@@ -23,7 +25,7 @@ def parse_set(set_string):
                 open_stack.append(char)
             elif char in ')]}':
                 if not open_stack:
-                    raise ValueError(f"Too many closing chars: ", char)
+                    raise exceptions.CalculateError(f"Too many closing chars: ", char)
 
                 last_open = open_stack.pop()
 
@@ -32,10 +34,10 @@ def parse_set(set_string):
                     last_open == '[' and char != ']' or
                     last_open == '(' and char != ')'
                 ):
-                    raise ValueError("Mismatched ", last_open, " with ", char)
+                    raise exceptions.CalculateError("Mismatched ", last_open, " with ", char)
 
     if open_stack:
-        raise ValueError(f"Too many open chars: ", open_stack)
+        raise exceptions.CalculateError(f"Too many open chars: ", open_stack)
 
     element_string = element_string.strip()
 
@@ -58,6 +60,6 @@ def is_a_relation(set_string, relation_string):
         try:
             relation.add((set_list.index(pair[0]), set_list.index(pair[1])))
         except ValueError:
-            raise ValueError(f"Pair {pair} has elements outside of the provided set.")
+            raise exceptions.CalculateError(f"Pair {pair} has elements outside of the provided set.")
 
     return set_list, relation

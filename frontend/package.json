@@ -21,6 +21,7 @@
     "joi": "^17.13.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-latex-next": "^3.0.0",
     "react-router-dom": "^6.29.0",
     "react-scripts": "^5.0.1",
     "react-tsparticles": "^2.12.2",
