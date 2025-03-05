@@ -6,6 +6,7 @@ import TruthTable from '../components/TruthTable';
 import Background from '../components/Background';
 import WFFOperationsTable from '../components/WFFOperationExample';
 import HomeButton from '../components/HomeButton';
+import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
 * Name: WFFSolverPage.js
@@ -18,6 +19,15 @@ const WFFSolverPage = () => {
   const [output, setOutput] = React.useState(null);
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+
+  // Initialize diagnostic hook
+  const { trackResults } = useDiagnostics("WFF_SOLVER");
+
+  // Wrap input to enable diagnostic tracking
+  const handleInput = (event) => {
+    const newInput = event.target.value;
+    setInput(newInput);
+  }
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -34,13 +44,30 @@ const WFFSolverPage = () => {
     }
 
     setError('');
+
+    const startTime = performance.now();
     
     try {
       const result = await solveWFF(input);
       const parsedResult = JSON.parse(result);
       console.log(parsedResult);
+      
+      // Track successful execution with timing
+      trackResults(
+        { formula: input }, // Input data
+        parsedResult,       // Result data
+        performance.now() - startTime      // Execution time in ms
+      );
+      
       setOutput(parsedResult);
     } catch (err) {
+      // Track failed execution with timing
+      trackResults(
+        { formula: input },
+        { error: err.message || 'Unknown error' },
+        performance.now() - startTime
+      );
+      
       setError('An error occurred while solving the WFF.');
     } finally {
       setLoading(false);
@@ -116,7 +143,7 @@ const WFFSolverPage = () => {
             <TextInput 
               placeholder="Example: Enter your formula here (e.g., A V B)"
               value={input}
-              onChange={(event) => setInput(event.target.value)}
+              onChange={handleInput}
             />
             {error && <Text color="status-critical">{error}</Text>}
           </CardBody>

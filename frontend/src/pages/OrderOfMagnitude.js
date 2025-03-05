@@ -5,6 +5,7 @@ import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 import PolynomialInput from '../components/PolynomialInput';
+import Latex from 'react-latex-next';
 
 /*
 * Name: OrderOfMagnitude.js
@@ -59,6 +60,22 @@ const OrderOfMagnitude = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const renderOutput = () => {
+
+    // If no output, return a default message
+    if (!output) {
+      return "Output will be displayed here!";
+    }
+
+    return (
+      <Box>
+        <Latex>
+          {output}
+        </Latex>
+      </Box>
+    );
   };
 
   return (
@@ -122,7 +139,7 @@ const OrderOfMagnitude = () => {
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
                 <Text>
-                  {output ? output : "Output will be displayed here!"}
+                  {renderOutput()}
                 </Text>
               </Box>
             </CardBody>

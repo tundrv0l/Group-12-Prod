@@ -30,6 +30,19 @@ const report = async (email, issue) => {
     }
 }
 
+// Send diagnostic struct to the backend
+export const sendDiagnostics = async (payload) => {
+    try {
+        const response = await axios.post('http://localhost:5000/diagnostics', payload);
+        return response;
+    } catch (error)
+    {
+        // Return null if there is an error
+        return null
+    }
+}
+
+
 // Driver function to call the report function to the backend
 export const reportProblem = async (email, issue) => {
     return await report(email, issue);
