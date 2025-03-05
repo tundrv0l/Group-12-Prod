@@ -12,8 +12,6 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
 
-import properties_solver
-
 # Append the parent directory to the path so we can import in utility
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from solvers.util import strings

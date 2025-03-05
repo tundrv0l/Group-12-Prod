@@ -115,8 +115,16 @@ export const solveEquivalenceRelations = async (set, relation) => {
 }
 
 // Call adjacency matrices and lists solver to the backend
-export const solveAdjacencyMatricesLists = async (input) => {
-    return await solve('adjacency-matrices-lists', { input });
+export const solveAdjacencyMatricesLists = async (input, type) => {
+    try {
+        const response =  await solve('adjacency-matrices-lists', { input, type });
+        if (response.error) {
+            throw new Error(response.error);
+        }
+        return response;
+    } catch (error) {
+        throw new Error(error.message);
+    }
 }
 
 // Call array to tree solver to the backend
@@ -130,8 +138,8 @@ export const solveBinaryTrees = async (input) => {
 }
 
 // Call boolean matrices solver to the backend
-export const solveBooleanMatrices = async (input) => {
-    return await solve('boolean-matrices', { input });
+export const solveBooleanMatrices = async (matrix1, matrix2, operation) => {
+    return await solve('boolean-matrices', { matrix1, matrix2, operation });
 }
 
 // Call compositions of permutations solver to the backend
@@ -211,8 +219,16 @@ export const solveWarshallsAlgorithm = async (input) => {
 }
 
 // Call weighted graphs solver to the backend
-export const solveWeightedGraphs = async (input) => {
-    return await solve('weighted-graphs', { input });
+export const solveWeightedGraphs = async (input, type) => {
+    try {
+        const response = await solve('weighted-graphs', { input, type });
+        if (response.error) {
+            throw new Error(response.error);
+        }
+        return response;
+    } catch (error) {
+        throw new Error(error.message);
+    }
 }
 
 // Solve tree notation to the backend
