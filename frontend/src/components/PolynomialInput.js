@@ -25,7 +25,18 @@ const PolynomialInput = forwardRef((props, ref) => {
   
   // Update coefficients array on user input of order change
   useEffect(() => {
-    const orderNum = parseInt(order, 10);
+
+    let orderNum = parseInt(order, 10);
+
+    // Enforce a maximum order of 20 on user update
+    // Note: This is so that the user doesn't enter an obscenely large number which would crash the page.
+    //  This can be changed if needed, but 20 is a reasonable limit for most use cases.
+    if (orderNum > 20) {
+        setError && setError('Maximum order is 20.');
+        orderNum = 20;
+        setOrder('20');
+    }
+
     if (!isNaN(orderNum) && orderNum >= 0) {
       
       // Adjust the array to match the new order generated
