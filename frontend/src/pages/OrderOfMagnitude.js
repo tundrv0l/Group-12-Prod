@@ -6,6 +6,7 @@ import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 import PolynomialInput from '../components/PolynomialInput';
 import Latex from 'react-latex-next';
+import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
 * Name: OrderOfMagnitude.js
@@ -29,6 +30,9 @@ const OrderOfMagnitude = () => {
   // Reference to the PolynomialInput field for validation
   const polynomialInputRef = React.useRef(null);
 
+  // Track diagnostics
+  const { trackResults } = useDiagnostics("ORDER_OF_MAGNITUDE");
+
   const handleSolve = async () => {
     // Empty output and error messages
     setLoading(true);
@@ -42,21 +46,42 @@ const OrderOfMagnitude = () => {
     }
 
     setError('');
-    try {
 
-      // Define a 'payload' or input 'collection' to call API.
-      const payload = {
-        order: parseInt(order, 10),
-        coefficients: coefficients.map(c => parseFloat(c)),
-        useLog,
-        useRoot
-      };
+    // Define a 'payload' or input 'collection' to call API.
+    const payload = {
+      order: parseInt(order, 10),
+      coefficients: coefficients.map(c => parseFloat(c)),
+      useLog,
+      useRoot
+    };
+
+
+    // Start timing for performance tracking
+    const startTime = performance.now();
+
+    try {
       
       // Call the backend solver with the payload
       const result = await solveOrderOfMagnitude(payload);
+
+      // Track successful execution
+      trackResults(
+        {payload: payload}, // Input data
+        result, // Success result
+        performance.now() - startTime // Execution time
+      );
+
       setOutput(result);
     } catch (err) {
+
+      trackResults(
+        {payload: payload}, // Input data
+        { error: err.message || 'Unknown error' }, // Error result
+        performance.now() - startTime // Execution time
+      );
+
       setError('An error occurred while calculating the Order of Magnitude.');
+
     } finally {
       setLoading(false);
     }

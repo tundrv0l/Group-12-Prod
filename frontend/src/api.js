@@ -196,9 +196,8 @@ export const solveOrderOfMagnitude = async (input) => {
 // Call PERT diagrams solver to the backend
 export const solvePERTDiagrams = async (taskTable) => {
     try {
-        // Here we don't need to wrap it in {input: ...} as the controller expects the raw data
-        const response = await axios.post('http://localhost:5000/solve/pert-diagrams', taskTable);
-        return response.data;
+        const response = await solve('pert-diagrams', taskTable);
+        return response
     } catch (error) {
         console.error('Error solving PERT diagram:', error);
         throw error;
@@ -224,8 +223,15 @@ export const solvePermutationsCycle = async (input) => {
 }
 
 // Call topological sorting solver to the backend
-export const solveTopologicalSorting = async (input) => {
-    return await solve('topological-sorting', { input });
+export const solveTopologicalSorting = async (taskTable) => {
+    try {
+        // Here we don't need to wrap it in {input: ...} as the controller expects the raw data
+        const response = await solve('pert-diagrams', taskTable);
+        return response;
+    } catch (error) {
+        console.error('Error topologically sorting:', error);
+        throw error;
+    }
 }
 
 // Call tree to array solver to the backend
@@ -254,4 +260,9 @@ export const solveWeightedGraphs = async (input, type) => {
 // Solve tree notation to the backend
 export const solveTreeNotation = async (input) => {
     return await solve('tree-notation', { input });
+}
+
+// Solve master theorem to the backend
+export const solveMasterTheorem = async (input) => {
+    return await solve('master-theorem', { input });
 }
