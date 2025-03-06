@@ -194,8 +194,15 @@ export const solveOrderOfMagnitude = async (input) => {
 }
 
 // Call PERT diagrams solver to the backend
-export const solvePERTDiagrams = async (input) => {
-    return await solve('pert-diagrams', { input });
+export const solvePERTDiagrams = async (taskTable) => {
+    try {
+        // Here we don't need to wrap it in {input: ...} as the controller expects the raw data
+        const response = await axios.post('http://localhost:5000/solve/pert-diagrams', taskTable);
+        return response.data;
+    } catch (error) {
+        console.error('Error solving PERT diagram:', error);
+        throw error;
+    }
 }
 
 // Call partial orderings solver to the backend

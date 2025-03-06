@@ -23,6 +23,7 @@ from backend.solvers import adjacency_solver
 from backend.solvers import weighted_graph_solver
 from backend.solvers import matrix_solver
 from backend.solvers import matrix_multiply_solver
+from backend.solvers import table_solver
 from solvers.util import exceptions
 
 #---Imports for the reporter---#
@@ -111,8 +112,8 @@ def solve_algorithim(solver_type, data):
         # Call the appropriate function for Critical Paths
         pass
     elif solver_type == 'pert-diagrams':
-        # Call the appropriate function for PERT Diagrams
-        pass
+        print(data)
+        return table_solver.solve(data)
     elif solver_type == 'topological-sorting':
         # Call the appropriate function for Topological Sorting
         pass
