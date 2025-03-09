@@ -6,10 +6,13 @@ import axios from 'axios';
 * Description: Axios API calls for the frontend.
 */ 
 
+// Get the API URL from environment variable or fallback to localhost for development
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 // A function to route and pass solver code to the backend
 const solve = async (solverType, data) => {
     try {
-        const response = await axios.post(`http://localhost:5000/solve/${solverType}`, data);
+        const response = await axios.post(`${API_BASE_URL}/solve/${solverType}`, data);
         return response.data;
     } catch (error)
     {
@@ -21,7 +24,7 @@ const solve = async (solverType, data) => {
 // A function to report problems to the webmaster
 const report = async (email, issue) => {
     try {
-        const response = await axios.post('http://localhost:5000/report-problem', { email, issue });
+        const response = await axios.post(`${API_BASE_URL}/report-problem`, { email, issue });
         return response;
     } catch (error)
     {
