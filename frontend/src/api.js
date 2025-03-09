@@ -7,11 +7,9 @@ import axios from 'axios';
 */ 
 
 // Get the API URL from environment variable or fallback to localhost for development
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = (window._env_ && window._env_.API_URL) || 'http://localhost:5000';
 
 console.log('API Base URL:', API_BASE_URL);
-const apiUrl = `${process.env.REACT_APP_API_URL}/submit`;
-console.log(apiUrl)
 
 // A function to route and pass solver code to the backend
 const solve = async (solverType, data) => {
