@@ -19,4 +19,4 @@ CORS(app, origins=[cors_origin])
 app.register_blueprint(controller_bp)
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port = 5000, debug = True, origins=[cors_origin])
+    app.run(host = '0.0.0.0', port = 5000, debug = True)
