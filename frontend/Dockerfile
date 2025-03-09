@@ -8,7 +8,14 @@ RUN npm install
 
 COPY frontend/ .
 
+# Build production version
+RUN npm run build
+
+# Install serve to host the static files
+RUN npm install -g serve
+
 EXPOSE 3000
 
-CMD ["npm", "start"]
+# Use serve to deliver the built app
+CMD ["serve", "-s", "build", "-l", "3000"]
 
