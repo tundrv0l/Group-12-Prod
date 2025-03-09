@@ -13,10 +13,8 @@ import os
 
 cors_origin = os.environ.get('CORS_ORIGIN','http://localhost:3000')
 
-CORS(app, origins=[cors_origin])
-
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=[cors_origin])
 
 app.register_blueprint(controller_bp)
 
