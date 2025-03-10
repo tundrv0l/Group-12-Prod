@@ -161,9 +161,16 @@ export const solveCompositions = async (input) => {
 }
 
 // Call critical paths solver to the backend
-export const solveCriticalPaths = async (input) => {
-    return await solve('critical-paths', { input });
+export const solveCriticalPaths = async (taskTable) => {
+    try {
+        const response = await solve('critical-paths', taskTable);
+        return response
+    } catch (error) {
+        console.error('Error finding critical paths:', error);
+        throw error;
+    }
 }
+
 
 // Call disjoint cycles solver to the backend
 export const solveDisjointCycles = async (input) => {
