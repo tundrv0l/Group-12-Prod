@@ -1,5 +1,6 @@
 import React from 'react';
 import { Grommet, Page, PageContent } from 'grommet';
+import customTheme from '../theme';
 
 /*
 * Name: AppLayout.js
@@ -8,7 +9,7 @@ import { Grommet, Page, PageContent } from 'grommet';
 */ 
 
 const AppLayout = ({ children }) => (
-  <Grommet full>
+  <Grommet theme={customTheme} full>
     <Page>
       <PageContent align="center">{children}</PageContent>
     </Page>
