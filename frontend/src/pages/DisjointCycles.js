@@ -26,15 +26,22 @@ const DisjointCycles = () => {
     // Validate input
     const isValid = validateInput(input);
     if (!isValid) {
-      setError('Invalid input. Please enter a valid permutation.');
+      setError('Invalid input. Please enter a valid permutation. Seperate inputs with spaces, no commas.');
       setLoading(false);
       return;
     }
 
+    const formatOutput = (input) => {
+      const results = typeof input === 'string' ? JSON.parse(input) : input;
+      return Object.entries(results)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(', ');
+    };
+
     setError('');
     try {
       const result = await solveDisjointCycles(input);
-      setOutput(result);
+      setOutput(formatOutput(result));
     } catch (err) {
       setError('An error occurred while generating the Disjoint Cycle.');
     } finally {
@@ -43,10 +50,15 @@ const DisjointCycles = () => {
   }
 
   const validateInput = (input) => {
-    // TODO: Change regex here based on input pattern
-    const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
-    return wffRegex.test(input);
-  }
+    // Regular expression to match the required pattern
+    const regex = /\(\s*([a-zA-Z0-9]+\s+[a-zA-Z0-9]+(?:\s+[a-zA-Z0-9]+)*)\s*\)/g;
+  
+    // Find all matches
+    const matches = input.match(regex);
+  
+    // Check if there are at least two valid cycles
+    return matches && matches.length >= 2;
+  };
 
   return (
     <Page>
@@ -58,7 +70,10 @@ const DisjointCycles = () => {
           </Box>
           <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
             <Text size="xxlarge" weight="bold">
-              Permutations Expressed As Disjoint Cycles
+              Permutations Expressed
+            </Text>
+            <Text size="xxlarge" weight="bold">
+              As Disjoint Cycles
             </Text>
           </Box>
           <Box align="center" justify="center">
@@ -99,8 +114,8 @@ const DisjointCycles = () => {
                 Output:
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                <Text>
-                  {output ? JSON.stringify(output) : "Output will be displayed here!"}
+                <Text style={{ whiteSpace: 'pre-wrap' }}>
+                  {output ? output : "Output will be displayed here!"}
                 </Text>
               </Box>
             </CardBody>
