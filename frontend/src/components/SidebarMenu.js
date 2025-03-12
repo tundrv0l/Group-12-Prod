@@ -48,7 +48,7 @@ const SidebarMenu = () => (
       <AccordionPanel label="5.4: Functions">
         <AccordionPanelContent content={[
           { label: "Permutations Of A Cycle", path: "permutations-cycle" },
-          { label: "Compositions of Permutations", path: "/compositions" },
+          //{ label: "Compositions of Permutations", path: "/compositions" },
           { label: "Permutations Expressed As Disjoint Cycles", path: "/disjoint-cycles" }
         ]} />
       </AccordionPanel>
