@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
 COPY app.py .
 COPY backend/ ./backend/
+COPY backend/reporter/.webmaster_emails.txt /app/backend/reporter/.webmaster_emails.txt
 
 EXPOSE 5000
 
