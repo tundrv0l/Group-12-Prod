@@ -7,6 +7,8 @@
 
 #---Imports---#
 from flask import Blueprint, request, jsonify
+from functools import wraps
+import os
 
 #---Imports for the solvers---#
 from backend.solvers import wff_solver
@@ -34,7 +36,20 @@ from backend.reporter import send_email
 # Define a Blueprint for the controller
 controller_bp = Blueprint('controller', __name__)
 
+# Define a decorator to check for the API key in the request headers
+def require_api_key(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        api_key = request.headers.get('X-API-Key')
+        expected_key = os.getenv('API_KEY')
+        if not api_key or api_key != expected_key:
+            return jsonify({'error': 'Unauthorized access'}), 401
+        
+        return f(*args, **kwargs)
+    return decorated_function
+
 @controller_bp.route('/solve/<solver_type>', methods=['POST'])
+@require_api_key
 def solve(solver_type):
     '''
         An api endpoint to solve a problem and derive the specified algorithm.
@@ -161,6 +176,7 @@ def solve_algorithim(solver_type, data):
         return {'error': 'Unsupported solver type'}, 400
 
 @controller_bp.route('/report-problem', methods=['POST'])
+@require_api_key
 def report_problem():
     '''
         A function that calls the send_email function to send an email 
