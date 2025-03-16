@@ -1,8 +1,8 @@
 '''----------------- 
-# Title: binary_notation_solver.py
-# Author: Michael Lowder
+# Title: binary_tree_notation_solver.py
+# Author: Michael Lowder (Reorganized)
 # Date: 3/15/2025
-# Description: A comprehensive solver for binary tree operations.
+# Description: A solver for binary tree notations and representations
 -----------------'''
 
 import re
@@ -13,7 +13,7 @@ from io import BytesIO
 import base64
 import json
 
-# Basic tree node definition
+
 class Node:
     def __init__(self, value):
         self.value = value
@@ -180,37 +180,6 @@ def build_tree_from_post_in(postorder, inorder):
     collect_nodes(root)
     return root, nodes
 
-def preorder_traversal(root):
-    """Returns the preorder traversal of the tree."""
-    return [root.value] + preorder_traversal(root.left) + preorder_traversal(root.right) if root else []
-
-def inorder_traversal(root):
-    """Returns the inorder traversal of the tree."""
-    return inorder_traversal(root.left) + [root.value] + inorder_traversal(root.right) if root else []
-
-def postorder_traversal(root):
-    """Returns the postorder traversal of the tree."""
-    return postorder_traversal(root.left) + postorder_traversal(root.right) + [root.value] if root else []
-
-def level_order_traversal(root):
-    """Returns the level-order traversal of the tree."""
-    if not root:
-        return []
-        
-    result = []
-    queue = deque([root])
-    
-    while queue:
-        node = queue.popleft()
-        result.append(node.value)
-        
-        if node.left:
-            queue.append(node.left)
-        if node.right:
-            queue.append(node.right)
-            
-    return result
-
 def tokenize(expression):
     """Tokenizes a mathematical expression, handling implicit multiplication."""
     expression = expression.replace(" ", "")
@@ -285,6 +254,42 @@ def build_expression_tree(postfix_tokens):
     traverse_and_collect(stack[0])
     
     return stack[0], complete_nodes
+
+
+def preorder_traversal(root):
+    """Returns the preorder traversal of the tree."""
+    return [root.value] + preorder_traversal(root.left) + preorder_traversal(root.right) if root else []
+
+def inorder_traversal(root):
+    """Returns the inorder traversal of the tree."""
+    return inorder_traversal(root.left) + [root.value] + inorder_traversal(root.right) if root else []
+
+def postorder_traversal(root):
+    """Returns the postorder traversal of the tree."""
+    return postorder_traversal(root.left) + postorder_traversal(root.right) + [root.value] if root else []
+
+def level_order_traversal(root):
+    """Returns the level-order traversal of the tree."""
+    if not root:
+        return []
+        
+    result = []
+    queue = deque([root])
+    
+    while queue:
+        node = queue.popleft()
+        result.append(node.value)
+        
+        if node.left:
+            queue.append(node.left)
+        if node.right:
+            queue.append(node.right)
+            
+    return result
+
+#------------------
+# VISUALIZATION METHODS
+#------------------
 
 def add_edges(graph, root, pos, x=0, y=0, level=1):
     """Recursively adds edges to the graph for visualization."""
@@ -384,99 +389,220 @@ def generate_child_array(nodes):
 
     return child_array
 
-def solve(input1, input2, choice):
+
+def build_tree_from_input(input_str, input_format):
     """
-    Main solver function for binary tree operations.
+    Build a tree from a given input format.
+    
+    Parameters:
+    -----------
+    input_str : str
+        The input string representing the tree
+    input_format : str
+        The format of the input, one of:
+        - 'level': Level-order traversal (e.g., "A B C D None E F")
+        - 'table': Left-child right-child table (e.g., "A B C\nB D E\n...")
+        - 'math': Mathematical expression (e.g., "3*(x+4)")
+        
+    Returns:
+    --------
+    tuple
+        (root, nodes, tree_type) - The root node, the node dictionary, and the tree type
+    """
+    root = None
+    nodes = {}
+    tree_type = "regular_tree"
+    
+    try:
+        if input_format == 'level':
+            root, nodes = build_tree_from_level_order(input_str)
+            
+        elif input_format == 'table':
+            root, nodes = build_tree_from_table(input_str)
+            
+        elif input_format == 'math':
+            tokens = tokenize(input_str)
+            postfix_tokens = to_postfix(tokens)
+            root, nodes = build_expression_tree(postfix_tokens)
+            tree_type = "expression_tree"
+            
+        else:
+            raise ValueError(f"Unknown input format: {input_format}")
+            
+        return root, nodes, tree_type
+        
+    except Exception as e:
+        print(f"Error building tree: {e}")
+        return None, {}, tree_type
+
+def reconstruct_tree_from_traversals(traversal1, traversal2, traversal_types):
+    """
+    Reconstruct a tree from a pair of traversals.
+    
+    Parameters:
+    -----------
+    traversal1 : str
+        The first traversal string
+    traversal2 : str
+        The second traversal string (should be inorder)
+    traversal_types : str
+        The combination of traversals, one of:
+        - 'preorder_inorder': First traversal is preorder, second is inorder
+        - 'postorder_inorder': First traversal is postorder, second is inorder
+        
+    Returns:
+    --------
+    tuple
+        (root, nodes, tree_type) - The root node, the node dictionary, and the tree type
+    """
+    root = None
+    nodes = {}
+    tree_type = "regular_tree"
+    
+    try:
+        if traversal_types == 'preorder_inorder':
+            root, nodes = build_tree_from_pre_in(traversal1, traversal2)
+            
+        elif traversal_types == 'postorder_inorder':
+            root, nodes = build_tree_from_post_in(traversal1, traversal2)
+            
+        else:
+            raise ValueError(f"Unknown traversal type combination: {traversal_types}")
+            
+        return root, nodes, tree_type
+        
+    except Exception as e:
+        print(f"Error reconstructing tree: {e}")
+        return None, {}, tree_type
+
+def process_tree_result(root, nodes, tree_type):
+    """
+    Process a tree to generate standard output format.
+    
+    Parameters:
+    -----------
+    root : Node
+        The root node of the tree
+    nodes : dict
+        Dictionary of all nodes in the tree
+    tree_type : str
+        The type of tree ('regular_tree' or 'expression_tree')
+        
+    Returns:
+    --------
+    dict
+        Results dictionary with success, image, traversals, and array representation
+    """
+    if not root:
+        return {
+            "success": False,
+            "error": "Failed to build or reconstruct tree. Check your input."
+        }
+    
+    # Visualize tree
+    image_data = draw_expression_tree(root) if tree_type == "expression_tree" else draw_tree(root)
+    
+    # Get traversals
+    traversals = {
+        "preorder": preorder_traversal(root),
+        "inorder": inorder_traversal(root),
+        "postorder": postorder_traversal(root),
+        "levelOrder": level_order_traversal(root)
+    }
+    
+    # Generate array representation
+    array_repr = []
+    if nodes:
+        child_array = generate_child_array(nodes)
+        array_repr = [{"node": node, "leftChild": left, "rightChild": right} 
+                     for node, left, right in child_array]
+    
+    return {
+        "success": True,
+        "type": tree_type,
+        "image": image_data,
+        "traversals": traversals,
+        "arrayRepresentation": array_repr
+    }
+
+def solve(input1, input2, operation):
+    """
+    Unified solver function for all tree operations.
     
     Parameters:
     -----------
     input1 : str
-        Primary input string (varies based on choice)
+        Primary input string
     input2 : str
-        Secondary input string (varies based on choice, may be empty)
-    choice : int
-        Operation to perform:
-        1: Build tree from level-order input
-        2: Build tree from left-child right-child table
-        3: Build tree from preorder & inorder traversals
-        4: Build tree from postorder & inorder traversals
-        5: Build tree from mathematical expression
-    
+        Secondary input string (may be empty depending on operation)
+    operation : str
+        The operation to perform, one of:
+        - 'build_from_level': Build tree from level-order input
+        - 'build_from_table': Build tree from left-child right-child table
+        - 'build_from_math': Build tree from mathematical expression
+        - 'reconstruct_from_preorder': Reconstruct tree from preorder+inorder
+        - 'reconstruct_from_postorder': Reconstruct tree from postorder+inorder
+        
     Returns:
     --------
     str
         JSON string containing the operation results
     """
     try:
-        root = None
-        nodes = {}
-        
-        if choice == 1:
-            # Build from level-order input
-            root, nodes = build_tree_from_level_order(input1)
-            tree_type = "regular_tree"
-        
-        elif choice == 2:
-            # Build from left-child right-child table
-            root, nodes = build_tree_from_table(input1)
-            tree_type = "regular_tree"
-        
-        elif choice == 3:
-            # Build from preorder & inorder traversals
-            root, nodes = build_tree_from_pre_in(input1, input2)
-            tree_type = "regular_tree"
-        
-        elif choice == 4:
-            # Build from postorder & inorder traversals
-            root, nodes = build_tree_from_post_in(input1, input2)
-            tree_type = "regular_tree"
-        
-        elif choice == 5:
-            # Build expression tree from mathematical expression
-            tokens = tokenize(input1)
-            postfix_tokens = to_postfix(tokens)
-            root, nodes = build_expression_tree(postfix_tokens)
-            tree_type = "expression_tree"
-        
+        # Determine which operation to perform
+        if operation == 'build_from_level':
+            root, nodes, tree_type = build_tree_from_input(input1, 'level')
+            
+        elif operation == 'build_from_table':
+            root, nodes, tree_type = build_tree_from_input(input1, 'table')
+            
+        elif operation == 'build_from_math':
+            root, nodes, tree_type = build_tree_from_input(input1, 'math')
+            
+        elif operation == 'reconstruct_from_preorder':
+            root, nodes, tree_type = reconstruct_tree_from_traversals(input1, input2, 'preorder_inorder')
+            
+        elif operation == 'reconstruct_from_postorder':
+            root, nodes, tree_type = reconstruct_tree_from_traversals(input1, input2, 'postorder_inorder')
+            
         else:
             return json.dumps({
                 "success": False,
-                "error": "Invalid choice. Must be between 1 and 5."
+                "error": f"Unknown operation: {operation}"
             })
         
-        # Generate results if tree was successfully built
-        if root:
-            # Visualize tree
-            image_data = draw_expression_tree(root) if choice == 5 else draw_tree(root)
-            
-            # Get traversals
-            traversals = {
-                "preorder": preorder_traversal(root),
-                "inorder": inorder_traversal(root),
-                "postorder": postorder_traversal(root),
-                "levelOrder": level_order_traversal(root)
-            }
-            
-            # Generate array representation
-            array_repr = []
-            if nodes:
-                child_array = generate_child_array(nodes)
-                array_repr = [{"node": node, "leftChild": left, "rightChild": right} 
-                             for node, left, right in child_array]
-            
-            return json.dumps({
-                "success": True,
-                "type": tree_type,
-                "image": image_data,
-                "traversals": traversals,
-                "arrayRepresentation": array_repr
-            })
-        else:
+        # Process results
+        result = process_tree_result(root, nodes, tree_type)
+        return json.dumps(result)
+        
+    except Exception as e:
+        return json.dumps({
+            "success": False,
+            "error": f"An error occurred: {str(e)}"
+        })
+
+# Legacy interface for backwards compatibility
+def solve_legacy(input1, input2, choice):
+    """Legacy solver function to maintain backwards compatibility."""
+    try:
+        # Map numeric choice to string operation
+        operation_map = {
+            1: 'build_from_level',
+            2: 'build_from_table',
+            3: 'reconstruct_from_preorder',
+            4: 'reconstruct_from_postorder',
+            5: 'build_from_math'
+        }
+        
+        operation = operation_map.get(choice, None)
+        if operation is None:
             return json.dumps({
                 "success": False,
-                "error": "Failed to build tree. Check your input."
+                "error": f"Invalid choice. Must be between 1 and 5."
             })
             
+        return solve(input1, input2, operation)
+        
     except Exception as e:
         return json.dumps({
             "success": False,

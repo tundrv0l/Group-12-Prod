@@ -265,8 +265,8 @@ export const solveWeightedGraphs = async (input, type) => {
 }
 
 // Solve tree notation to the backend
-export const solveTreeNotation = async (input) => {
-    return await solve('tree-notation', { input });
+export const solveTreeNotation = async (input, secondaryInput, operation) => {
+    return await solve('tree-notation', { input, secondaryInput, operation });
 }
 
 // Solve master theorem to the backend

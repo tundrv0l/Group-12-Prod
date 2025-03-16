@@ -29,6 +29,7 @@ from backend.solvers import critical_solver
 from backend.solvers import binary_trees_solver
 from backend.solvers import tree_to_array_solver
 from backend.solvers import array_to_tree_solver
+from backend.solvers import tree_notation_solver
 from solvers.util import exceptions
 
 #---Imports for the reporter---#
@@ -152,8 +153,19 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'tree-to-array':
         return tree_to_array_solver.solve(data["input"], data["choice"])
     elif solver_type == 'tree-notation':
-        # Call the appropriate function for Tree Notation
-        pass
+        
+        # Map the operation number to the corresponding function name
+        operation_num = int(data.get("operation", 1))
+        operation_map = {
+            1: 'build_from_level',
+            2: 'build_from_table', 
+            3: 'reconstruct_from_preorder',
+            4: 'reconstruct_from_postorder',
+            5: 'build_from_math'
+        }
+        operation = operation_map.get(operation_num)
+
+        return tree_notation_solver.solve(data["input"], data["secondaryInput"], operation)
     elif solver_type == 'warshalls-algorithm':
         return Warshall_solver.solve(data["input"])
     else:

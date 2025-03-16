@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, TextArea, Spinner, Image, Table, TableHeader, TableBody, TableRow, TableCell, Collapsible } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, TextArea, Spinner, Image, Table, TableHeader, TableBody, TableRow, TableCell, Collapsible, Tab, Tabs } from 'grommet';
 import { solveArrayToTree } from '../api';
 import { CircleInformation } from 'grommet-icons';
 import ReportFooter from '../components/ReportFooter';
@@ -68,42 +68,6 @@ const ArrayToTree = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const renderTable = () => {
-    if (!result || !result.table || result.table.length === 0) {
-      return null;
-    }
-    
-    return (
-      <Box margin={{ vertical: 'medium' }}>
-        <Text weight="bold" margin={{ bottom: 'small' }}>Node-Child Relationship Table:</Text>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableCell scope="col" border="bottom" background="light-2">
-                <Text weight="bold">Node</Text>
-              </TableCell>
-              <TableCell scope="col" border="bottom" background="light-2">
-                <Text weight="bold">Left Child</Text>
-              </TableCell>
-              <TableCell scope="col" border="bottom" background="light-2">
-                <Text weight="bold">Right Child</Text>
-              </TableCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {result.table.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell><Text>{row.node}</Text></TableCell>
-                <TableCell><Text>{row.leftChild}</Text></TableCell>
-                <TableCell><Text>{row.rightChild}</Text></TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Box>
-    );
   };
 
   const validateInput = (input) => {
@@ -201,13 +165,14 @@ const ArrayToTree = () => {
     return { isValid: true };
   };
 
+  // Then replace the renderOutput function with this tabbed version
   const renderOutput = () => {
     if (loading) {
       return <Spinner size="medium" />;
     }
     
     if (!result) {
-      return "Output will be displayed here!";
+      return <Text>Output will be displayed here!</Text>;
     }
     
     if (result.success === false) {
@@ -215,29 +180,76 @@ const ArrayToTree = () => {
     }
     
     return (
-      <Box gap="medium" fill>
-        {result.image && (
-          <Box>
-            <Text weight="bold" margin={{ bottom: 'small' }}>Tree Visualization:</Text>
-            <Box height="medium" overflow="auto">
-              <Image 
-                src={`data:image/png;base64,${result.image}`}
-                fit="contain"
-                alt="Binary tree visualization"
-              />
-            </Box>
+      <Tabs>
+        {/* Tree Visualization Tab */}
+        <Tab title="Tree Visualization">
+          <Box pad="small">
+            {result.image && (
+              <Box>
+                <Text weight="bold" margin={{ bottom: 'small' }}>Tree Visualization:</Text>
+                <Box height="medium" overflow="auto" background="white" pad="small" round="small">
+                  <Image 
+                    src={`data:image/png;base64,${result.image}`}
+                    fit="contain"
+                    alt="Binary tree visualization"
+                  />
+                </Box>
+              </Box>
+            )}
           </Box>
-        )}
+        </Tab>
         
-        {renderTable()}
-        
-        {result.nodes && result.nodes.length > 0 && (
-          <Box>
-            <Text weight="bold" margin={{ bottom: 'xsmall' }}>Nodes (BFS order):</Text>
-            <Text>{result.nodes.join(', ')}</Text>
+        {/* Table Representation Tab */}
+        <Tab title="Table Representation">
+          <Box pad="small">
+            {result.table && result.table.length > 0 && (
+              <Box>
+                <Text weight="bold" margin={{ bottom: 'small' }}>Node-Child Relationship Table:</Text>
+                <Box background="white" pad="small" round="small" overflow="auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableCell scope="col" border="bottom" background="light-2">
+                          <Text weight="bold">Node</Text>
+                        </TableCell>
+                        <TableCell scope="col" border="bottom" background="light-2">
+                          <Text weight="bold">Left Child</Text>
+                        </TableCell>
+                        <TableCell scope="col" border="bottom" background="light-2">
+                          <Text weight="bold">Right Child</Text>
+                        </TableCell>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {result.table.map((row, index) => (
+                        <TableRow key={index}>
+                          <TableCell><Text>{row.node}</Text></TableCell>
+                          <TableCell><Text>{row.leftChild}</Text></TableCell>
+                          <TableCell><Text>{row.rightChild}</Text></TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Box>
+            )}
           </Box>
-        )}
-      </Box>
+        </Tab>
+        
+        {/* Node Listing Tab */}
+        <Tab title="Node Listing">
+          <Box pad="small">
+            {result.nodes && result.nodes.length > 0 && (
+              <Box>
+                <Text weight="bold" margin={{ bottom: 'small' }}>Nodes (BFS order):</Text>
+                <Box background="white" pad="small" round="small">
+                  <Text>{result.nodes.join(', ')}</Text>
+                </Box>
+              </Box>
+            )}
+          </Box>
+        </Tab>
+      </Tabs>
     );
   };
 

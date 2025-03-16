@@ -130,15 +130,14 @@ const BinaryTrees = () => {
         return { isValid: false, error: 'Tree must have at least a root node.' };
       }
 
-      // Check for correct characters in nodes (letters, numbers, or "None")
       const invalidNodes = nodes.filter(node => 
-        node !== 'None' && !(/^[A-Za-z0-9]+$/.test(node))
+        node !== 'None' && !(/^[A-Za-z0-9]$/.test(node))  // Changed from + to require exactly one character
       );
       
       if (invalidNodes.length > 0) {
         return { 
           isValid: false, 
-          error: `Invalid node value(s): ${invalidNodes.join(', ')}. Use letters, numbers, or 'None'.` 
+          error: `Invalid node value(s): ${invalidNodes.join(', ')}. Use single letters, numbers, or 'None'.` 
         };
       }
 

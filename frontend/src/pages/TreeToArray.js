@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, Tab, Tabs } from 'grommet';
 import { solveTreeToArray } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
@@ -108,53 +108,67 @@ const TreeToArray = () => {
     }
   };
 
-  // Convert base64 image string to image element and display array tables
-  // Replace the current renderOutput function with this one
+  // Update the renderOutput function
   const renderOutput = () => {
     if (!output && !treeData) {
-      return "Output will be displayed here!";
+      return <Text>Output will be displayed here!</Text>;
     }
 
     return (
-      <Box gap="medium">
-        {/* Tree Visualization */}
-        {output && (
-          <Box>
-            <Text weight="bold" margin={{ bottom: 'small' }}>Tree Structure:</Text>
-            <Box background="white" pad="small" round="small">
-              <img 
-                src={`data:image/png;base64,${output}`} 
-                alt="Tree structure visualization" 
-                style={{ maxWidth: '100%', height: 'auto' }} 
-              />
-            </Box>
+      <Tabs>
+        {/* Tree Visualization Tab */}
+        <Tab title="Tree Visualization">
+          <Box pad="small">
+            {output && (
+              <Box>
+                <Text weight="bold" margin={{ bottom: 'small' }}>Tree Structure:</Text>
+                <Box background="white" pad="small" round="small">
+                  <img 
+                    src={`data:image/png;base64,${output}`} 
+                    alt="Tree structure visualization" 
+                    style={{ maxWidth: '100%', height: 'auto' }} 
+                  />
+                </Box>
+              </Box>
+            )}
           </Box>
-        )}
-        
-        {/* Pointer Diagram - NEW */}
-        {treeData && treeData.pointerDiagram && (
-          <Box>
-            <Text weight="bold" margin={{ bottom: 'small', top: 'medium' }}>
-              Pointer Memory Representation:
-            </Text>
-            <Box background="white" pad="small" round="small">
-              <img 
-                src={`data:image/png;base64,${treeData.pointerDiagram}`} 
-                alt="Pointer memory representation" 
-                style={{ maxWidth: '100%', height: 'auto' }} 
-              />
-            </Box>
+        </Tab>
+
+        {/* Pointer Diagram Tab */}
+        <Tab title="Memory Representation">
+          <Box pad="small">
+            {treeData && treeData.pointerDiagram && (
+              <Box>
+                <Text weight="bold" margin={{ bottom: 'small' }}>
+                  Pointer Memory Representation:
+                </Text>
+                <Box background="white" pad="small" round="small">
+                  <img 
+                    src={`data:image/png;base64,${treeData.pointerDiagram}`} 
+                    alt="Pointer memory representation" 
+                    style={{ maxWidth: '100%', height: 'auto' }} 
+                  />
+                </Box>
+              </Box>
+            )}
           </Box>
-        )}
-        
-        {treeData && treeData.childArray && treeData.pointerArray && (
-          <Box margin={{ top: 'medium' }}>
-            <TreeToArrayOutput
-              childArray={treeData.childArray}
-            />
+        </Tab>
+
+        {/* Array Representation Tab */}
+        <Tab title="Array Representation">
+          <Box pad="small">
+            {treeData && treeData.childArray && (
+              <Box>
+                <Box background="white" pad="small" round="small">
+                  <TreeToArrayOutput
+                    childArray={treeData.childArray}
+                  />
+                </Box>
+              </Box>
+            )}
           </Box>
-        )}
-      </Box>
+        </Tab>
+      </Tabs>
     );
   };
 
@@ -173,15 +187,15 @@ const TreeToArray = () => {
         return { isValid: false, error: 'Tree must have at least a root node.' };
       }
 
-      // Check for correct characters in nodes (letters, numbers, or "None")
+      // Check for invalid node values (allowing single letters, numbers, or 'None')
       const invalidNodes = nodes.filter(node => 
-        node !== 'None' && !(/^[A-Za-z0-9]+$/.test(node))
+        node !== 'None' && !(/^[A-Za-z0-9]$/.test(node)) 
       );
       
       if (invalidNodes.length > 0) {
         return { 
           isValid: false, 
-          error: `Invalid node value(s): ${invalidNodes.join(', ')}. Use letters, numbers, or 'None'.` 
+          error: `Invalid node value(s): ${invalidNodes.join(', ')}. Use single letters, numbers, or 'None'.` 
         };
       }
 
