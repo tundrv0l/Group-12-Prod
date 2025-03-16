@@ -1,6 +1,6 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible} from 'grommet';
-import { CircleInformation } from 'grommet-icons';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible, ResponsiveContext} from 'grommet';
+import { StatusCritical, StatusGood, CircleInformation } from 'grommet-icons';
 import { solveWFF } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import TruthTable from '../components/TruthTable';
@@ -36,7 +36,7 @@ const WFFSolverPage = () => {
     setLoading(true);
     setOutput(null);
     setError('');
-
+  
     // Validate input
     const isValid = validateInput(input);
     if (!isValid) {
@@ -44,9 +44,9 @@ const WFFSolverPage = () => {
       setLoading(false);
       return;
     }
-
+  
     setError('');
-
+  
     const startTime = performance.now();
     
     try {
@@ -75,12 +75,55 @@ const WFFSolverPage = () => {
       setLoading(false);
     }
   }
-
- 
+  
+  // Function to render the WFF classification
+  const renderClassification = (classification, description) => {
+    if (!classification) return null;
+    
+    let color;
+    let icon;
+    
+    switch (classification) {
+      case 'tautology':
+        color = '#43a047';  // Green
+        icon = <StatusGood size="medium" color={color} />;
+        break;
+      case 'contradiction':
+        color = '#e53935';  // Red
+        icon = <StatusCritical size="medium" color={color} />;
+        break;
+      case 'contingency':
+        color = '#1565c0';  // Blue
+        icon = <CircleInformation size="medium" color={color} />;
+        break;
+      default:
+        color = '#424242';  // Grey
+        icon = '?';
+    }
+  
+    return (
+      <Box 
+        background={{ color: 'light-2' }} 
+        pad="medium" 
+        margin={{ top: 'medium' }} 
+        round="small"
+        border={{ color, size: '2px' }}
+      >
+        <Box direction="row" gap="small" align="center">
+          {icon}
+          <Text size="large" weight="bold" color={color}>
+            {classification.toUpperCase()}
+          </Text>
+        </Box>
+        <Text margin={{ top: 'small' }}>{description}</Text>
+      </Box>
+    );
+  };
+  
   const validateInput = (input) => {
     // Regular expression to validate WFF general form, including operators, NOT, parentheses, and brackets.
     // Regex accomodates for symbols used in unicode, keyboard and book format. To see a mapping of this check /backend/solvers/wff_solver.py
-    const wffRegex = /^(\(*\[*\s*(not\s*)?[A-Z]('|′|¬)?\s*\]*\)*(\s*(->|→|v|∨|V|~|S|`|\^|∧|>|<>|4|↔)\s*\(*\[*\s*(not\s*)?[A-Z]('|′|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|′|¬)?|\[\s*.*\s*\]('|′|¬)?$/;
+    const wffRegex = /^(\(*\[*\s*((not\s*)|¬)?[A-Z]('|′)?\s*\]*\)*(\s*(->|→|v|∨|V|~|S|`|\^|∧|>|<>|4|↔)\s*\(*\[*\s*((not\s*)|¬)?[A-Z]('|′)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|′)?|\[\s*.*\s*\]('|′)?$/;
   
     // Check for balanced parentheses and brackets
     const balancedParentheses = (input.match(/\(/g) || []).length === (input.match(/\)/g) || []).length;
@@ -105,77 +148,211 @@ const WFFSolverPage = () => {
   };
 
   return (
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-      <PageContent align="center" skeleton={false}>
-        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-          <HomeButton />
-        </Box>
-        <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-          <Text size="xxlarge" weight="bold">
-            WFF to Truth Table Solver
-          </Text>
-        </Box>
-        <Box align="center" justify="center">
-          <Text size="large" margin="none" weight={500}>
-            Topic: Statement And Tautologies
-          </Text>
-        </Box>
-        <Box align="center" justify="start" direction="column" cssGap={false} width={'large'}>
-          <Text margin={{"bottom":"small"}} textAlign="center">
-            This tool helps you work with well-formed formulas (wffs) and truth tables.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            A WFF is a valid expression in propositional logic that is constructed using logical operators (like AND, OR, NOT, IMPLIES) and propositions (like A, B, C). These formulas strictly adhere to the syntax rules of logic, making them suitable for mathematical reasoning.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            A truth table is a systematic way to list all possible truth values for a given logical expression. It shows how the truth value of the entire formula depends on the truth values of its components. Truth tables are especially useful for verifying tautologies (statements that are always true) or contradictions (statements that are always false).
-          </Text>
-          <Text textAlign="center" weight="normal" margin={{"bottom":"medium"}}>
-            Enter your logical statement below, by using the list of symbols to generate its truth table and analyze its properties!
-          </Text>
-        </Box>
-        <Card width="large" pad="medium" background={{"color":"light-1"}}>
-          <CardBody pad="small">
-          <Box margin={{bottom : "small" }}><Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-            <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-          </Box>
-          <Collapsible open={showHelp}>
-              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-                <Text>
-                 Use the symbols from the table below to create your wff. In the symbol column, from left to right, the solver supports keyboard, unicode, and book syntax.
-                </Text>
-                <WFFOperationsTable />
+    <ResponsiveContext.Consumer>
+    {(size) => (
+        <Page>
+          {/* Only show background on larger screens */}
+          {size !== 'small' && <Background />}
+          
+          <Box 
+            align="center" 
+            justify="center" 
+            pad={size === 'small' ? 'small' : 'medium'} 
+            background="white" 
+            style={{ 
+              position: 'relative', 
+              zIndex: 1, 
+              width: size === 'small' ? '98%' : size === 'medium' ? '80%' : '55%',
+              margin: 'auto', 
+              borderRadius: '8px', 
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+              overflowX: 'hidden' // Prevent horizontal scrolling
+            }}
+          >
+            <PageContent align="center" skeleton={false} pad={size === 'small' ? { horizontal: 'small' } : undefined}>
+              {/* Responsive Home Button */}
+              <Box 
+                align="start" 
+                style={{ 
+                  position: size === 'small' ? 'relative' : 'absolute', 
+                  top: size === 'small' ? undefined : 0, 
+                  left: size === 'small' ? undefined : 0, 
+                  padding: size === 'small' ? '5px' : '10px',
+                  width: size === 'small' ? '100%' : 'auto',
+                  marginBottom: size === 'small' ? '8px' : 0,
+                  background: 'white', 
+                  borderRadius: '8px' 
+                }}
+              >
+                <HomeButton />
               </Box>
-            </Collapsible>
 
-            <TextInput 
-              placeholder="Example: Enter your formula here (e.g., A V B)"
-              value={input}
-              onChange={handleInput}
-            />
-            {error && <Text color="status-critical">{error}</Text>}
+              {/* Title - removed duplicate title */}
+              <Box 
+                align="center" 
+                justify="center" 
+                pad={{ 
+                  vertical: size === 'small' ? 'small' : 'medium',
+                  top: size === 'small' ? '0' : undefined
+                }}
+                width="100%"
+              >
+                <Text 
+                  size={size === 'small' ? 'xlarge' : 'xxlarge'} 
+                  weight="bold"
+                  textAlign="center"
+                >
+                  WFF to Truth Table Solver
+                </Text>
+              </Box>
+
+              {/* Subtitle */}
+              <Box align="center" justify="center" margin={{ bottom: size === 'small' ? 'small' : 'medium' }}>
+                <Text 
+                  size={size === 'small' ? 'medium' : 'large'} 
+                  margin="none" 
+                  weight={500}
+                  textAlign="center"
+                >
+                  Topic: Statements and Tautologies
+                </Text>
+              </Box>
+
+              {/* Explanation text - mobile optimized */}
+              <Box 
+                align="center" 
+                justify="start" 
+                direction="column" 
+                width="100%"
+                margin={{ bottom: size === 'small' ? 'small' : 'medium' }}
+              >
+                <Text 
+                  margin={{ bottom: size === 'small' ? 'xsmall' : 'small' }} 
+                  textAlign="center" 
+                  size={size === 'small' ? 'small' : 'medium'}
+                >
+                  This tool helps you work with well-formed formulas (wffs) and truth tables.
+                </Text>
+                <Text 
+                  margin={{ bottom: size === 'small' ? 'xsmall' : 'small' }} 
+                  textAlign={size === 'small' ? 'start' : 'center'}
+                  size={size === 'small' ? 'small' : 'medium'}
+                >
+                  A WFF is a valid expression in propositional logic that is constructed using logical operators (like AND, OR, NOT, IMPLIES) and propositions (like A, B, C).
+                </Text>
+                <Text 
+                  margin={{ bottom: size === 'small' ? 'xsmall' : 'small' }} 
+                  textAlign={size === 'small' ? 'start' : 'center'}
+                  size={size === 'small' ? 'small' : 'medium'}
+                >
+                  A truth table is a systematic way to list all possible truth values for a given logical expression.
+                </Text>
+                <Text 
+                  margin={{ bottom: size === 'small' ? 'xsmall' : 'small' }} 
+                  textAlign="center"
+                  size={size === 'small' ? 'small' : 'medium'}
+                  weight={size === 'small' ? 'bold' : 'normal'}
+                >
+                  Enter your logical statement below to generate its truth table!
+                </Text>
+              </Box>
+
+              {/* Input Card - Mobile optimized */}
+              <Card 
+                width="100%" 
+                pad={size === 'small' ? 'small' : 'medium'} 
+                background={{ color: "light-1" }}
+              >
+                <CardBody pad={size === 'small' ? 'xsmall' : 'small'}>
+                  <Box margin={{ bottom: "small" }}>
+                    <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+                      <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+                    </Box>
+                    
+                    {/* Help menu - scrollable on mobile */}
+                    <Collapsible open={showHelp}>
+                      <Box 
+                        pad="small" 
+                        background="light-2" 
+                        round="small" 
+                        margin={{ bottom: "medium" }} 
+                        width="100%"
+                        height={size === 'small' ? { max: '200px' } : undefined}
+                        overflow={size === 'small' ? 'auto' : undefined}
+                      >
+                        <Text size={size === 'small' ? 'small' : 'medium'}>
+                         Use the symbols from the table below to create your wff. In the symbol column, from left to right, the solver supports keyboard, unicode, and book syntax.
+                        </Text>
+                        <Box overflow="auto" width="100%">
+                          <WFFOperationsTable />
+                        </Box>
+                      </Box>
+                    </Collapsible>
+
+                    <TextInput 
+                      placeholder={size === 'small' ? "E.g., A V B" : "Example: Enter your formula here (e.g., A V B)"}
+                      value={input}
+                      onChange={handleInput}
+                    />
+                    {error && <Text color="status-critical" size={size === 'small' ? 'small' : 'medium'}>{error}</Text>}
+                  </Box>
+                </CardBody>
+                <CardFooter 
+                  align="center" 
+                  direction="row" 
+                  flex={false} 
+                  justify="center" 
+                  gap="medium" 
+                  pad={{ top: "small" }}
+                >
+                  <Button 
+                    label={loading ? <Spinner /> : "Solve"} 
+                    onClick={handleSolve} 
+                    disabled={loading}
+                    size={size === 'small' ? 'small' : 'medium'} 
+                  />
+                </CardFooter>
+              </Card>
+
+              {/* Output Card - Mobile optimized */}
+              <Card 
+                width="100%" 
+                pad={size === 'small' ? 'small' : 'medium'} 
+                background={{ color: "light-2" }} 
+                margin={{ top: "medium" }}
+              >
+                <CardBody pad={size === 'small' ? 'xsmall' : 'small'}>
+                  <Text weight="bold" size={size === 'small' ? 'small' : 'medium'}>
+                    Output:
+                  </Text>
+                  <Box 
+                    align="center" 
+                    justify="center" 
+                    pad={{ vertical: "small" }} 
+                    background={{ color: "light-3" }} 
+                    round="xsmall"
+                    overflow="auto"
+                  >
+                    {output ? (
+                      <Box width="100%" overflow="auto">
+                        {/* Make TruthTable component scrollable horizontally on mobile */}
+                        <Box overflow="auto" width="100%">
+                          <TruthTable headers={output.headers} rows={output.rows} />
+                        </Box>
+                        {output.classification && renderClassification(output.classification, output.description)}
+                      </Box>
+                    ) : (
+                      <Text size={size === 'small' ? 'small' : 'medium'}>Output will be displayed here!</Text>
+                    )}
+                  </Box>
+                </CardBody>
+              </Card>
+              <ReportFooter />
+            </PageContent>
           </Box>
-          </CardBody>
-          <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
-          </CardFooter>
-        </Card>
-        <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
-          <CardBody pad="small">
-            <Text weight="bold">
-              Output:
-            </Text>
-            <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-              {output ? <TruthTable headers={output.headers} rows={output.rows} /> : <Text>Output will be displayed here!</Text>}
-            </Box>
-          </CardBody>
-        </Card>
-        <ReportFooter />
-      </PageContent>
-      </Box>
-    </Page>
+        </Page>
+      )}
+    </ResponsiveContext.Consumer>
   );
 };
 
