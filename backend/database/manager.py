@@ -7,6 +7,7 @@ import time
 
 from datetime import datetime
 
+
 class Database:
     def __init__(self, name):
         self.connection = sqlite3.connect(name)
@@ -64,7 +65,8 @@ class Database:
                     language,
                     first_connect_time,
                     last_connect_time
-                ) VALUES(?, ?, ?, ?, ?)
+                )
+                VALUES(?, ?, ?, ?, ?)
             """,
             (uid, user_agent, language, current_time, current_time)
         )
@@ -74,7 +76,8 @@ class Database:
     def add_solver(self, sid, sname):
         self.cursor.execute(
             """
-                INSERT INTO solver(sid, sname) VALUES(?, ?)
+                INSERT INTO solver(sid, sname)
+                VALUES(?, ?)
             """,
             (sid, sname)
         )
@@ -91,7 +94,8 @@ class Database:
                     sid,
                     input_text,
                     in_time
-                ) VALUES(?, ?, ?, ?, ?)
+                )
+                VALUES(?, ?, ?, ?, ?)
             """,
             (iid, uid, sid, input_text, current_time)
         )
@@ -111,7 +115,8 @@ class Database:
                     success,
                     execution_time,
                     out_time
-                ) VALUES(?, ?, ?, ?, ?)
+                )
+                VALUES(?, ?, ?, ?, ?)
             """,
             (oid, iid, success, execution_time, current_time)
         )
@@ -121,7 +126,9 @@ class Database:
     def get_user(self, uid):
         self.cursor.execute(
             """
-                SELECT * FROM user WHERE uid = ?
+                SELECT *
+                FROM user
+                WHERE uid = ?
             """,
             (uid, )
         )
@@ -142,7 +149,9 @@ class Database:
     def get_solver(self, sid):
         self.cursor.execute(
             """
-                SELECT * FROM solver WHERE sid = ?
+                SELECT *
+                FROM solver
+                WHERE sid = ?
             """,
             (sid, )
         )
@@ -161,7 +170,9 @@ class Database:
     def get_input(self, iid):
         self.cursor.execute(
             """
-                SELECT * FROM input WHERE iid = ?
+                SELECT *
+                FROM input
+                WHERE iid = ?
             """,
             (iid, )
         )
@@ -182,7 +193,9 @@ class Database:
     def get_output(self, oid):
         self.cursor.execute(
             """
-                SELECT * FROM output WHERE oid = ?
+                SELECT *
+                FROM output
+                WHERE oid = ?
             """,
             (oid, )
         )
@@ -204,7 +217,9 @@ class Database:
         current_time = int(time.time())
         self.cursor.execute(
             """
-                UPDATE user SET last_connect_time = ? WHERE uid = ?
+                UPDATE user
+                SET last_connect_time = ?
+                WHERE uid = ?
             """,
             (current_time, uid)
         )
@@ -212,7 +227,9 @@ class Database:
     def update_solver(self, sid):
        self.cursor.execute(
             """
-                UPDATE solver SET used_count = used_count + 1 WHERE sid = ?
+                UPDATE solver
+                SET used_count = used_count + 1
+                WHERE sid = ?
             """,
             (sid, )
         )
@@ -221,3 +238,82 @@ class Database:
         self.cursor.close()
         self.connection.close()
     
+    # aggregates
+    def get_user_count(self):
+        self.cursor.execute(
+            """
+                SELECT COUNT(*) 
+                FROM user
+            """
+        )
+        
+        result = {
+            "user_count": self.cursor.fetchone()[0]
+        }
+
+        return result
+    
+    def get_user_inputs(self, uid):
+        self.cursor.execute(
+            """
+                SELECT *
+                FROM input
+                WHERE uid = ?
+            """,
+            (uid, )
+        )
+        
+        rows = self.cursor.fetchall()
+        result = []
+        for row in rows:
+            result.append({
+                "iid": row[0],
+                "uid": row[1],
+                "sid": row[2],
+                "input_text": row[3],
+                "in_time": datetime.fromtimestamp(row[4]).isoformat()
+            })
+
+        return result
+
+    def get_user_outputs(self, uid):
+        self.cursor.execute(
+            """
+                SELECT o.oid, o.iid, o.success, o.execution_time, o.out_time
+                FROM output o JOIN input i ON o.iid = i.iid
+                WHERE i.uid = ?
+            """,
+            (uid, )
+        )
+
+        rows = self.cursor.fetchall()
+        result = []
+        for row in rows:
+            result.append({
+                "oid": row[0],
+                "iid": row[1],
+                "success": row[2],
+                "execution_time": row[3],
+                "out_time": datetime.fromtimestamp(row[4]).isoformat()
+            })
+
+        return result
+
+    def get_average_execution(self, sid, success_only):
+        query = """
+                SELECT AVG(o.execution_time) 
+                FROM output o JOIN input i ON o.iid = i.iid
+                WHERE i.sid = ?
+        """
+        
+        parameters = [sid]
+        if success_only:
+            query += " AND o.success = 1"
+
+        self.cursor.execute(query, parameters)
+        aggregate = self.cursor.fetchone()
+        result = None
+        if aggregate:
+            result = aggregate[0]
+        
+        return result
