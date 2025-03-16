@@ -12,7 +12,7 @@ from util import strings
 parameters
 ==========
 permutation: a dictionary representing a permutation
-    - example: "{"A": "2", "2": "A"}" 
+    - example: {"A": "2", "2": "A"} 
     - restrictions: it has to be a bijection from some set
                     to itself
 ======
