@@ -26,6 +26,9 @@ from backend.solvers import matrix_multiply_solver
 from backend.solvers import table_solver
 from backend.solvers import topological_solver
 from backend.solvers import critical_solver
+from backend.solvers import binary_trees_solver
+from backend.solvers import tree_to_array_solver
+from backend.solvers import array_to_tree_solver
 from solvers.util import exceptions
 
 #---Imports for the reporter---#
@@ -132,7 +135,6 @@ def solve_algorithim(solver_type, data):
         # Call the appropriate function for Master Theorem
         pass
     elif solver_type == 'boolean-matrices':
-        print(data)
         if data["operation"] == "MEET/JOIN":
             return matrix_solver.solve(data["matrix1"], data["matrix2"])
         else:
@@ -144,14 +146,11 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'weighted-graphs':
         return weighted_graph_solver.solve(data["input"], data["type"])
     elif solver_type == 'binary-trees':
-        # Call the appropriate function for Binary Trees
-        pass
+        return binary_trees_solver.solve(data["input"], data["choice"])
     elif solver_type == 'array-to-tree':
-        # Call the appropriate function for Array to Tree
-        pass
+        return array_to_tree_solver.solve(data["input"])
     elif solver_type == 'tree-to-array':
-        # Call the appropriate function for Array to Tree
-        pass
+        return tree_to_array_solver.solve(data["input"], data["choice"])
     elif solver_type == 'tree-notation':
         # Call the appropriate function for Tree Notation
         pass

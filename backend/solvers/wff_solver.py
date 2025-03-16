@@ -208,12 +208,18 @@ def solve(formula):
     # Generate the headers for the truth table
     headers = variables + intermediate_expressions + [formula]
 
+    # Post process formula to conform to symbology
     headers = _post_process_formula(headers)
+
+    # Classify the WFF based on the truth table
+    classification, description = _classify_wff(results)
     
     # Prepare the truth table as a JSON object
     truth_table = {
         "headers": headers,
-        "rows": []
+        "rows": [],
+        "classification": classification,
+        "description": description
     }
 
     # Add the rows to the truth table
@@ -221,3 +227,33 @@ def solve(formula):
         truth_table["rows"].append(row)
 
     return json.dumps(truth_table)
+
+def _classify_wff(truth_table_rows):
+    """
+    Classify a WFF as a tautology, contradiction, or contingency based on its truth table.
+    
+    Parameters
+    ----------
+    truth_table_rows (list): 
+        List of rows from the truth table
+        
+    Returns
+    ----------
+    tuple: (classification, description)
+        Classification as string and description explaining the classification
+    """
+    # Extract the last column of each row (the final formula evaluation)
+    final_column = [row[-1] for row in truth_table_rows]
+    
+    # Check if all values are True
+    if all(final_column):
+        return ("tautology", "Formula is always true regardless of input values.")
+    
+    # Check if all values are False
+    if not any(final_column):
+        return ("contradiction", "Formula is always false regardless of input values.")
+    
+    # If some true and some false, it's a contingency
+    true_count = sum(1 for val in final_column if val)
+    false_count = len(final_column) - true_count
+    return ("contingency", f"Formula is true for {true_count} combinations and false for {false_count} combinations.")

@@ -146,8 +146,8 @@ export const solveArrayToTree = async (input) => {
 }
 
 // Call binary trees solver to the backend
-export const solveBinaryTrees = async (input) => {
-    return await solve('binary-trees', { input });
+export const solveBinaryTrees = async (input, choice) => {
+    return await solve('binary-trees', { input, choice });
 }
 
 // Call boolean matrices solver to the backend
@@ -242,8 +242,8 @@ export const solveTopologicalSorting = async (taskTable) => {
 }
 
 // Call tree to array solver to the backend
-export const solveTreeToArray = async (input) => {
-    return await solve('tree-to-array', { input });
+export const solveTreeToArray = async (input, choice) => {
+    return await solve('tree-to-array', { input, choice });
 }
 
 // Call Warshall's algorithm solver to the backend
