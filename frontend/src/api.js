@@ -8,7 +8,7 @@ import axios from 'axios';
 
 // Get the API URL from environment variable or fallback to localhost for development
 const API_BASE_URL = (window._env_ && window._env_.API_URL) || 'http://localhost:5000';
-const API_KEY = (window._env_ && window._env.API_KEY) || 'development-key';
+const API_KEY = (window._env_ && window._env_.API_KEY) || 'development-key';
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
