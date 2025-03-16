@@ -44,7 +44,7 @@ const report = async (email, issue) => {
 // Send diagnostic struct to the backend
 export const sendDiagnostics = async (payload) => {
     try {
-        const response = await axios.post('http://localhost:5000/diagnostics', payload);
+        const response = await apiClient.post('/diagnostics', payload);
         return response;
     } catch (error)
     {
