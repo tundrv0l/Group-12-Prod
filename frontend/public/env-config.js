@@ -1,3 +1,4 @@
 window._env_ = {
-    API_URL: "PLACEHOLDER_API_URL"
+    API_URL: "PLACEHOLDER_API_URL",
+    API_KEY: "PLACEHOLDER_API_KEY"
 };

@@ -14,6 +14,7 @@ RUN npm run build
 # Create the script to replace placeholders
 RUN echo '#!/bin/sh \n\
 sed -i "s|PLACEHOLDER_API_URL|${REACT_APP_API_URL:-http://localhost:5000}|g" /app/build/env-config.js \n\
+sed -i "s|PLACEHOLDER_API_KEY|${API_KEY:-default-key}|g" /app/build/env-config.js \n\
 exec serve -s build -l 3000' > /app/start.sh && \
 chmod +x /app/start.sh
 

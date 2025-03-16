@@ -8,13 +8,19 @@ import axios from 'axios';
 
 // Get the API URL from environment variable or fallback to localhost for development
 const API_BASE_URL = (window._env_ && window._env_.API_URL) || 'http://localhost:5000';
+const API_KEY = (window._env_ && window._env.API_KEY) || 'development-key';
 
-console.log('API Base URL:', API_BASE_URL);
+const apiClient = axios.create({
+    baseURL: API_BASE_URL,
+    headers: {
+        'X-API-Key': API_KEY
+    }
+});
 
 // A function to route and pass solver code to the backend
 const solve = async (solverType, data) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/solve/${solverType}`, data);
+        const response = await apiClient.post(`/solve/${solverType}`, data);
         return response.data;
     } catch (error)
     {
@@ -26,7 +32,7 @@ const solve = async (solverType, data) => {
 // A function to report problems to the webmaster
 const report = async (email, issue) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/report-problem`, { email, issue });
+        const response = await apiClient.post(`/report-problem`, { email, issue });
         return response;
     } catch (error)
     {
