@@ -17,6 +17,15 @@ from backend.solvers import closures_solver
 from backend.solvers import partition_solver
 from backend.solvers import special_solver
 from backend.solvers import hasse_solver
+from backend.solvers import Warshall_solver
+from backend.solvers import graph_solver
+from backend.solvers import adjacency_solver
+from backend.solvers import weighted_graph_solver
+from backend.solvers import matrix_solver
+from backend.solvers import matrix_multiply_solver
+from backend.solvers import table_solver
+from backend.solvers import topological_solver
+from backend.solvers import critical_solver
 from solvers.util import exceptions
 
 #---Imports for the reporter---#
@@ -102,14 +111,11 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'hasse-diagrams':
         return hasse_solver.solve(data["set"], data["relation"])
     elif solver_type == 'critical-paths':
-        # Call the appropriate function for Critical Paths
-        pass
+        return critical_solver.solve(data)
     elif solver_type == 'pert-diagrams':
-        # Call the appropriate function for PERT Diagrams
-        pass
+        return table_solver.solve(data)
     elif solver_type == 'topological-sorting':
-        # Call the appropriate function for Topological Sorting
-        pass
+        return topological_solver.solve(data)
     elif solver_type == 'permutations-cycle':
         # Call the appropriate function for Permutations of a Cycle
         pass
@@ -126,20 +132,17 @@ def solve_algorithim(solver_type, data):
         # Call the appropriate function for Master Theorem
         pass
     elif solver_type == 'boolean-matrices':
-        # Call the appropriate function for Boolean Matrices
-        pass
-    elif solver_type == 'matrice-operations':
-        # Call the appropriate function for Matrice Operations
-        pass
+        print(data)
+        if data["operation"] == "MEET/JOIN":
+            return matrix_solver.solve(data["matrix1"], data["matrix2"])
+        else:
+            return matrix_multiply_solver.solve(data["matrix1"], data["matrix2"])
     elif solver_type == 'graphs':
-        # Call the appropriate function for Graphs
-        pass
+        return graph_solver.solve(data["pairs"], data["type"], data["isIsomorphic"], data["secondInput"])
     elif solver_type == 'adjacency-matrices-lists':
-        # Call the appropriate function for Adjacency Matrices and Lists
-        pass
+        return adjacency_solver.solve(data["input"], data["type"])
     elif solver_type == 'weighted-graphs':
-        # Call the appropriate function for Weighted Graphs
-        pass
+        return weighted_graph_solver.solve(data["input"], data["type"])
     elif solver_type == 'binary-trees':
         # Call the appropriate function for Binary Trees
         pass
@@ -153,8 +156,7 @@ def solve_algorithim(solver_type, data):
         # Call the appropriate function for Tree Notation
         pass
     elif solver_type == 'warshalls-algorithm':
-        # Call the appropriate function for Warshalls
-        pass
+        return Warshall_solver.solve(data["input"])
     else:
         return {'error': 'Unsupported solver type'}, 400
 

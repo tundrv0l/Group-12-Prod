@@ -1,9 +1,13 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
 import { solveWarshallsAlgorithm } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
+import MatrixTable from '../components/MatrixTable';
+import MatrixToolbar from '../components/MatrixToolbar';
 import HomeButton from '../components/HomeButton';
+import MatrixOutput from '../components/MatrixOutput';
+import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
 * Name: WarshallsAlgorithm.js
@@ -12,41 +16,87 @@ import HomeButton from '../components/HomeButton';
 */
 
 const WarshallsAlgorithm = () => {
-  const [input, setInput] = React.useState('');
+  const [matrix, setMatrix] = React.useState([['']]);
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
 
+  // Add diagnostics
+  const { trackResults } = useDiagnostics("WARSHALLS_ALGORITHM");
+
   const handleSolve = async () => {
-    // Empty output and error messages
     setLoading(true);
     setOutput('');
     setError('');
 
+
     // Validate input
-    const isValid = validateInput(input);
-    if (!isValid) {
-      setError('Invalid input. Please enter a valid expression.');
+    if (!validateMatrices(matrix)) {
+      setError('Invalid input. Please ensure both matrix only contain only 0s and 1s and is square.');
       setLoading(false);
       return;
     }
 
-    setError('');
+    const startTime = performance.now();
+    
     try {
-      const result = await solveWarshallsAlgorithm(input);
-      setOutput(result);
+      const result = await solveWarshallsAlgorithm(matrix);
+      const parsedResult = JSON.parse(result);
+      console.log(parsedResult);
+      
+      // Track successful execution with timing
+      trackResults(
+        { formula: matrix }, // Input data
+        parsedResult,       // Result data
+        performance.now() - startTime      // Execution time in ms
+      );
+      
+      setOutput(parsedResult);
     } catch (err) {
-      setError('An error occurred while generating the solution.');
+      // Track failed execution with timing
+      trackResults(
+        { formula: matrix },
+        { error: err.message || 'Unknown error' },
+        performance.now() - startTime
+      );
+      
+      setError('An error occurred while generating the weighted graph.');
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  const validateInput = (input) => {
-    // TODO: Change regex here based on input pattern
-    const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
-    return wffRegex.test(input);
-  }
+  const validateMatrices = (matrix) => {
+
+    // Check for empty matrix
+    if (!matrix || matrix.length === 0) {
+      return false;
+    }
+    
+    // Check if the matrix is square
+    const columns = matrix[0].length;
+    const isSquareMatrix = matrix.length === columns;
+
+    // Check to make sure all cells are either 0 or 1
+    const isValidMatrix = matrix.every(row => row.every(cell => cell === '0' || cell === '1'));
+
+    return isSquareMatrix && isValidMatrix;
+  };
+
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here.";
+    }
+    
+    try {
+      // Parse output if it's a JSON string
+      const matrices = typeof output === 'string' ? JSON.parse(output) : output;
+      return <MatrixOutput matrices={matrices} />;
+    } catch (e) {
+      console.error("Error rendering matrix output:", e);
+      return "Error rendering matrices.";
+    }
+  };
 
   return (
     <Page>
@@ -58,44 +108,45 @@ const WarshallsAlgorithm = () => {
           </Box>
           <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
             <Text size="xxlarge" weight="bold">
-            Warhsall's Algorithm Solver
+              Warshall's Algorithm Solver
             </Text>
           </Box>
           <Box align="center" justify="center">
             <Text size="large" margin="none" weight={500}>
-              Topic: Directed Graphs, Binary Relations, and Warhsall's Algorithm
+              Topic: Directed Graphs, Binary Relations, and Warshall's Algorithm
             </Text>
           </Box>
           <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
             <Text margin={{"bottom":"small"}} textAlign="center">
-            This tool helps you analyze graphs using Warshall's Algorithm in discrete mathematics.
+              This tool helps you analyze graphs using Warshall's Algorithm in discrete mathematics.
             </Text>
             <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            Warshall's Algorithm is used to find the transitive closure of a directed graph. The transitive closure of a graph is a measure of which vertices are reachable from other vertices. This algorithm is useful in various applications such as finding the reachability of nodes in a network.
+              Warshall's Algorithm is used to find the transitive closure of a directed graph. The transitive closure of a graph is a measure of which vertices are reachable from other vertices. This algorithm is useful in various applications such as finding the reachability of nodes in a network.
             </Text>
             <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            In Warshall's Algorithm, we start with the adjacency matrix of the graph. The algorithm iteratively updates the matrix to reflect the reachability of vertices. If there is a path from vertex i to vertex j through vertex k, the algorithm updates the matrix to indicate that vertex j is reachable from vertex i.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            By analyzing graphs using Warshall's Algorithm, you can understand the reachability and connectivity of different nodes in a graph. This is useful in various applications such as network analysis, algorithm design, and optimization problems. This tool allows you to input a graph and explore its transitive closure using Warshall's Algorithm.
+              In Warshall's Algorithm, we start with the adjacency matrix of the graph. The algorithm iteratively updates the matrix to reflect the reachability of vertices. If there is a path from vertex i to vertex j through vertex k, the algorithm updates the matrix to indicate that vertex j is reachable from vertex i.
             </Text>
             <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-            Enter your graph below to generate and analyze its transitive closure using Warshall's Algorithm!
+              By analyzing graphs using Warshall's Algorithm, you can understand the reachability and connectivity of different nodes in a graph. This is useful in various applications such as network analysis, algorithm design, and optimization problems. This tool allows you to input a graph and explore its transitive closure using Warshall's Algorithm.
+            </Text>
+            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+              Enter your graph below to generate and analyze its transitive closure using Warshall's Algorithm!
             </Text>
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
-              <TextInput 
-                placeholder="Example: Enter your tree here (e.g., [1, 2, 3, 4, 5, 6, 7])"
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-              />
-              {error && <Text color="status-critical">{error}</Text>}
+              <MatrixTable label="Adjacency Matrix" matrix={matrix} setMatrix={setMatrix} />
+              <MatrixToolbar matrix={matrix} setMatrix={setMatrix} combined addRemoveBoth />
             </CardBody>
             <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
               <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
             </CardFooter>
           </Card>
+          {error && (
+            <Text color="status-critical" margin={{"top":"small"}}>
+              {error}
+            </Text>
+          )}
           <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
             <CardBody pad="small">
               <Text weight="bold">
@@ -103,7 +154,7 @@ const WarshallsAlgorithm = () => {
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
                 <Text>
-                  {output ? JSON.stringify(output) : "Output will be displayed here!"}
+                  {renderOutput()}
                 </Text>
               </Box>
             </CardBody>

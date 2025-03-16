@@ -1,9 +1,11 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
+import { CircleInformation } from 'grommet-icons';
 import { solvePropertiesOfRelations } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
+import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
 * Name: RelationProperties.js
@@ -17,13 +19,16 @@ const RelationProperties = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
+
+  const { trackResults } = useDiagnostics("RELATION_PROPERTIES");
 
   const handleSolve = async () => {
     // Empty output and error messages
     setLoading(true);
     setOutput('');
     setError('');
-
+  
     // Validate input
     const isValidSet = validateSet(set);
     const isValidRelation = validateRelation(relation, set);
@@ -35,40 +40,65 @@ const RelationProperties = () => {
     } 
     
     setError('');
+    
+    // Start timing for performance tracking
+    const startTime = performance.now();
+    
     try {
-          let result = await solvePropertiesOfRelations(set, relation);
-    
-          // Parse result if it is a string
-          if (typeof result === 'string') {
-            result = JSON.parse(result);
-          }
-    
-          // Check if there is an error key in the result
-          const errorKey = Object.keys(result).find(key => key.toLowerCase().includes('error'));
-          console.log(errorKey);
-          if (errorKey) {
-            setError(result[errorKey]);
-          } else {
-            setOutput(result);
-          }
-        } catch (err) {
-          console.log(err);
-          setError('An error occurred while analyzing the relations.');
-        } finally {
-          setLoading(false);
-        }
+      let result = await solvePropertiesOfRelations(set, relation);
+  
+      // Parse result if it is a string
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
       }
+  
+      // Check if there is an error key in the result
+      const errorKey = Object.keys(result).find(key => key.toLowerCase().includes('error'));
+      
+      if (errorKey) {
+        // Track result with error
+        trackResults(
+          { set, relation }, // Input data
+          { error: result[errorKey] }, // Error result
+          performance.now() - startTime // Execution time
+        );
+        setError(result[errorKey]);
+      } else {
+        // Track successful result
+        trackResults(
+          { set, relation }, // Input data
+          result, // Success result
+          performance.now() - startTime // Execution time
+        );
+        setOutput(result);
+      }
+    } catch (err) {
+      // Track exception
+      trackResults(
+        { set, relation }, // Input data
+        { error: err.message || 'Unknown error' }, // Error result
+        performance.now() - startTime // Execution time
+      );
+      console.log(err);
+      setError('An error occurred while analyzing the relations.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Validate that set conforms to format
   const validateSet = (input) => {
-
-    // Tests if input is in the form {a, b, c, 23}
-    const setRegex = /^\{(\s*[a-zA-Z0-9]+\s*,)*\s*[a-zA-Z0-9]+\s*\}$/;
+    // Allow both non-empty sets {a, b, c, 23} and empty sets {}
+    const setRegex = /^\{(\s*[a-zA-Z0-9]+\s*,)*\s*[a-zA-Z0-9]+\s*\}$|^\{\s*\}$/;
     return setRegex.test(input);
   };
 
   // Validate that relation conforms to format
   const validateRelation = (input, set) => {
+    // Check for empty relation
+    if (input.trim() === '{}') {
+      return true; // Empty relation is valid
+    }
 
     // Tests if input is in the form {(a, b), (23, c)}
     const relationRegex = /^\{(\s*\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*,)*\s*\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*\}$/;
@@ -76,10 +106,15 @@ const RelationProperties = () => {
       return false;
     }
     
+    // If set is empty but relation isn't, the relation can't be valid
+    if (set.trim() === '{}') {
+      return false;
+    }
+    
     // Checks if all elements in the relation are in the set
-    const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/);
-    const relationElements = input.replace(/[{}()]/g, '').split(/\s*,\s*/);
-  
+    const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/).filter(Boolean);
+    const relationElements = input.replace(/[{}()]/g, '').split(/\s*,\s*/).filter(Boolean);
+    
     return relationElements.every(element => setElements.includes(element));
   };
 
@@ -138,7 +173,31 @@ const RelationProperties = () => {
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
-            <Box margin={{bottom : "small" }}>
+            <Box margin={{bottom : "small" }}><Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+              <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+            </Box>
+            <Collapsible open={showHelp}>
+              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                <Text>
+                  To input a set, use the following format:
+                </Text>
+                <Text>
+                  <strong>{'{a,b,c}'}</strong>
+                </Text>
+                <Text>
+                  For example: <strong>{'{a,b,f,23}'}</strong>
+                </Text>
+                <Text>
+                  To input a relation, use the following format:
+                </Text>
+                <Text>
+                  <strong>{'{(a,b),(b,c),(c,a)}'}</strong>
+                </Text>
+                <Text>
+                  For example: <strong>{'{(a,b),(b,f),(f,23),(a,a)}'}</strong>
+                </Text>
+              </Box>
+            </Collapsible>
               <TextInput 
                 placeholder="Example: Enter your set here (e.g., {a, b, c, 23})"
                 value={set}

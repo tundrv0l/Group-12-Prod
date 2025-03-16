@@ -18,3 +18,14 @@ code {
   height: 100%;
   z-index: -1; /* Ensure it is behind other content */
 }
+
+/* Add to your index.css or App.css */
+*:focus {
+  outline: none !important;
+}
+
+/* For accessibility, add a subtle indicator on keyboard focus only */
+*:focus-visible {
+  outline: 2px solid #aaaaaa !important;
+  outline-offset: 2px !important;
+}

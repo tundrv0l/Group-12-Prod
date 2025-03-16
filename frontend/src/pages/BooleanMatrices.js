@@ -1,11 +1,13 @@
 import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Select } from 'grommet';
 import { solveBooleanMatrices } from '../api';
+import MatrixOutput from '../components/MatrixOutput';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import MatrixTable from '../components/MatrixTable';
 import MatrixToolbar from '../components/MatrixToolbar';
 import HomeButton from '../components/HomeButton';
+import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
 * Name: BooleanMatrices.js
@@ -17,10 +19,12 @@ import HomeButton from '../components/HomeButton';
 const BooleanMatrices = () => {
   const [matrix1, setMatrix1] = React.useState([['']]);
   const [matrix2, setMatrix2] = React.useState([['']]);
-  const [operation, setOperation] = React.useState('AND');
+  const [operation, setOperation] = React.useState('MEET/JOIN');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+
+  const { trackResults } = useDiagnostics("BOOLEAN_MATRICES");
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -36,10 +40,29 @@ const BooleanMatrices = () => {
     }
 
     setError('');
+    
+    // Start timing for performance tracking
+    const startTime = performance.now();
+
     try {
       const result = await solveBooleanMatrices(matrix1, matrix2, operation);
+
+      // Tracking results for diagnostics
+      trackResults(
+        { matrix1: matrix1, matrix2: matrix2, operation: operation },
+        result, 
+        performance.now() - startTime
+      )
+
       setOutput(result);
     } catch (err) {
+
+      trackResults(
+        { matrix1: matrix1, matrix2: matrix2, operation: operation },
+        { error: err.message || "Error solving Boolean Matrices" },
+        performance.now() - startTime
+      );
+
       setError('An error occurred while generating the matrix.');
     } finally {
       setLoading(false);
@@ -55,11 +78,26 @@ const BooleanMatrices = () => {
       return false;
     }
 
-    if (operation === 'MULTIPLY') {
+    if (operation === 'PRODUCT') {
       return matrix1[0].length === matrix2.length;
     }
 
     return matrix1.length === matrix2.length && matrix1[0].length === matrix2[0].length;
+  };
+
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here.";
+    }
+    
+    try {
+      // Parse output if it's a JSON string
+      const matrices = typeof output === 'string' ? JSON.parse(output) : output;
+      return <MatrixOutput matrices={matrices} />;
+    } catch (e) {
+      console.error("Error rendering matrix output:", e);
+      return "Error rendering matrices.";
+    }
   };
 
   return (
@@ -103,7 +141,7 @@ const BooleanMatrices = () => {
             </CardBody>
             <Box align="center" justify="center" pad={{ vertical: 'small' }}>
               <Select
-                options={['AND', 'OR', 'MULTIPLY']}
+                options={['MEET/JOIN', 'PRODUCT']}
                 value={operation}
                 onChange={({ option }) => setOperation(option)}
               />
@@ -124,7 +162,7 @@ const BooleanMatrices = () => {
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
                 <Text>
-                  {output ? JSON.stringify(output) : "Output will be displayed here!"}
+                  {renderOutput()}
                 </Text>
               </Box>
             </CardBody>

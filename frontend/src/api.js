@@ -30,6 +30,19 @@ const report = async (email, issue) => {
     }
 }
 
+// Send diagnostic struct to the backend
+export const sendDiagnostics = async (payload) => {
+    try {
+        const response = await axios.post('http://localhost:5000/diagnostics', payload);
+        return response;
+    } catch (error)
+    {
+        // Return null if there is an error
+        return null
+    }
+}
+
+
 // Driver function to call the report function to the backend
 export const reportProblem = async (email, issue) => {
     return await report(email, issue);
@@ -115,8 +128,16 @@ export const solveEquivalenceRelations = async (set, relation) => {
 }
 
 // Call adjacency matrices and lists solver to the backend
-export const solveAdjacencyMatricesLists = async (input) => {
-    return await solve('adjacency-matrices-lists', { input });
+export const solveAdjacencyMatricesLists = async (input, type) => {
+    try {
+        const response =  await solve('adjacency-matrices-lists', { input, type });
+        if (response.error) {
+            throw new Error(response.error);
+        }
+        return response;
+    } catch (error) {
+        throw new Error(error.message);
+    }
 }
 
 // Call array to tree solver to the backend
@@ -130,8 +151,8 @@ export const solveBinaryTrees = async (input) => {
 }
 
 // Call boolean matrices solver to the backend
-export const solveBooleanMatrices = async (input) => {
-    return await solve('boolean-matrices', { input });
+export const solveBooleanMatrices = async (matrix1, matrix2, operation) => {
+    return await solve('boolean-matrices', { matrix1, matrix2, operation });
 }
 
 // Call compositions of permutations solver to the backend
@@ -140,9 +161,16 @@ export const solveCompositions = async (input) => {
 }
 
 // Call critical paths solver to the backend
-export const solveCriticalPaths = async (input) => {
-    return await solve('critical-paths', { input });
+export const solveCriticalPaths = async (taskTable) => {
+    try {
+        const response = await solve('critical-paths', taskTable);
+        return response
+    } catch (error) {
+        console.error('Error finding critical paths:', error);
+        throw error;
+    }
 }
+
 
 // Call disjoint cycles solver to the backend
 export const solveDisjointCycles = async (input) => {
@@ -173,8 +201,14 @@ export const solveOrderOfMagnitude = async (input) => {
 }
 
 // Call PERT diagrams solver to the backend
-export const solvePERTDiagrams = async (input) => {
-    return await solve('pert-diagrams', { input });
+export const solvePERTDiagrams = async (taskTable) => {
+    try {
+        const response = await solve('pert-diagrams', taskTable);
+        return response
+    } catch (error) {
+        console.error('Error solving PERT diagram:', error);
+        throw error;
+    }
 }
 
 // Call partial orderings solver to the backend
@@ -196,8 +230,15 @@ export const solvePermutationsCycle = async (input) => {
 }
 
 // Call topological sorting solver to the backend
-export const solveTopologicalSorting = async (input) => {
-    return await solve('topological-sorting', { input });
+export const solveTopologicalSorting = async (taskTable) => {
+    try {
+        // Here we don't need to wrap it in {input: ...} as the controller expects the raw data
+        const response = await solve('pert-diagrams', taskTable);
+        return response;
+    } catch (error) {
+        console.error('Error topologically sorting:', error);
+        throw error;
+    }
 }
 
 // Call tree to array solver to the backend
@@ -211,11 +252,24 @@ export const solveWarshallsAlgorithm = async (input) => {
 }
 
 // Call weighted graphs solver to the backend
-export const solveWeightedGraphs = async (input) => {
-    return await solve('weighted-graphs', { input });
+export const solveWeightedGraphs = async (input, type) => {
+    try {
+        const response = await solve('weighted-graphs', { input, type });
+        if (response.error) {
+            throw new Error(response.error);
+        }
+        return response;
+    } catch (error) {
+        throw new Error(error.message);
+    }
 }
 
 // Solve tree notation to the backend
 export const solveTreeNotation = async (input) => {
     return await solve('tree-notation', { input });
+}
+
+// Solve master theorem to the backend
+export const solveMasterTheorem = async (input) => {
+    return await solve('master-theorem', { input });
 }
