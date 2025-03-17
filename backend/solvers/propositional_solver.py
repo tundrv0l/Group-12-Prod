@@ -1,5 +1,6 @@
-#Inputs can be "A ^ B v C ^ D > (E > A) ^ (E v D)' ^ ((A' ^ B')' v (C' ^ D')')'"
-#output would be outputStrning
+# Propositinal_solver.py
+# Author: Mathias Buchanan
+# Solves: 1.2 propositinal logic problems
 
 letters = []
 outputString = ""
