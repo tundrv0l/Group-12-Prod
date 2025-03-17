@@ -212,7 +212,7 @@ const WFFSolverPage = () => {
             </Text>
             <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
               {output ? <TruthTable headers={output.headers} rows={output.rows} /> : <Text>Output will be displayed here!</Text>}
-              {output.classification && renderClassification(output.classification, output.description)}
+              {output && output.classification && renderClassification(output.classification, output.description)}
             </Box>
           </CardBody>
         </Card>
