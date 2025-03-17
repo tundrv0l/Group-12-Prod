@@ -26,7 +26,7 @@ const DisjointCycles = () => {
     // Validate input
     const isValid = validateInput(input);
     if (!isValid) {
-      setError('Invalid input. Please enter a valid permutation. Seperate inputs with spaces, no commas.');
+      setError('Invalid input. Please enter a valid permutation.');
       setLoading(false);
       return;
     }
@@ -50,11 +50,19 @@ const DisjointCycles = () => {
   }
 
   const validateInput = (input) => {
-    // Regular expression to match the required pattern
-    const regex = /\(\s*([a-zA-Z0-9]+\s+[a-zA-Z0-9]+(?:\s+[a-zA-Z0-9]+)*)\s*\)/g;
+    // Reject input if it contains a plus sign
+    if (/\+/.test(input)) {
+      return false;
+    }
+  
+    // Improved regex to match cycles with space or comma separators
+    const regex = /\(\s*([a-zA-Z0-9]+(?:\s*,\s*|\s+)[a-zA-Z0-9]+(?:(?:\s*,\s*|\s+)[a-zA-Z0-9]+)*)\s*\)/g;
+  
+    // Remove composition symbols before matching
+    const cleanedInput = input.replace(/\s*\∘\s*/g, ' '); // Unicode composition symbol only
   
     // Find all matches
-    const matches = input.match(regex);
+    const matches = cleanedInput.match(regex);
   
     // Check if there are at least two valid cycles
     return matches && matches.length >= 2;
