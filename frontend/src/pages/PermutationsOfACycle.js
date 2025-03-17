@@ -4,8 +4,8 @@ import { solvePermutationsCycle } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
-import MatrixTable from '../components/MatrixTable';
-import MatrixToolbar from '../components/MatrixToolbar';
+import MatrixTable from '../components/PermutationsInput';
+import MatrixToolbar from '../components/PermutatinsToolbar';
 import MatrixOutput from '../components/MatrixOutput';
 
 /*
