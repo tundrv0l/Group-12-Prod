@@ -35,7 +35,7 @@ const CompositionOfPermutations = () => {
     }
     const isBigger = validateSizes(setOne, setTwo);
     if (!isBigger) {
-      setError('Invalid input. Please ensure that Set 1\'s input is bigger than set 2\'s');
+      setError('Invalid input. Please ensure that the set has more items than is being selected.');
       setLoading(false);
       return;
     }
@@ -70,7 +70,7 @@ const CompositionOfPermutations = () => {
   };
 
   const validateSizes = (setOne, setTwo) => {
-    return setOne >= setTwo
+    return Number(setOne) >= Number(setTwo);
   }
 
   return (
@@ -161,7 +161,7 @@ const CompositionOfPermutations = () => {
                 </Text>
                 <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} margin={{"bottom":"medium"}}>
                   <Text>
-                    {perm ? JSON.stringify(perm) : "Output will be displayed here!"}
+                    {perm ? Number(perm).toExponential(2) : "Output will be displayed here!"}
                   </Text>
                 </Box>
                 <Text>
@@ -169,7 +169,7 @@ const CompositionOfPermutations = () => {
                 </Text>
                 <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
                   <Text>
-                    {comp ? JSON.stringify(comp) : "Output will be displayed here!"}
+                    {comp ? Number(comp).toExponential(2) : "Output will be displayed here!"}
                   </Text>
                 </Box>
               </Box>
