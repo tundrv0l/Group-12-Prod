@@ -29,6 +29,11 @@ const SidebarMenu = () => (
           { label: "Cartesian Products", path: "/cartesian-products" }
         ]} />
       </AccordionPanel>
+      <AccordionPanel label="4.4: Permutations and Combinations">
+        <AccordionPanelContent content={[
+          { label: "Compositions of Permutations", path: "/compositions" },
+        ]} />
+      </AccordionPanel>
       <AccordionPanel label="5.1: Relations">
         <AccordionPanelContent content={[
           { label: "Property Of Relations", path: "/properties-of-relations" },
@@ -48,7 +53,6 @@ const SidebarMenu = () => (
       <AccordionPanel label="5.4: Functions">
         <AccordionPanelContent content={[
           { label: "Permutations Of A Cycle", path: "permutations-cycle" },
-          //{ label: "Compositions of Permutations", path: "/compositions" },
           { label: "Permutations Expressed As Disjoint Cycles", path: "/disjoint-cycles" }
         ]} />
       </AccordionPanel>

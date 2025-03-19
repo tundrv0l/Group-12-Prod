@@ -25,6 +25,7 @@ from backend.solvers import matrix_solver
 from backend.solvers import matrix_multiply_solver
 from backend.solvers import cycle_solver
 from backend.solvers import disjoint_solver
+from backend.solvers import compisitions_solver
 from solvers.util import exceptions
 
 #---Imports for the reporter---#
@@ -121,8 +122,7 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'permutations-cycle':
         return cycle_solver.solve(data['input'])
     elif solver_type == 'compositions':
-        # Call the appropriate function for Compositions
-        pass
+        return compisitions_solver.solve(data['setOne']['setOne'], data['setOne']['setTwo'])
     elif solver_type == 'disjoint-cycles':
         return disjoint_solver.solve(data['input'])
     elif solver_type == 'order-of-magnitude':
