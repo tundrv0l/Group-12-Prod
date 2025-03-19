@@ -58,6 +58,14 @@ def _parse_formula(formula):
     formula = formula.replace('→', ' <= ')
     formula = formula.replace('↔', ' == ')
 
+    formula = re.sub(r"\(([^()]+)\)\'", r'not (\1)', formula)  # ASCII apostrophe
+    formula = re.sub(r"\(([^()]+)\)′", r'not (\1)', formula)   # Unicode prime symbol
+    
+    # Handle negation of individual variables
+    formula = re.sub(r"([A-Z])\'", r'not \1', formula)
+    formula = re.sub(r"([A-Z])′", r'not \1', formula)
+
+
     # Replace logical operators with Python equivalents
     formula = formula.replace('v', ' or ')
     formula = formula.replace('V', ' or ')
@@ -67,18 +75,25 @@ def _parse_formula(formula):
     formula = formula.replace('>', ' <= ')
     formula = re.sub(r"([A-Z])'", r'not \1', formula)
 
+    # Handle the implies function for later eval() usage.
+    # Python is picky about how logical and conditional operators are validated.
+    if '->' in formula or '>' in formula or '→' in formula:
+        # Extract the left and right parts of the implication
+        parts = re.split(r'(->|>|→)', formula, 1)
+        if len(parts) >= 3:
+            left = parts[0].strip()
+            right = ''.join(parts[2:]).strip()
+            formula = f"implies({left}, {right})"
+    elif '<=' in formula or 'S' in formula:
+        # Same for <= operator
+        parts = re.split(r'(<=|S)', formula, 1)
+        if len(parts) >= 3:
+            left = parts[0].strip()
+            right = ''.join(parts[2:]).strip()
+            formula = f"implies({left}, {right})"
+
     # Replace parentheses with brackets for easier parsing
     formula = formula.replace('[', '(').replace(']', ')')
-
-    # Handle implies operator by adding parentheses around the expressions
-    # Python is really picky about order of operations, so just parse it out
-    # and add parentheses around the expressions
-    parts = re.split(r'(\s<=\s|\s==\s)', formula)
-    for i in range(len(parts)):
-        part = parts[i].strip()
-        if part not in ['<=', '=='] and not part.startswith('(') and not part.endswith(')'):
-            parts[i] = f'({part})'
-    formula = ''.join(parts)
 
     return formula
 

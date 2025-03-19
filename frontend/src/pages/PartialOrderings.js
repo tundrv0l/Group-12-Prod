@@ -87,6 +87,11 @@ const PartialOrderings = () => {
   // Validate that set conforms to format
   const validateSet = (input) => {
 
+    // Allow empty set {}
+    if (input.trim() === '{}') {
+      return true;
+    }
+
     // Tests if input is in the form {a, b, c, 23}
     const setRegex = /^\{(\s*[a-zA-Z0-9]+\s*,)*\s*[a-zA-Z0-9]+\s*\}$/;
     return setRegex.test(input);
@@ -95,15 +100,25 @@ const PartialOrderings = () => {
   // Validate that relation conforms to format
   const validateRelation = (input, set) => {
 
+    // Allow empty relation {}
+    if (input.trim() === '{}') {
+      return true;
+    }
+
     // Tests if input is in the form {(a, b), (23, c)}
     const relationRegex = /^\{(\s*\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*,)*\s*\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*\}$/;
     if (!relationRegex.test(input)) {
       return false;
     }
+
+    // If set is empty, no relation can be valid (except empty relation, already handled)
+    if (set.trim() === '{}') {
+      return false;
+    }
     
     // Checks if all elements in the relation are in the set
-    const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/);
-    const relationElements = input.replace(/[{}()]/g, '').split(/\s*,\s*/);
+    const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/).filter(element => element.trim() !== '');
+    const relationElements = input.replace(/[{}()]/g, '').split(/\s*,\s*/).filter(element => element.trim() !== '');
   
     return relationElements.every(element => setElements.includes(element));
   };
@@ -115,10 +130,10 @@ const PartialOrderings = () => {
     }
 
     // Parse out json object and return out elements one by one
-    const parsedOutput = JSON.parse(output);
+    //const parsedOutput = JSON.parse(output);
     return (
       <Box>
-        {Object.entries(parsedOutput).map(([key, value]) => (
+        {Object.entries(output).map(([key, value]) => (
           <Text key={key}>{`${key}: ${value}`}</Text>
         ))}
       </Box>

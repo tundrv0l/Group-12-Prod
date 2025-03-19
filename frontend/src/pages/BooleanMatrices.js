@@ -34,7 +34,7 @@ const BooleanMatrices = () => {
 
     // Validate input
     if (!validateMatrices(matrix1, matrix2, operation)) {
-        setError('Invalid input. Please ensure both matrices only contain only 0s and 1s. If you are using AND/OR ensure the matrices are the same size. If you are using MULTIPLY ensure the number of columns in the first matrix is equal to the number of rows in the second matrix.');
+        setError('Invalid input. Please ensure both matrices only contain only 0s and 1s. If you are using MEET/JOIN ensure the matrices are the same size. If you are using PRODUCT ensure the number of columns in the first matrix is equal to the number of rows in the second matrix.');
         setLoading(false);
         return;
     }

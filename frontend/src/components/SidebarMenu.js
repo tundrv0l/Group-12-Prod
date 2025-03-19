@@ -74,8 +74,9 @@ const SidebarMenu = () => (
           }}
         >
           <CustomAccordionPanel label="1.1: Statements and Tautologies">
+            
             <AccordionPanelContent 
-              content={[{ label: "Well-Formed Formula (wff) to Truth Table", path: "/wff-truthtable" }]} 
+              content={[{ label: "Well-Formed Formula (wff) to Truth Table", path: "/wff-truthtable"}]} 
               size={size}
             />
           </CustomAccordionPanel>
@@ -120,7 +121,7 @@ const SidebarMenu = () => (
               content={[
                 { label: "Property Of Relations", path: "/properties-of-relations" },
                 { label: "Closure Axioms", path: "/closure-axioms" },
-                { label: "Equivalence Relations", path: "/equivalence-relations" },
+                { label: "Partitions", path: "/partitions" },
                 { label: "Partial Orderings", path: "/partial-orderings" },
                 { label: "Hasse Diagram", path: "/hasse-diagram" }
               ]} 

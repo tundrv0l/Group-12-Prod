@@ -108,7 +108,7 @@ def solve_algorithim(solver_type, data):
         return properties_solver.solve(data["set"], data["relation"])
     elif solver_type == 'closure-axioms':
         return closures_solver.solve(data["set"], data["relation"])
-    elif solver_type == 'equivalence-relations':
+    elif solver_type == 'partitions':
         return partition_solver.solve(data["set"], data["relation"])
     elif solver_type == 'partial-orderings':
         return special_solver.solve(data["set"], data["relation"])

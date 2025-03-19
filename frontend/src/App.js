@@ -14,7 +14,7 @@ import BinaryUnaryOperators from './pages/BinaryUnaryOperators';
 import CartesianProducts from './pages/CartesianProducts';
 import RelationProperties from './pages/RelationProperties';
 import ClosureAxioms from './pages/ClosureAxioms';
-import EquivalenceRelations from './pages/EquivalenceRelations';
+import Partitions from './pages/Partitions';
 import PartialOrderings from './pages/PartialOrderings';
 import HasseDiagram from './pages/HasseDiagram';
 import CriticalPaths from './pages/CriticalPaths';
@@ -52,7 +52,7 @@ const App = () => (
         <Route path="/cartesian-products" element={<CartesianProducts />} />
         <Route path="/properties-of-relations" element={<RelationProperties />} />
         <Route path="/closure-axioms" element={<ClosureAxioms />} />
-        <Route path="/equivalence-relations" element={<EquivalenceRelations />} />
+        <Route path="/partitions" element={<Partitions />} />
         <Route path="/partial-orderings" element={<PartialOrderings />} />
         <Route path="/hasse-diagram" element={<HasseDiagram />} />
         <Route path="/critical-path" element={<CriticalPaths />} />

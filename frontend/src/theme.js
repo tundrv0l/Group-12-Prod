@@ -46,14 +46,11 @@ const customTheme = deepMerge(grommet, {
     },
     default: {
       color: 'text',
-      border: { color: 'transparent' }
     },
     hover: {
       background: { color: 'light-2' },
-      border: { color: 'transparent' }
     },
     focus: {
-      border: { color: 'transparent' },
       outline: { color: 'transparent', size: '0px' },
       shadow: { color: 'transparent', size: '0px' }
     }
