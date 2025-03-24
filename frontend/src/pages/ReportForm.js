@@ -94,7 +94,7 @@ const ReportForm = () => {
                             onChange={(event) => setEmail(event.target.value)}
                         />
                         <Box align="center" justify="center" margin={{ vertical: 'small' }}>
-                            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSubmit} disabled={loading} />
+                            <Button label={loading ? <Spinner /> : "Send"} onClick={handleSubmit} disabled={loading} />
                         </Box>
                     </Box>
                     {error && <Text color="status-critical">{error}</Text>}

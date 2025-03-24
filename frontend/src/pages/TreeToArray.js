@@ -1,11 +1,12 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, Tab, Tabs } from 'grommet';
+import { PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, Tab, Tabs } from 'grommet';
 import { solveTreeToArray } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import TreeToArrayOutput from '../components/TreeToArrayOutput';
+import PageTopScroller from '../components/PageTopScroller';
 
 /*
 * Name: TreeToArray.js
@@ -14,6 +15,7 @@ import TreeToArrayOutput from '../components/TreeToArrayOutput';
 */
 
 const TreeToArray = () => {
+
   const [input, setInput] = React.useState('');
   const [treeType, setTreeType] = React.useState('regular');
   const [output, setOutput] = React.useState('');
@@ -253,108 +255,110 @@ const TreeToArray = () => {
   };
 
   return (
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-        <PageContent align="center" skeleton={false}>
-          <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-              <HomeButton />
-            </Box>
-            <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-              <Text size="xxlarge" weight="bold">
-              Tree to Array Representations
-              </Text>
-            </Box>
-            <Box align="center" justify="center">
-              <Text size="large" margin="none" weight={500}>
-                Topic: Trees And Their Representations
-              </Text>
-            </Box>
-            <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{"bottom":"small"}} textAlign="center">
-              This tool helps you convert binary trees to their array representations.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              While binary trees are often visualized with nodes and connecting lines, they can also be represented using arrays. Array representations provide efficient storage and access methods for tree structures and are fundamental in many computational applications.
-            </Text>
 
-            <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
-              There are two common array representations for binary trees:
-            </Text>
+        <PageTopScroller>
+          <Background />
+          <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+            <PageContent align="center" skeleton={false}>
+              <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
+                  <HomeButton />
+                </Box>
+                <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
+                  <Text size="xxlarge" weight="bold">
+                  Tree to Array Representations
+                  </Text>
+                </Box>
+                <Box align="center" justify="center">
+                  <Text size="large" margin="none" weight={500}>
+                    Topic: Trees And Their Representations
+                  </Text>
+                </Box>
+                <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
+                <Text margin={{"bottom":"small"}} textAlign="center">
+                  This tool helps you convert binary trees to their array representations.
+                </Text>
+                <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+                  While binary trees are often visualized with nodes and connecting lines, they can also be represented using arrays. Array representations provide efficient storage and access methods for tree structures and are fundamental in many computational applications.
+                </Text>
 
-            {/* Explanation of Left-Child-Right-Child Representation */}
-            <Box background="light-1" pad="small" round="small" margin={{ vertical: "small" }}>
-              <Text weight="bold" size="medium" margin={{ bottom: "xsmall" }}>Left Child-Right Child Representation</Text>
-              <Text textAlign="start" weight="normal" size="small">
-                This representation uses a table with three columns for each node:
-                <ul>
-                  <li><strong>Node Value:</strong> The value stored in the node</li>
-                  <li><strong>Left Child:</strong> The value of the node's left child (or None)</li>
-                  <li><strong>Right Child:</strong> The value of the node's right child (or None)</li>
-                </ul>
-                This approach explicitly records the parent-child relationships for every node, making it intuitive to understand. It's particularly useful for educational purposes and when tree manipulation operations are frequent, as the relationships between nodes are directly accessible.
-              </Text>
-            </Box>
+                <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
+                  There are two common array representations for binary trees:
+                </Text>
 
-            {/* Explanation of Pointer Representation */}
-            <Box background="light-1" pad="small" round="small" margin={{ vertical: "small" }}>
-              <Text weight="bold" size="medium" margin={{ bottom: "xsmall" }}>Pointer Memory Representation</Text>
-              <Text textAlign="start" weight="normal" size="small">
-                This visualization models how trees are typically stored in computer memory using pointers:
-                <ul>
-                  <li><strong>Value Field:</strong> Contains the actual node value</li>
-                  <li><strong>Left Pointer:</strong> References the memory location of the left child</li>
-                  <li><strong>Right Pointer:</strong> References the memory location of the right child</li>
-                </ul>
-                Each node is drawn as a block of three connected cells, mirroring how nodes would be implemented in languages like C or C++. The arrows visually demonstrate how pointers connect nodes in memory, which might be stored in non-contiguous memory locations. This representation is closer to real-world implementations in many programming languages.
-              </Text>
-            </Box>
+                {/* Explanation of Left-Child-Right-Child Representation */}
+                <Box background="light-1" pad="small" round="small" margin={{ vertical: "small" }}>
+                  <Text weight="bold" size="medium" margin={{ bottom: "xsmall" }}>Left Child-Right Child Representation</Text>
+                  <Text textAlign="start" weight="normal" size="small">
+                    This representation uses a table with three columns for each node:
+                    <ul>
+                      <li><strong>Node Value:</strong> The value stored in the node</li>
+                      <li><strong>Left Child:</strong> The value of the node's left child (or None)</li>
+                      <li><strong>Right Child:</strong> The value of the node's right child (or None)</li>
+                    </ul>
+                    This approach explicitly records the parent-child relationships for every node, making it intuitive to understand. It's particularly useful for educational purposes and when tree manipulation operations are frequent, as the relationships between nodes are directly accessible.
+                  </Text>
+                </Box>
 
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              Array representations have practical advantages in certain algorithms and memory-constrained environments. They can simplify tree operations, provide constant-time access to nodes, and reduce the overhead of storing explicit pointer data structures.
-            </Text>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-              Enter your binary tree below to generate both the visual tree and its equivalent array representations!
-            </Text>
-            </Box>
-          <Card width="large" pad="medium" background={{"color":"light-1"}}>
-            <CardBody pad="small">
-              <Box margin={{ bottom: 'small' }}>
-                <Text margin={{ bottom: 'xsmall' }}>Select Tree Type:</Text>
-                <Select
-                  options={[
-                    { label: 'Regular Binary Tree (Level Order)', value: 'regular' },
-                    { label: 'Mathematical Expression', value: 'mathematical' }
-                  ]}
-                  value={treeType}
-                  labelKey="label"
-                  valueKey="value"
-                  onChange={({ value }) => setTreeType(value.value)}
-                />
-              </Box>
-              <TextInput 
-                placeholder={getPlaceholder()}
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-              />
-              {error && <Text color="status-critical" margin={{ top: 'small' }}>{error}</Text>}
-            </CardBody>
-            <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-              <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
-            </CardFooter>
-          </Card>
-          
-          <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
-            <CardBody pad="small">
-              <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-2"}} round="xsmall">
-                {renderOutput()}
-              </Box>
-            </CardBody>
-          </Card>
-          <ReportFooter />
-        </PageContent>
-      </Box>
-    </Page>
+                {/* Explanation of Pointer Representation */}
+                <Box background="light-1" pad="small" round="small" margin={{ vertical: "small" }}>
+                  <Text weight="bold" size="medium" margin={{ bottom: "xsmall" }}>Pointer Memory Representation</Text>
+                  <Text textAlign="start" weight="normal" size="small">
+                    This visualization models how trees are typically stored in computer memory using pointers:
+                    <ul>
+                      <li><strong>Value Field:</strong> Contains the actual node value</li>
+                      <li><strong>Left Pointer:</strong> References the memory location of the left child</li>
+                      <li><strong>Right Pointer:</strong> References the memory location of the right child</li>
+                    </ul>
+                    Each node is drawn as a block of three connected cells, mirroring how nodes would be implemented in languages like C or C++. The arrows visually demonstrate how pointers connect nodes in memory, which might be stored in non-contiguous memory locations. This representation is closer to real-world implementations in many programming languages.
+                  </Text>
+                </Box>
+
+                <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+                  Array representations have practical advantages in certain algorithms and memory-constrained environments. They can simplify tree operations, provide constant-time access to nodes, and reduce the overhead of storing explicit pointer data structures.
+                </Text>
+                <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+                  Enter your binary tree below to generate both the visual tree and its equivalent array representations!
+                </Text>
+                </Box>
+              <Card width="large" pad="medium" background={{"color":"light-1"}}>
+                <CardBody pad="small">
+                  <Box margin={{ bottom: 'small' }}>
+                    <Text margin={{ bottom: 'xsmall' }}>Select Tree Type:</Text>
+                    <Select
+                      options={[
+                        { label: 'Regular Binary Tree (Level Order)', value: 'regular' },
+                        { label: 'Mathematical Expression', value: 'mathematical' }
+                      ]}
+                      value={treeType}
+                      labelKey="label"
+                      valueKey="value"
+                      onChange={({ value }) => setTreeType(value.value)}
+                    />
+                  </Box>
+                  <TextInput 
+                    placeholder={getPlaceholder()}
+                    value={input}
+                    onChange={(event) => setInput(event.target.value)}
+                  />
+                  {error && <Text color="status-critical" margin={{ top: 'small' }}>{error}</Text>}
+                </CardBody>
+                <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
+                  <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
+                </CardFooter>
+              </Card>
+              
+              <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
+                <CardBody pad="small">
+                  <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-2"}} round="xsmall">
+                    {renderOutput()}
+                  </Box>
+                </CardBody>
+              </Card>
+              <ReportFooter />
+            </PageContent>
+          </Box>
+        </PageTopScroller>
+      
   );
 };
 

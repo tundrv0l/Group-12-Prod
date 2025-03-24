@@ -37,8 +37,9 @@ import WarshallsAlgorithm from './pages/WarshallsAlgorithm';
 
 
 const App = () => (
-  <AppLayout>
-    <Router>
+
+  <Router>
+    <AppLayout>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/wff-truthtable" element={<WFFSolverPage />} />
@@ -74,8 +75,9 @@ const App = () => (
         <Route path="/warshalls-algorithm" element={<WarshallsAlgorithm />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </Router>
-  </AppLayout>
+    </AppLayout>
+  </Router>
+ 
 );
 
 export default App;
