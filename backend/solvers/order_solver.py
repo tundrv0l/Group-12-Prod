@@ -37,7 +37,7 @@ just use the polynomial inside them as the input data.
 def solve(order, scalars_f, scalars_g):
     result_list = [0, 0, 0]
     result = {
-        "For all x\\geq 0, ": "0g(x)\\leq f(x)\\leq 0g(x)" 
+        "Result": "\\forall x\\geq 0, 0g(x)\\leq f(x)\\leq 0g(x)" 
     }
 
     if scalars_g[order] == 0:
@@ -62,7 +62,7 @@ def solve(order, scalars_f, scalars_g):
     result_list[2] = c_2
 
     result = {
-        "Result": f"For all x\\geq {result_list[0]:.2f}, {result_list[1]:.2f}g(x)\\leq f(x)\\leq {result_list[2]:.2f}g(x)"
+        "Result": f"\\forall x\\geq {result_list[0]:.2f}, {result_list[1]:.2f}g(x)\\leq f(x)\\leq {result_list[2]:.2f}g(x)"
     }
 
     return json.dumps(result)
