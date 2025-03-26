@@ -23,6 +23,9 @@ from backend.solvers import adjacency_solver
 from backend.solvers import weighted_graph_solver
 from backend.solvers import matrix_solver
 from backend.solvers import matrix_multiply_solver
+from backend.solvers import cycle_solver
+from backend.solvers import disjoint_solver
+from backend.solvers import compisitions_solver
 from backend.solvers import table_solver
 from backend.solvers import topological_solver
 from backend.solvers import critical_solver
@@ -117,14 +120,11 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'topological-sorting':
         return topological_solver.solve(data)
     elif solver_type == 'permutations-cycle':
-        # Call the appropriate function for Permutations of a Cycle
-        pass
+        return cycle_solver.solve(data['input'])
     elif solver_type == 'compositions':
-        # Call the appropriate function for Compositions
-        pass
+        return compisitions_solver.solve(data['setOne']['setOne'], data['setOne']['setTwo'])
     elif solver_type == 'disjoint-cycles':
-        # Call the appropriate function for Disjoint Cycles
-        pass
+        return disjoint_solver.solve(data['input'])
     elif solver_type == 'order-of-magnitude':
         # Call the appropriate function for Order of Magnitude
         pass

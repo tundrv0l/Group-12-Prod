@@ -4,8 +4,8 @@
 
 import json
 
-from util import exceptions
-from util import strings
+from .util import exceptions
+from .util import strings
 
 '''
 ==========
@@ -21,8 +21,15 @@ result
 cycles_string: a string representing the cycle form
                representation of the permutation
 '''
+
+def convertToDictioary(permutationMatrix):
+    dictionary = {}
+    for i in range(permutationMatrix[0].__len__()):
+        dictionary[permutationMatrix[0][i]] = permutationMatrix[1][i]
+    return dictionary
+
 def solve(permutation):
-    cycles_string = not_json(permutation)
+    cycles_string = not_json(convertToDictioary(permutation))
 
     result = {
         "Cycle Form": cycles_string

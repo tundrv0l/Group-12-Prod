@@ -156,8 +156,8 @@ export const solveBooleanMatrices = async (matrix1, matrix2, operation) => {
 }
 
 // Call compositions of permutations solver to the backend
-export const solveCompositions = async (input) => {
-    return await solve('compositions', { input });
+export const solveCompositions = async (setOne, setTwo) => {
+    return await solve('compositions', { setOne, setTwo });
 }
 
 // Call critical paths solver to the backend
