@@ -8,7 +8,7 @@ import { Add, Trash } from 'grommet-icons';
 * Description: Input component for task tables used in PERT Diagrams.
 */
 
-const TaskTableInput = ({ tasks, setTasks, isTimed, setIsTimed }) => {
+const TaskTableInput = ({ tasks, setTasks, isTimed, setIsTimed, showTimedToggle = true}) => {
 
   // Add a new empty task
   const addTask = () => {
@@ -84,11 +84,13 @@ const TaskTableInput = ({ tasks, setTasks, isTimed, setIsTimed }) => {
   return (
     <Box gap="medium">
       <Box direction="row" align="center" gap="small">
+        {showTimedToggle && (
         <CheckBox
           label="Include task times"
           checked={isTimed}
           onChange={(e) => setIsTimed(e.target.checked)}
         />
+        )}
         <Button icon={<Add />} label="Add Task" onClick={addTask} />
       </Box>
       

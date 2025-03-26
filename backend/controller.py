@@ -30,6 +30,8 @@ from backend.solvers import binary_trees_solver
 from backend.solvers import tree_to_array_solver
 from backend.solvers import array_to_tree_solver
 from backend.solvers import tree_notation_solver
+from backend.solvers import order_solver
+from backend.solvers import master_solver
 from solvers.util import exceptions
 
 #---Imports for the reporter---#
@@ -130,11 +132,16 @@ def solve_algorithim(solver_type, data):
         # Call the appropriate function for Disjoint Cycles
         pass
     elif solver_type == 'order-of-magnitude':
-        # Call the appropriate function for Order of Magnitude
-        pass
+        # Parse the input data from the frontend
+        order = int(data.get("order", 0))
+        scalars_f = data.get("coefficients1", [])
+        scalars_g = data.get("coefficients2", [])
+        use_log = data.get("useLog", False)
+        use_root = data.get("useRoot", False)
+
+        return order_solver.solve(order, scalars_f, scalars_g)
     elif solver_type == 'master-theorem':
-        # Call the appropriate function for Master Theorem
-        pass
+        return master_solver.solve(data["a"], data["b"], data["c"])
     elif solver_type == 'boolean-matrices':
         if data["operation"] == "MEET/JOIN":
             return matrix_solver.solve(data["matrix1"], data["matrix2"])

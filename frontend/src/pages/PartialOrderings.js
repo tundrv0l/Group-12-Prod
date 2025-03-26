@@ -73,12 +73,12 @@ const PartialOrderings = () => {
       }
     } catch (err) {
       trackResults(
-        { set, relation }, // Input data
-        { error: err.message || 'Unknown error' }, // Error result
-        performance.now() - startTime // Execution time
+        { set, relation }, 
+        { error: err.message || 'Unknown error' }, 
+        performance.now() - startTime 
       );
       console.log(err);
-      setError('An error occurred while generating the Hasse Diagram.');
+      setError('An error occurred while generating the Partial Ordering.');
     } finally {
       setLoading(false);
     }

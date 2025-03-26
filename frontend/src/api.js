@@ -210,8 +210,14 @@ export const solveHasseDiagram = async (set, relation) => {
 }
 
 // Call order of magnitude solver to the backend
-export const solveOrderOfMagnitude = async (input) => {
-    return await solve('order-of-magnitude', { input });
+export const solveOrderOfMagnitude = async (payload) => {
+    try {
+        const response = await solve('order-of-magnitude', payload);
+        return response
+    } catch (error) {
+        console.error('Error solving Order of Magnitude:', error);
+        throw error;
+    }
 }
 
 // Call PERT diagrams solver to the backend
@@ -285,5 +291,5 @@ export const solveTreeNotation = async (input, secondaryInput, operation) => {
 
 // Solve master theorem to the backend
 export const solveMasterTheorem = async (input) => {
-    return await solve('master-theorem', { input });
+    return await solve('master-theorem',  input );
 }

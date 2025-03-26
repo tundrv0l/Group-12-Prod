@@ -32,11 +32,11 @@ const BooleanMatrices = () => {
     setOutput('');
     setError('');
 
-    // Validate input
-    if (!validateMatrices(matrix1, matrix2, operation)) {
-        setError('Invalid input. Please ensure both matrices only contain only 0s and 1s. If you are using MEET/JOIN ensure the matrices are the same size. If you are using PRODUCT ensure the number of columns in the first matrix is equal to the number of rows in the second matrix.');
-        setLoading(false);
-        return;
+    const validation = validateMatrices(matrix1, matrix2, operation);
+    if (!validation.valid) {
+      setError(validation.error);
+      setLoading(false);
+      return;
     }
 
     setError('');
@@ -69,20 +69,38 @@ const BooleanMatrices = () => {
     }
   }
 
+  // Replace the validateMatrices function with this improved version:
   const validateMatrices = (matrix1, matrix2, operation) => {
-    const isValidMatrix = matrix => matrix.every(row => row.every(cell => cell === '0' || cell === '1'));
-
-    console.log(operation);
-
-    if (!isValidMatrix(matrix1) || !isValidMatrix(matrix2)) {
-      return false;
+    // Check if matrices contain only 0s and 1s
+    const isValidContent = matrix => matrix.every(row => row.every(cell => cell === '0' || cell === '1'));
+    
+    if (!isValidContent(matrix1)) {
+      return { valid: false, error: 'Matrix 1 should only contain 0s and 1s.' };
+    }
+    
+    if (!isValidContent(matrix2)) {
+      return { valid: false, error: 'Matrix 2 should only contain 0s and 1s.' };
     }
 
-    if (operation === 'PRODUCT') {
-      return matrix1[0].length === matrix2.length;
+    // Check dimensions based on operation
+    if (operation === 'MEET/JOIN') {
+      if (matrix1.length !== matrix2.length || matrix1[0].length !== matrix2[0].length) {
+        return { 
+          valid: false, 
+          error: 'For MEET/JOIN operations, both matrices must have the same dimensions.' 
+        };
+      }
+    } else if (operation === 'PRODUCT') {
+      if (matrix1[0].length !== matrix2.length) {
+        return { 
+          valid: false, 
+          error: 'For PRODUCT operation, the number of columns in Matrix 1 must equal the number of rows in Matrix 2.' 
+        };
+      }
     }
-
-    return matrix1.length === matrix2.length && matrix1[0].length === matrix2[0].length;
+    
+    // If we got here, everything is valid
+    return { valid: true };
   };
 
   const renderOutput = () => {

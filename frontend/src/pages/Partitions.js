@@ -21,7 +21,7 @@ const Partitions = () => {
   const [loading, setLoading] = React.useState(false);
   const [showHelp, setShowHelp] = React.useState(false);
 
-  const { trackResults } = useDiagnostics("EQUIVALENCE_RELATIONS");
+  const { trackResults } = useDiagnostics("PARTITIONS");
 
   const handleSolve = async () => {
     // Empty output and error messages
