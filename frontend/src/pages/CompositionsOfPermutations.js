@@ -4,6 +4,7 @@ import { solveCompositions } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
+import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
 * Name: CompositionOfPermutations.js
@@ -19,6 +20,8 @@ const CompositionOfPermutations = () => {
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
 
+  const { trackResults } = useDiagnostics("COMPOSITION_PERMUTATIONS");
+
   const handleSolve = async () => {
     // Reset states
     setLoading(true);
@@ -33,6 +36,7 @@ const CompositionOfPermutations = () => {
       setLoading(false);
       return;
     }
+    
     const isBigger = validateSizes(setOne, setTwo);
     if (!isBigger) {
       setError('Invalid input. Please ensure that the set has more items than is being selected.');
@@ -53,7 +57,15 @@ const CompositionOfPermutations = () => {
       } else {
         setError('Invalid response structure.');
       }
+
     } catch (err) {
+
+      trackResults(
+        { input: input },
+        {error: err.message || "Error solving Composition of Permutations"},
+        performance.now() - startTime
+      )
+
       setError('An error occurred while generating the composition.');
     } finally {
       setLoading(false);

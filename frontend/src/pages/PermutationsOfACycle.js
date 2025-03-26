@@ -8,6 +8,9 @@ import MatrixTable from '../components/PermutationsInput';
 import MatrixToolbar from '../components/PermutatinsToolbar';
 import MatrixOutput from '../components/MatrixOutput';
 
+import { useDiagnostics } from '../hooks/useDiagnostics';
+
+
 /*
 * Name: PermutationsOfACycle.js
 * Author: Parker Clark
@@ -20,10 +23,20 @@ const PermutationsOfACycle = () => {
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
 
+  const { trackResults } = useDiagnostics("PERMUTATIONS_CYCLE");
+  
   const handleSolvePermutations = async () => {
+
+
+
+
+    // Empty output and error messages
     setLoading(true);
     setOutput('');
     setError('');
+    
+    // Start timing for performance tracking
+    const startTime = performance.now();
   
     // Validate that the matrix has exactly 2 rows
     if (matrix.length !== 2) {
@@ -31,6 +44,7 @@ const PermutationsOfACycle = () => {
       setError('Matrix must have exactly 2 rows.');
       return;
     }
+
 
     const renderOutput = (input) => {
       const results = typeof input === 'string' ? JSON.parse(input) : input;
@@ -41,6 +55,13 @@ const PermutationsOfACycle = () => {
   
     try {
       const result = await solvePermutationsCycle(matrix);
+      
+      // Tracking results for diagnostics
+      trackResults(
+        { input: input },
+        result, 
+        performance.now() - startTime
+      );
   
       // Check if the response contains an error
       if (result.error) {
@@ -51,6 +72,12 @@ const PermutationsOfACycle = () => {
     } catch (err) {
       if (err.message.includes("Not a permutation")) {
         setError("Not a permutation. Please ensure your input is a valid bijection.");
+        // Tracking failures for diagnostics
+        trackResults(
+          { input: input },
+          { error: err.message || "Error solving PERT diagram" },
+          performance.now() - startTime
+        );
         return;
       } else {
         setError("An error occurred while generating the permutations.");

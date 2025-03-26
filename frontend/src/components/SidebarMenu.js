@@ -1,5 +1,6 @@
 import React from 'react';
-import { Sidebar, Accordion, AccordionPanel } from 'grommet';
+import { Sidebar, Accordion, AccordionPanel, ResponsiveContext, Box, Text } from 'grommet';
+import { FormDown, FormNext } from 'grommet-icons';
 import AccordionPanelContent from './AccordionPanelContent';
 
 /*
@@ -8,7 +9,50 @@ import AccordionPanelContent from './AccordionPanelContent';
 * Description: Defines the SidebarMenu component for the main
 */
 
+// Simple separator component
+const Separator = () => (
+  <Box
+    height="1px"  // Keep this exactly 1px
+    background="light-5"
+    margin={{ vertical: "small" }}  // Increased from xsmall for better spacing
+    style={{
+      width: '100%',
+      borderBottom: 'none',  // Ensure no extra borders
+      boxShadow: 'none',     // No shadow effects
+      padding: 0,            // No padding
+      overflow: 'hidden'     // Prevent any overflow issues
+    }}
+  />
+);
+// Fixed CustomAccordionPanel to use AccordionPanel from grommet
+const CustomAccordionPanel = ({ label, children }) => (
+  <AccordionPanel
+    header={({ active }) => (
+      <Box 
+        direction="row" 
+        align="center" 
+        justify="between"
+        background={active ? 'light-2' : 'white'}
+        pad={{ vertical: 'small', horizontal: 'medium' }}
+        style={{ 
+          borderRadius: '4px',
+          fontWeight: 600,
+          transition: 'all 0.2s',
+          outline: 'none'
+        }}
+        focusIndicator={false}
+      >
+        <Text>{label}</Text>
+        {active ? <FormDown /> : <FormNext />}
+      </Box>
+    )}
+  >
+    {children}
+  </AccordionPanel>
+);
+
 const SidebarMenu = () => (
+
   <Sidebar align="start" direction="row" flex={false} gap="large" pad="small" justify="start">
     <Accordion>
       <AccordionPanel label="1.1: Statements and Tautologies">
