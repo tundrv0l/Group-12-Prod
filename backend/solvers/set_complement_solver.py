@@ -1,4 +1,12 @@
+'''----------------- 
+# Title: set_complement_solver.py
+# Author: Michael Lowder
+# Date: 3/15/2025
+# Description: A solver for finding the complements of sets
+-----------------'''
+
 from sympy import Interval, Union, S, Complement, Symbol
+import json
 
 # Function to find the complement of a set
 def find_complement(universal_set, subset):
@@ -40,22 +48,21 @@ def sorted_set(symbol_set):
 
 # Main function to solve the problem
 def solve(U, A):
+
+    # Convert the input strings to sets of symbols
+    U = create_set_from_input(U)  # Universal set
+    A = create_set_from_input(A)  # Subset
+
     complement_A = find_complement(U, A)
     
-    # Sort the result before printing and replace square brackets with curly braces
-    print("Complement of A:", sorted_set(complement_A))
+
 
     B = Union(Interval(2, 5), Interval(7, S.Infinity))
     complement_B = Complement(S.Reals, B)
 
-    # Format and print the complement of B
-    print("Complement of B:", interval_to_str(complement_B))
+    result = {
+        "complement_A": sorted_set(complement_A),
+        "complement_B": interval_to_str(complement_B),
+    }
 
-# Example Usage: Set with symbolic elements in "{a, b, c, d, e}" format
-U = "{a, a, a, a, a}"
-A = "{∅}"
-U = create_set_from_input(U)  # Universal set with symbolic elements 'a', 'b', 'c', 'd', 'e'
-A = create_set_from_input(A)        # Subset with symbolic elements 'a', 'b', 'c'
-print(sorted_set(U))
-print(sorted_set(A))
-solve(U, A)
+    return json.dumps(result)
