@@ -23,9 +23,18 @@ from backend.solvers import adjacency_solver
 from backend.solvers import weighted_graph_solver
 from backend.solvers import matrix_solver
 from backend.solvers import matrix_multiply_solver
+from backend.solvers import cycle_solver
+from backend.solvers import disjoint_solver
+from backend.solvers import compisitions_solver
 from backend.solvers import table_solver
 from backend.solvers import topological_solver
 from backend.solvers import critical_solver
+from backend.solvers import binary_trees_solver
+from backend.solvers import tree_to_array_solver
+from backend.solvers import array_to_tree_solver
+from backend.solvers import tree_notation_solver
+from backend.solvers import order_solver
+from backend.solvers import master_solver
 from solvers.util import exceptions
 
 #---Imports for the reporter---#
@@ -104,7 +113,7 @@ def solve_algorithim(solver_type, data):
         return properties_solver.solve(data["set"], data["relation"])
     elif solver_type == 'closure-axioms':
         return closures_solver.solve(data["set"], data["relation"])
-    elif solver_type == 'equivalence-relations':
+    elif solver_type == 'partitions':
         return partition_solver.solve(data["set"], data["relation"])
     elif solver_type == 'partial-orderings':
         return special_solver.solve(data["set"], data["relation"])
@@ -117,22 +126,23 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'topological-sorting':
         return topological_solver.solve(data)
     elif solver_type == 'permutations-cycle':
-        # Call the appropriate function for Permutations of a Cycle
-        pass
+        return cycle_solver.solve(data['input'])
     elif solver_type == 'compositions':
-        # Call the appropriate function for Compositions
-        pass
+        return compisitions_solver.solve(data['setOne']['setOne'], data['setOne']['setTwo'])
     elif solver_type == 'disjoint-cycles':
-        # Call the appropriate function for Disjoint Cycles
-        pass
+        return disjoint_solver.solve(data['input'])
     elif solver_type == 'order-of-magnitude':
-        # Call the appropriate function for Order of Magnitude
-        pass
+        # Parse the input data from the frontend
+        order = int(data.get("order", 0))
+        scalars_f = data.get("coefficients1", [])
+        scalars_g = data.get("coefficients2", [])
+        use_log = data.get("useLog", False)
+        use_root = data.get("useRoot", False)
+
+        return order_solver.solve(order, scalars_f, scalars_g)
     elif solver_type == 'master-theorem':
-        # Call the appropriate function for Master Theorem
-        pass
+        return master_solver.solve(data["a"], data["b"], data["c"])
     elif solver_type == 'boolean-matrices':
-        print(data)
         if data["operation"] == "MEET/JOIN":
             return matrix_solver.solve(data["matrix1"], data["matrix2"])
         else:
@@ -144,17 +154,25 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'weighted-graphs':
         return weighted_graph_solver.solve(data["input"], data["type"])
     elif solver_type == 'binary-trees':
-        # Call the appropriate function for Binary Trees
-        pass
+        return binary_trees_solver.solve(data["input"], data["choice"])
     elif solver_type == 'array-to-tree':
-        # Call the appropriate function for Array to Tree
-        pass
+        return array_to_tree_solver.solve(data["input"])
     elif solver_type == 'tree-to-array':
-        # Call the appropriate function for Array to Tree
-        pass
+        return tree_to_array_solver.solve(data["input"], data["choice"])
     elif solver_type == 'tree-notation':
-        # Call the appropriate function for Tree Notation
-        pass
+        
+        # Map the operation number to the corresponding function name
+        operation_num = int(data.get("operation", 1))
+        operation_map = {
+            1: 'build_from_level',
+            2: 'build_from_table', 
+            3: 'reconstruct_from_preorder',
+            4: 'reconstruct_from_postorder',
+            5: 'build_from_math'
+        }
+        operation = operation_map.get(operation_num)
+
+        return tree_notation_solver.solve(data["input"], data["secondaryInput"], operation)
     elif solver_type == 'warshalls-algorithm':
         return Warshall_solver.solve(data["input"])
     else:

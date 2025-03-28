@@ -6,6 +6,7 @@ import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 import PolynomialInput from '../components/PolynomialInput';
 import Latex from 'react-latex-next';
+import 'katex/dist/katex.min.css';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
@@ -20,7 +21,8 @@ const OrderOfMagnitude = () => {
 
   // Default order on page to 2
   const [order, setOrder] = React.useState('2');
-  const [coefficients, setCoefficients] = React.useState(['', '', '']);
+  const [coefficients, setCoefficients] = React.useState([]);
+  const [coefficients2, setCoefficients2] = React.useState([]);
   const [useLog, setUseLog] = React.useState(false);
   const [useRoot, setUseRoot] = React.useState(false);
   const [output, setOutput] = React.useState('');
@@ -50,7 +52,8 @@ const OrderOfMagnitude = () => {
     // Define a 'payload' or input 'collection' to call API.
     const payload = {
       order: parseInt(order, 10),
-      coefficients: coefficients.map(c => parseFloat(c)),
+      coefficients1: coefficients.map(c => parseFloat(c)),
+      coefficients2: coefficients2.map(c => parseFloat(c)),
       useLog,
       useRoot
     };
@@ -66,7 +69,7 @@ const OrderOfMagnitude = () => {
 
       // Track successful execution
       trackResults(
-        {payload: payload}, // Input data
+        payload, // Input data
         result, // Success result
         performance.now() - startTime // Execution time
       );
@@ -88,19 +91,41 @@ const OrderOfMagnitude = () => {
   };
 
   const renderOutput = () => {
-
     // If no output, return a default message
     if (!output) {
       return "Output will be displayed here!";
     }
-
-    return (
-      <Box>
-        <Latex>
-          {output}
-        </Latex>
-      </Box>
-    );
+  
+    try {
+      // Parse JSON if it's a string
+      let result;
+      if (typeof output === 'string') {
+        try {
+          result = JSON.parse(output);
+        } catch (e) {
+          // If not valid JSON, use the string directly
+          result = output;
+        }
+      } else {
+        result = output;
+      }
+  
+      // Extract the LaTeX content
+      let latexContent;
+      if (typeof result === 'object' && result !== null && result.Result) {
+        // Format the equation with proper LaTeX delimiters
+        latexContent = `$${result.Result}$`;
+      } else {
+        // Fallback to string representation
+        latexContent = `$${typeof result === 'string' ? result : JSON.stringify(result)}$`;
+      }
+      console.log(latexContent);
+      // Return the LaTeX component directly (not wrapped in Text)
+      return <Latex>{latexContent}</Latex>;
+    } catch (err) {
+      console.error("Error rendering LaTeX:", err);
+      return `Error: ${err.message}`;
+    }
   };
 
   return (
@@ -137,20 +162,22 @@ const OrderOfMagnitude = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
-              <PolynomialInput 
-                ref={polynomialInputRef}
-                order={order}
-                setOrder={setOrder}
-                coefficients={coefficients}
-                setCoefficients={setCoefficients}
-                useLog={useLog}
-                setUseLog={setUseLog}
-                useRoot={useRoot}
-                setUseRoot={setUseRoot}
-                error={error}
-                setError={setError}
-              />
-              
+            <PolynomialInput
+              order={order}
+              setOrder={setOrder}
+              coefficients={coefficients}
+              setCoefficients={setCoefficients}
+              coefficients2={coefficients2} 
+              setCoefficients2={setCoefficients2}
+              useLog={useLog}
+              setUseLog={setUseLog}
+              useRoot={useRoot}
+              setUseRoot={setUseRoot}
+              setError={setError}
+              label1="First Polynomial (f)"
+              label2="Second Polynomial (g)"
+            />
+                        
               {error && <Text color="status-critical">{error}</Text>}
             </CardBody>
             <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
@@ -163,9 +190,7 @@ const OrderOfMagnitude = () => {
                 Output:
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                <Text>
                   {renderOutput()}
-                </Text>
               </Box>
             </CardBody>
           </Card>

@@ -2,12 +2,12 @@
 # Author: Jacob Warren
 # Solves: 5.4.56-5.4.59
 
-import cycle_solver
+from solvers import cycle_solver
 
 import json
 
-from util import exceptions
-from util import strings
+from .util import exceptions
+from .util import strings
 
 '''
 ==========
@@ -23,8 +23,23 @@ result
 disjoint_string: a string representing the disjoint cycle form
                  of the same permutation
 '''
+
+def convertStringToStrings(nonListedStrings):
+    returnList = []
+    iterateString = ""
+
+    for index, char in enumerate(nonListedStrings):
+        if char == ')': 
+            iterateString += ")"
+            returnList.append(iterateString)
+            iterateString = ""
+        else:
+            iterateString += char
+    
+    return returnList
+
 def solve(cycle_strings):
-    cycles = string_to_list(cycle_strings)
+    cycles = string_to_list(convertStringToStrings(cycle_strings))
     multi_mapping = {}
     cycle_count = 0
     
@@ -60,6 +75,8 @@ def solve(cycle_strings):
         permutation[element] = result
 
     disjoint_string = cycle_solver.not_json(permutation)
+
+    disjoint_string = "(" + disjoint_string.replace("(", "").replace(")", "") + ")"
 
     result = {
         "Disjoint Cycle Form": disjoint_string

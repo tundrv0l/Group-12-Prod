@@ -3,8 +3,12 @@
 # Solves: 5.5.1-5.5.6
 
 import json
+import os
+import sys
 
-from util import exceptions
+# Append the parent directory to the path so we can import in utility
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from solvers.util import exceptions
 
 '''
 ==========
@@ -35,6 +39,8 @@ just use the polynomial inside them as the input data.
 5.5.5 is unsolved for now.
 '''
 def solve(order, scalars_f, scalars_g):
+
+    print(f"order: {order}, scalars_f: {scalars_f}, scalars_g: {scalars_g}")
     result_list = [0, 0, 0]
     result = {
         "Result": "\\forall x\\geq 0, 0g(x)\\leq f(x)\\leq 0g(x)" 

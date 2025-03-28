@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible} from 'grommet';
-import { CircleInformation } from 'grommet-icons';
+import { StatusCritical, StatusGood, CircleInformation } from 'grommet-icons';
 import { solveWFF } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import TruthTable from '../components/TruthTable';
@@ -76,11 +76,54 @@ const WFFSolverPage = () => {
     }
   }
 
+  // Function to render the WFF classification
+  const renderClassification = (classification, description) => {
+    if (!classification) return null;
+    
+    let color;
+    let icon;
+    
+    switch (classification) {
+      case 'tautology':
+        color = '#43a047';  // Green
+        icon = <StatusGood size="medium" color={color} />;
+        break;
+      case 'contradiction':
+        color = '#e53935';  // Red
+        icon = <StatusCritical size="medium" color={color} />;
+        break;
+      case 'contingency':
+        color = '#1565c0';  // Blue
+        icon = <CircleInformation size="medium" color={color} />;
+        break;
+      default:
+        color = '#424242';  // Grey
+        icon = '?';
+    }
+
+    return (
+      <Box 
+        background={{ color: 'light-2' }} 
+        pad="medium" 
+        margin={{ top: 'medium' }} 
+        round="small"
+        border={{ color, size: '2px' }}
+      >
+        <Box direction="row" gap="small" align="center">
+          {icon}
+          <Text size="large" weight="bold" color={color}>
+            {classification.toUpperCase()}
+          </Text>
+        </Box>
+        <Text margin={{ top: 'small' }}>{description}</Text>
+      </Box>
+    );
+  };
  
   const validateInput = (input) => {
     // Regular expression to validate WFF general form, including operators, NOT, parentheses, and brackets.
     // Regex accomodates for symbols used in unicode, keyboard and book format. To see a mapping of this check /backend/solvers/wff_solver.py
-    const wffRegex = /^(\(*\[*\s*(not\s*)?[A-Z]('|′|¬)?\s*\]*\)*(\s*(->|→|v|∨|V|~|S|`|\^|∧|>|<>|4|↔)\s*\(*\[*\s*(not\s*)?[A-Z]('|′|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|′|¬)?|\[\s*.*\s*\]('|′|¬)?$/;
+    const wffRegex = /^(\(*\[*\s*((not\s*)|¬)?[A-Z]('|′)?\s*\]*\)*(\s*(->|→|v|∨|V|~|S|`|\^|∧|>|<>|4|↔)\s*\(*\[*\s*((not\s*)|¬)?[A-Z]('|′)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|′)?|\[\s*.*\s*\]('|′)?$/;
   
     // Check for balanced parentheses and brackets
     const balancedParentheses = (input.match(/\(/g) || []).length === (input.match(/\)/g) || []).length;
@@ -168,6 +211,7 @@ const WFFSolverPage = () => {
             </Text>
             <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
               {output ? <TruthTable headers={output.headers} rows={output.rows} /> : <Text>Output will be displayed here!</Text>}
+              {output && output.classification && renderClassification(output.classification, output.description)}
             </Box>
           </CardBody>
         </Card>
