@@ -1,77 +1,89 @@
 import React, { forwardRef, useImperativeHandle, useEffect } from 'react';
-import { Box, Text, TextInput, CheckBox, FormField, Grid } from 'grommet';
+import { Box, Text, TextInput, CheckBox, FormField, Grid, Heading } from 'grommet';
 
-/*
-* Name: PolynomialInput.js
-* Author: Parker Clark
-* Description: Reusable component for polynomial function input with dynamic coefficients
-*/
-
-// Using a forwardRef in this component for the parent to call it's validation method.
 const PolynomialInput = forwardRef((props, ref) => {
-
-  // State variables for the polynomial input
+  // Keep original props but add coefficients2/setCoefficients2
   const { 
     order, 
     setOrder, 
     coefficients, 
-    setCoefficients, 
+    setCoefficients,
+    // New props for second polynomial 
+    coefficients2 = [], 
+    setCoefficients2,
+    // Original props
     useLog, 
     setUseLog, 
     useRoot, 
     setUseRoot,
-    setError 
+    setError,
+    // Allow customizing labels
+    label1 = "Polynomial 1",
+    label2 = "Polynomial 2",
+    // Flag to show/hide second polynomial
+    showSecondPolynomial = !!setCoefficients2
   } = props;
   
-  // Update coefficients array on user input of order change
   useEffect(() => {
-
     let orderNum = parseInt(order, 10);
 
-    // Enforce a maximum order of 20 on user update
-    // Note: This is so that the user doesn't enter an obscenely large number which would crash the page.
-    //  This can be changed if needed, but 20 is a reasonable limit for most use cases.
-    if (orderNum > 20) {
-        setError && setError('Maximum order is 20.');
-        orderNum = 20;
-        setOrder('20');
+    if (orderNum > 10) {
+      setError && setError('Maximum order is 10.');
+      orderNum = 10;
+      setOrder('10');
+      return; // Exit early after changing order
     }
 
     if (!isNaN(orderNum) && orderNum >= 0) {
-      
-      // Adjust the array to match the new order generated
-      const newCoefficients = Array(orderNum + 1).fill('');
-      
-      // Preserve existing coefficient values when possible
-      for (let i = 0; i < Math.min(coefficients.length, newCoefficients.length); i++) {
-        newCoefficients[i] = coefficients[i];
+      // Only update arrays if their length doesn't match the order+1
+      if (coefficients.length !== orderNum + 1) {
+        const newCoefficients = Array(orderNum + 1).fill('');
+        
+        // Preserve existing values
+        for (let i = 0; i < Math.min(coefficients.length, newCoefficients.length); i++) {
+          newCoefficients[i] = coefficients[i];
+        }
+        
+        setCoefficients(newCoefficients);
       }
       
-      // Set the new coefficients array
-      setCoefficients(newCoefficients);
+      // Similar check for second polynomial
+      if (showSecondPolynomial && setCoefficients2 && coefficients2.length !== orderNum + 1) {
+        const newCoefficients2 = Array(orderNum + 1).fill('');
+        
+        for (let i = 0; i < Math.min(coefficients2.length, newCoefficients2.length); i++) {
+          newCoefficients2[i] = coefficients2[i];
+        }
+        
+        setCoefficients2(newCoefficients2);
+      }
     }
-  }, [order, coefficients, setCoefficients]);
 
+  }, [order, setCoefficients, setCoefficients2, setOrder, setError, showSecondPolynomial]);
 
-  // Call handlers for manipulating coefficient array
+  // Original coefficient change handler
   const handleCoefficientChange = (index, value) => {
     const newCoefficients = [...coefficients];
     newCoefficients[index] = value;
     setCoefficients(newCoefficients);
   };
-
-  // Generate polynomial display text
-  const generatePolynomialText = () => {
-
-    // If no coefficients, return empty string
-    if (coefficients.length === 0) return "";
+  
+  // New handler for second polynomial
+  const handleCoefficientChange2 = (index, value) => {
+    if (!setCoefficients2) return;
     
+    const newCoefficients = [...coefficients2];
+    newCoefficients[index] = value;
+    setCoefficients2(newCoefficients);
+  };
 
-    // Generate the polynomial text based on the coefficients with proper position
-    return coefficients.map((coef, index) => {
-      const power = coefficients.length - 1 - index;
+  // Generate polynomial text (can be reused for both polynomials)
+  const generatePolynomialText = (coeffs) => {
+    if (!coeffs || coeffs.length === 0) return "";
+    
+    return coeffs.map((coef, index) => {
+      const power = coeffs.length - 1 - index;
       
-      // Adjust coefficient powers for display
       if (power === 0) {
         return coef || '0';
       } else if (power === 1) {
@@ -82,38 +94,48 @@ const PolynomialInput = forwardRef((props, ref) => {
     }).join(' + ');
   };
 
-  // Validator that can be called from parent
-  // NOTE: Not a fan of doing it this way, I prefer to keep this logic in the page itself, but 
-  //   because this input is such a pain in the butt to maintain and bookeep, it makes more sense
-  //   for the page to access and validate input this way on the fly. 
+  // Validator for both polynomials
   const validateInputs = () => {
-
-    // Validate order is a natural number via ensuring it is a non-negative integer
     const orderNum = parseInt(order, 10);
     if (isNaN(orderNum) || orderNum < 0 || !Number.isInteger(orderNum)) {
       setError && setError('Order must be a non-negative integer.');
       return false;
     }
 
-    // Validate all coefficients are valid numbers
+    // Validate first polynomial
     for (let i = 0; i < coefficients.length; i++) {
       if (coefficients[i].trim() === '') {
-        setError && setError(`Coefficient for x^${coefficients.length - 1 - i} cannot be empty.`);
+        setError && setError(`${label1}: Coefficient for x^${coefficients.length - 1 - i} cannot be empty.`);
         return false;
       }
       
-      // If the coefficent is not a number, return false
       const value = parseFloat(coefficients[i]);
       if (isNaN(value)) {
-        setError && setError(`Invalid number for coefficient of x^${coefficients.length - 1 - i}.`);
+        setError && setError(`${label1}: Invalid number for coefficient of x^${coefficients.length - 1 - i}.`);
         return false;
+      }
+    }
+    
+    // Validate second polynomial if shown
+    if (showSecondPolynomial) {
+      for (let i = 0; i < coefficients2.length; i++) {
+        if (coefficients2[i].trim() === '') {
+          setError && setError(`${label2}: Coefficient for x^${coefficients2.length - 1 - i} cannot be empty.`);
+          return false;
+        }
+        
+        const value = parseFloat(coefficients2[i]);
+        if (isNaN(value)) {
+          setError && setError(`${label2}: Invalid number for coefficient of x^${coefficients2.length - 1 - i}.`);
+          return false;
+        }
       }
     }
 
     return true;
   };
 
-  // Expose the validation method via ref
+  // Expose the validation method
   useImperativeHandle(ref, () => ({
     validate: validateInputs
   }));
@@ -125,6 +147,7 @@ const PolynomialInput = forwardRef((props, ref) => {
           placeholder="Enter the order (e.g., 2)"
           value={order}
           onChange={(e) => setOrder(e.target.value)}
+          type="number"
         />
       </FormField>
       
@@ -141,33 +164,67 @@ const PolynomialInput = forwardRef((props, ref) => {
         />
       </Box>
       
-      <Box margin={{ top: 'medium', bottom: 'small' }}>
-        <Text weight="bold">Coefficients:</Text>
+      {/* First Polynomial */}
+      <Box margin={{ top: 'medium', bottom: 'small' }} background="light-2" pad="medium" round="small">
+        <Heading level={4} margin={{ top: 'none', bottom: 'small' }}>{label1}</Heading>
         <Text size="small">Enter the coefficients for your polynomial:</Text>
+        
+        <Grid columns={{ count: 'fit', size: 'small' }} gap="small">
+          {coefficients.map((coef, index) => {
+            const power = coefficients.length - 1 - index;
+            return (
+              <FormField 
+                key={index} 
+                label={power === 0 ? 'Constant term' : power === 1 ? 'x' : `x^${power}`}
+              >
+                <TextInput
+                  placeholder={`Coefficient`}
+                  value={coef}
+                  onChange={(e) => handleCoefficientChange(index, e.target.value)}
+                  type="number"
+                />
+              </FormField>
+            );
+          })}
+        </Grid>
+        
+        <Box margin={{ top: 'small' }} align="center">
+          <Text weight="bold">Your polynomial:</Text>
+          <Text>{generatePolynomialText(coefficients)}</Text>
+        </Box>
       </Box>
       
-      <Grid columns={{ count: 'fit', size: 'small' }} gap="small">
-        {coefficients.map((coef, index) => {
-          const power = coefficients.length - 1 - index;
-          return (
-            <FormField 
-              key={index} 
-              label={power === 0 ? 'Constant term' : power === 1 ? 'x' : `x^${power}`}
-            >
-              <TextInput
-                placeholder={`Coefficient`}
-                value={coef}
-                onChange={(e) => handleCoefficientChange(index, e.target.value)}
-              />
-            </FormField>
-          );
-        })}
-      </Grid>
-      
-      <Box margin={{ top: 'medium', bottom: 'small' }} align="center">
-        <Text weight="bold">Your polynomial:</Text>
-        <Text>{generatePolynomialText()}</Text>
-      </Box>
+      {/* Second Polynomial (conditional) */}
+      {showSecondPolynomial && (
+        <Box margin={{ top: 'medium', bottom: 'small' }} background="light-2" pad="medium" round="small">
+          <Heading level={4} margin={{ top: 'none', bottom: 'small' }}>{label2}</Heading>
+          <Text size="small">Enter the coefficients for your polynomial:</Text>
+          
+          <Grid columns={{ count: 'fit', size: 'small' }} gap="small">
+            {coefficients2.map((coef, index) => {
+              const power = coefficients2.length - 1 - index;
+              return (
+                <FormField 
+                  key={index} 
+                  label={power === 0 ? 'Constant term' : power === 1 ? 'x' : `x^${power}`}
+                >
+                  <TextInput
+                    placeholder={`Coefficient`}
+                    value={coef}
+                    onChange={(e) => handleCoefficientChange2(index, e.target.value)}
+                    type="number"
+                  />
+                </FormField>
+              );
+            })}
+          </Grid>
+          
+          <Box margin={{ top: 'small' }} align="center">
+            <Text weight="bold">Your polynomial:</Text>
+            <Text>{generatePolynomialText(coefficients2)}</Text>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 });

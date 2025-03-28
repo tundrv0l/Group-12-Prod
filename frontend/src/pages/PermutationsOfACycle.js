@@ -27,9 +27,6 @@ const PermutationsOfACycle = () => {
   
   const handleSolvePermutations = async () => {
 
-
-
-
     // Empty output and error messages
     setLoading(true);
     setOutput('');
@@ -58,7 +55,7 @@ const PermutationsOfACycle = () => {
       
       // Tracking results for diagnostics
       trackResults(
-        { input: input },
+        { matrix: matrix },
         result, 
         performance.now() - startTime
       );
@@ -74,7 +71,7 @@ const PermutationsOfACycle = () => {
         setError("Not a permutation. Please ensure your input is a valid bijection.");
         // Tracking failures for diagnostics
         trackResults(
-          { input: input },
+          { matrix: matrix },
           { error: err.message || "Error solving PERT diagram" },
           performance.now() - startTime
         );

@@ -7,14 +7,28 @@ import axios from 'axios';
 */ 
 
 // A function to route and pass solver code to the backend
+// Core solve function that needs fixing
 const solve = async (solverType, data) => {
     try {
         const response = await axios.post(`http://localhost:5000/solve/${solverType}`, data);
+        
+        // Check if the response contains an error key
+        if (response.data && response.data['Calculation Error']) {
+            // Convert to a standard error format that components expect
+            return { error: response.data['Calculation Error'] };
+        }
+        
         return response.data;
-    } catch (error)
-    {
+    } catch (error) {
         console.error('Error Solving:', error);
-        return null;
+        
+        // Return structured error info instead of null
+        return { 
+            error: error.response?.data?.['Calculation Error'] || 
+                  error.response?.data?.error || 
+                  error.message || 
+                  'An unknown error occurred'
+        };
     }
 };
 
@@ -115,9 +129,9 @@ export const solveClosureAxioms = async (set, relation) => {
 }
 
 // Call equivalence relations solver to the backend
-export const solveEquivalenceRelations = async (set, relation) => {
+export const solvePartitions = async (set, relation) => {
     try {
-        const response = await solve('equivalence-relations', { set, relation });
+        const response = await solve('partitions', { set, relation });
         if (response.error) {
             throw new Error(response.error);
         }
@@ -146,8 +160,8 @@ export const solveArrayToTree = async (input) => {
 }
 
 // Call binary trees solver to the backend
-export const solveBinaryTrees = async (input) => {
-    return await solve('binary-trees', { input });
+export const solveBinaryTrees = async (input, choice) => {
+    return await solve('binary-trees', { input, choice });
 }
 
 // Call boolean matrices solver to the backend
@@ -196,8 +210,14 @@ export const solveHasseDiagram = async (set, relation) => {
 }
 
 // Call order of magnitude solver to the backend
-export const solveOrderOfMagnitude = async (input) => {
-    return await solve('order-of-magnitude', { input });
+export const solveOrderOfMagnitude = async (payload) => {
+    try {
+        const response = await solve('order-of-magnitude', payload);
+        return response
+    } catch (error) {
+        console.error('Error solving Order of Magnitude:', error);
+        throw error;
+    }
 }
 
 // Call PERT diagrams solver to the backend
@@ -242,8 +262,8 @@ export const solveTopologicalSorting = async (taskTable) => {
 }
 
 // Call tree to array solver to the backend
-export const solveTreeToArray = async (input) => {
-    return await solve('tree-to-array', { input });
+export const solveTreeToArray = async (input, choice) => {
+    return await solve('tree-to-array', { input, choice });
 }
 
 // Call Warshall's algorithm solver to the backend
@@ -265,11 +285,11 @@ export const solveWeightedGraphs = async (input, type) => {
 }
 
 // Solve tree notation to the backend
-export const solveTreeNotation = async (input) => {
-    return await solve('tree-notation', { input });
+export const solveTreeNotation = async (input, secondaryInput, operation) => {
+    return await solve('tree-notation', { input, secondaryInput, operation });
 }
 
 // Solve master theorem to the backend
 export const solveMasterTheorem = async (input) => {
-    return await solve('master-theorem', { input });
+    return await solve('master-theorem',  input );
 }

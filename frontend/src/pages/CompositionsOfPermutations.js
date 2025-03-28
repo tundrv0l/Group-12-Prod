@@ -28,6 +28,9 @@ const CompositionOfPermutations = () => {
     setPerm('');
     setComp('');
     setError('');
+
+    // Start timing for performance tracking
+    const startTime = performance.now();
   
     // Validate input
     const isValid = validateInput(setOne, setTwo);
@@ -61,7 +64,8 @@ const CompositionOfPermutations = () => {
     } catch (err) {
 
       trackResults(
-        { input: input },
+        { setOne: setOne },
+        { setTwo: setTwo },
         {error: err.message || "Error solving Composition of Permutations"},
         performance.now() - startTime
       )

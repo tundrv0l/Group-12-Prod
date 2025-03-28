@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
-import { solveEquivalenceRelations } from '../api';
+import { solvePartitions } from '../api';
 import { CircleInformation } from 'grommet-icons';
 import ReportFooter from '../components/ReportFooter';
 import HomeButton from '../components/HomeButton';
@@ -8,12 +8,12 @@ import Background from '../components/Background';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
-* Name: EquivalenceRelations.js
+* Name: Partitions.js
 * Author: Parker Clark
 * Description: Solver page for equivalence relations.
 */
 
-const EquivalenceRelations = () => {
+const Partitions = () => {
   const [set, setSet] = React.useState('');
   const [relation, setRelation] = React.useState('');
   const [output, setOutput] = React.useState('');
@@ -21,7 +21,7 @@ const EquivalenceRelations = () => {
   const [loading, setLoading] = React.useState(false);
   const [showHelp, setShowHelp] = React.useState(false);
 
-  const { trackResults } = useDiagnostics("EQUIVALENCE_RELATIONS");
+  const { trackResults } = useDiagnostics("PARTITIONS");
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -47,7 +47,7 @@ const EquivalenceRelations = () => {
     try {
       
       // Do some conversion to display any backend errors
-      let result = await solveEquivalenceRelations(set, relation);
+      let result = await solvePartitions(set, relation);
 
       // Parse result if it is a string
       if (typeof result === 'string') {
@@ -230,4 +230,4 @@ const EquivalenceRelations = () => {
   );
 };
 
-export default EquivalenceRelations;
+export default Partitions;

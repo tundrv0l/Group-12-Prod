@@ -32,18 +32,14 @@ const CriticalPaths = () => {
         // Convert the Set to an array before serializing
         const prerequisitesArray = Array.from(task.prerequisites);
         
-        // For debugging
-        console.log(`Task ${task.name} depends on:`, prerequisitesArray);
-        
-        // Store the prerequisites as an array and the time as a number
-        taskTable[task.name] = [prerequisitesArray, isTimed ? task.time : 0];
+        // Always use task.time for critical paths (no conditional)
+        taskTable[task.name] = [prerequisitesArray, task.time];
       }
     });
-    
     console.log("Formatted table:", taskTable);
     return taskTable;
   };
-
+  
   const validateInput = () => {
 
     // Check for empty task names
@@ -183,6 +179,7 @@ const CriticalPaths = () => {
                 setTasks={setTasks}
                 isTimed={isTimed}
                 setIsTimed={setIsTimed}
+                showTimedToggle={false}
               />
               {error && <Text color="status-critical">{error}</Text>}
             </CardBody>
