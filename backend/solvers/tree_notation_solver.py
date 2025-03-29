@@ -1,6 +1,6 @@
 '''----------------- 
 # Title: binary_tree_notation_solver.py
-# Author: Michael Lowder (Reorganized)
+# Author: Michael Lowder
 # Date: 3/15/2025
 # Description: A solver for binary tree notations and representations
 -----------------'''
