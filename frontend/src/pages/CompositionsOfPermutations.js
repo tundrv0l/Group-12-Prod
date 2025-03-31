@@ -176,17 +176,25 @@ const CompositionOfPermutations = () => {
                   Number of Permutations:
                 </Text>
                 <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} margin={{"bottom":"medium"}}>
-                  <Text>
-                    {perm ? Number(perm).toExponential(2) : "Output will be displayed here!"}
-                  </Text>
+                <Text>
+                  {perm
+                    ? Number(perm) >= 1e9
+                      ? Number(perm).toExponential(3) // Use scientific notation with 3 decimal places
+                      : Number(perm).toLocaleString() // Use standard number format with commas
+                    : "Output will be displayed here!"}
+                </Text>
                 </Box>
                 <Text>
                   Number of Combinations:
                 </Text>
                 <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                  <Text>
-                    {comp ? Number(comp).toExponential(2) : "Output will be displayed here!"}
-                  </Text>
+                <Text>
+                  {comp
+                    ? Number(comp) >= 1e9
+                      ? Number(comp).toExponential(3) // Use scientific notation with 3 decimal places
+                      : Number(comp).toLocaleString() // Use standard number format with commas
+                    : "Output will be displayed here!"}
+                </Text>
                 </Box>
               </Box>
             </CardBody>
