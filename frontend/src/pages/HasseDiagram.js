@@ -195,16 +195,10 @@ const HasseDiagram = () => {
                     <strong>{'{a,b,c}'}</strong>
                   </Text>
                   <Text>
-                    For example: <strong>{'{a,b,f}'}</strong>
-                  </Text>
-                  <Text>
                     To input a relation, use the following format:
                   </Text>
                   <Text>
-                    <strong>{'{(a,b),(b,c),(c,a)}'}</strong>
-                  </Text>
-                  <Text>
-                    For example: <strong>{'{(a,b),(b,f),(a,f),(a,a),(b,b),(f,f)}'}</strong>
+                    <strong>{'{(a,a),(b,b),(c,c),(a,b),(b,c),(a,c)}'}</strong>
                   </Text>
                   <Text style={{ fontStyle: 'italic' }}>
                     The set and relation must form a partial ordering, that is, they must be reflexive, antisymmetric, and transitive.

@@ -43,13 +43,16 @@ def solve(order, scalars_f, scalars_g):
     print(f"order: {order}, scalars_f: {scalars_f}, scalars_g: {scalars_g}")
     result_list = [0, 0, 0]
     result = {
-        "For all x\\geq 0, ": "0g(x)\\leq f(x)\\leq 0g(x)" 
+        "Result": "\\forall x\\geq 0, 0g(x)\\leq f(x)\\leq 0g(x)" 
     }
 
     if scalars_g[order] == 0:
         if scalars_f[order] == 0:
             return json.dumps(result)
         else:
+            raise exceptions.CalculateError(f"Not possible.")
+    else:
+        if scalars_f[order] == 0:
             raise exceptions.CalculateError(f"Not possible.")
 
     c_1 = (1/2) * scalars_f[order] / scalars_g[order];
@@ -68,7 +71,7 @@ def solve(order, scalars_f, scalars_g):
     result_list[2] = c_2
 
     result = {
-        "Result": f"For all x\\geq {result_list[0]:.2f}, {result_list[1]:.2f}g(x)\\leq f(x)\\leq {result_list[2]:.2f}g(x)"
+        "Result": f"\\forall x\\geq {result_list[0]:.2f}, {result_list[1]:.2f}g(x)\\leq f(x)\\leq {result_list[2]:.2f}g(x)"
     }
 
     return json.dumps(result)

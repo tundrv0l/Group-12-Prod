@@ -60,6 +60,9 @@ def solve(set_string, relation_string):
 def generate_diagram(relation, set_list):
     # Generate the Hasse diagram using networkx
     G = nx.DiGraph()
+    for element in set_list:
+        G.add_node(element)
+
     for pair in relation:
         G.add_edge(set_list[pair[0]], set_list[pair[1]])
 

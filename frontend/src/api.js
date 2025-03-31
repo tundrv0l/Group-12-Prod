@@ -253,7 +253,7 @@ export const solvePermutationsCycle = async (input) => {
 export const solveTopologicalSorting = async (taskTable) => {
     try {
         // Here we don't need to wrap it in {input: ...} as the controller expects the raw data
-        const response = await solve('pert-diagrams', taskTable);
+        const response = await solve('topological-sorting', taskTable);
         return response;
     } catch (error) {
         console.error('Error topologically sorting:', error);
