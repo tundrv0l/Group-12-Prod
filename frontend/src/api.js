@@ -79,17 +79,17 @@ export const solveRecursion = async (formula, baseCase, n) => {
 
 // Call basic set functions solver to the backend
 export const solveBasicSetFunctions = async (input) => {
-    return await solve('basic-set-functions', { input });
+    return await solve('basic-set-functions',  input );
 }
 
 // Call power set solver to the backend
 export const solvePowerSet = async (input) => {
-    return await solve('power-set', { input });
+    return await solve('power-set', input );
 }
 
 // Call set complement solver to the backend
 export const solveSetComplement = async (input) => {
-    return await solve('set-complement', { input });
+    return await solve('set-complement', input );
 }
 
 // Call binary and unary operators solver to the backend

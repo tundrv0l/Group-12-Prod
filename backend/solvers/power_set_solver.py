@@ -74,58 +74,85 @@ def parse_set_notation(s):
     if s.startswith('{') and s.endswith('}'):
         parsed_set, _ = helper(1)  # start inside the first `{`
         return parsed_set
+    elif s == '∅' or s == '{}':
+        # Handle empty set
+        return set()
     else:
-        raise ValueError("Input must start and end with braces {}")
+        raise ValueError("Input must start and end with braces {} or be ∅")
 
 
-def solve(input_text, power_sets):
+def solve(sets_dict, iterations=1):
     """
-    Calculate power sets for a given set and return JSON result.
+    Calculate power sets for multiple sets and return JSON result.
     
     Parameters:
     -----------
-    input_text : str
-        String representation of the input set (e.g., "{a, b, c}")
-    power_sets : int
+    sets_dict : dict
+        Dictionary mapping set names to their string representations
+        Example: {"A": "{a, b, c}", "B": "{1, 2}"}
+    iterations : int
         Number of power set iterations to calculate
         
     Returns:
     --------
     str
-        JSON string with the original set and calculated power sets
+        JSON string with the original sets and calculated power sets
     """
-    input_text = re.sub("|".join(map(re.escape, har_mapping.keys())), replace_char, input_text)
-    
-    # Parse the input set
-    user_set = parse_set_notation(input_text)
-    
-    if '∅' in user_set:
-        user_set.remove('∅')
-        user_set.add(frozenset())
-    
-    # Initialize the result structure
-    result = {
-        "original_set": format_math_set(user_set),
-        "power_sets": []
-    }
-    
-    # Calculate power sets
-    current_set = user_set
-    for i in range(power_sets):
-        # Calculate next power set
-        current_set = power_set(current_set)
+    try:
+        # Convert iterations to int
+        iterations = int(iterations)
+        if iterations < 1 or iterations > 3:
+            raise ValueError("Iterations must be between 1 and 3")
         
-        # Format the power set for output
-        formatted_subsets = []
-        for subset in sorted(current_set, key=lambda x: (len(x), [str(e) for e in x])):
-            formatted_subsets.append(format_math_set(subset))
+        # Initialize the result structures
+        result = {
+            "original_sets": {},
+            "power_sets": {},
+            "iterations": iterations
+        }
         
-        # Add to result
-        result["power_sets"].append({
-            "iteration": i + 1,
-            "notation": f"𝒫^{i+1}(S)",
-            "elements": formatted_subsets,
-            "cardinality": len(formatted_subsets)
-        })
-
-    return json.dumps(result)
+        # Process each set in the dictionary
+        for set_name, set_value in sets_dict.items():
+            # Apply character replacements
+            set_value = re.sub("|".join(map(re.escape, har_mapping.keys())), replace_char, set_value)
+            
+            # Save original set
+            result["original_sets"][set_name] = set_value
+            
+            # Parse the input set
+            try:
+                user_set = parse_set_notation(set_value)
+                
+                if '∅' in user_set:
+                    user_set.remove('∅')
+                    user_set.add(frozenset())
+                
+                # Calculate power sets
+                current_set = user_set
+                for i in range(iterations):
+                    # Calculate next power set
+                    current_set = power_set(current_set)
+                    
+                    # Format the power set for output
+                    formatted_subsets = []
+                    for subset in sorted(current_set, key=lambda x: (len(x), [str(e) for e in x])):
+                        formatted_subsets.append(format_math_set(subset))
+                    
+                    # Add to result with a key that combines iteration and set name
+                    power_set_key = f"Iteration {i+1} - Set {set_name}"
+                    result["power_sets"][power_set_key] = {
+                        "notation": f"𝒫^{i+1}({set_name})",
+                        "elements": formatted_subsets,
+                        "cardinality": len(formatted_subsets)
+                    }
+            except Exception as e:
+                # If a specific set fails, add error message but continue processing others
+                result["power_sets"][f"Error in Set {set_name}"] = str(e)
+        
+        return json.dumps(result)
+    
+    except Exception as e:
+        error_result = {
+            "error": f"Error calculating power sets: {str(e)}"
+        }
+        return json.dumps(error_result)
