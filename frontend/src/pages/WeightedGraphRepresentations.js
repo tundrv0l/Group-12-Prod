@@ -45,7 +45,7 @@ const WeightedGraphRepresentations = () => {
     const startTime = performance.now();
 
     try {
-      const result = await solveWeightedGraphs(input);
+      const result = await solveWeightedGraphs(input, type);
       const parsedResult = JSON.parse(result);
       console.log(parsedResult);
       
