@@ -19,7 +19,7 @@ order: an integer represnting the order of the two functions
     - restrictions: can't be negative
 scalar_f: a list representing of floats reprenting the scalars of the 
           first function in order-ascending order
-    - example: [2.5, 0]
+    - example: [2.5, 1]
     - restrictions: length is equal to order
 scalar_g: a list representing of floats reprenting the scalars of the 
           second function in order-ascending order
