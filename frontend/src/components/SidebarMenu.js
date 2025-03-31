@@ -116,6 +116,17 @@ const SidebarMenu = () => (
           
           <Separator />
           
+          <CustomAccordionPanel label="4.4: Permutations">
+            <AccordionPanelContent 
+              content={[
+                { label: "Compositions Of Permutations", path: "/compositions-of-permutations" },
+              ]} 
+              size={size}
+            />
+          </CustomAccordionPanel>
+          
+          <Separator />
+          
           <CustomAccordionPanel label="5.1: Relations">
             <AccordionPanelContent 
               content={[

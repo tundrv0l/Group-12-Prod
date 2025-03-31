@@ -60,6 +60,7 @@ const App = () => (
         <Route path="/pert-diagrams" element={<PERTDiagrams />} />
         <Route path="/topological-sorting" element={<TopologicalSorting />} />
         <Route path="/permutations-cycle" element={<PermutationsOfACycle />} />
+        <Route path="/compositions-of-permutations" element={<CompositionOfPermutations />} />
         <Route path="/compositions" element={<CompositionOfPermutations />} />
         <Route path="/disjoint-cycles" element={<DisjointCycles />} />
         <Route path="/order-of-magnitude" element={<OrderOfMagnitude />} />
