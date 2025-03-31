@@ -14,15 +14,15 @@ from solvers.util import exceptions
 ==========
 parameters
 ==========
-order: an integer represnting the order of the two functions
+order: an integer reprsenting the order of the two functions
     - example: 2
     - restrictions: can't be negative
 scalar_f: a list representing of floats reprenting the scalars of the 
-          first function in order-ascending order
-    - example: [2.5, 0]
+          first function in order-descending order
+    - example: [2.5, 1]
     - restrictions: length is equal to order
 scalar_g: a list representing of floats reprenting the scalars of the 
-          second function in order-ascending order
+          second function in order-descending order
     - example: [0, 3.44]
     - restrictions: length is equal to order
 ======
@@ -39,39 +39,49 @@ just use the polynomial inside them as the input data.
 5.5.5 is unsolved for now.
 '''
 def solve(order, scalars_f, scalars_g):
-
-    print(f"order: {order}, scalars_f: {scalars_f}, scalars_g: {scalars_g}")
-    result_list = [0, 0, 0]
     result = {
         "Result": "\\forall x\\geq 0, 0g(x)\\leq f(x)\\leq 0g(x)" 
     }
 
-    if scalars_g[order] == 0:
-        if scalars_f[order] == 0:
+    if scalars_g[0] == 0:
+        if scalars_f[0] != 0:
             return json.dumps(result)
         else:
             raise exceptions.CalculateError(f"Not possible.")
     else:
-        if scalars_f[order] == 0:
+        if scalars_f[0] == 0:
             raise exceptions.CalculateError(f"Not possible.")
 
-    c_1 = (1/2) * scalars_f[order] / scalars_g[order];
-    c_2 = (2) * scalars_f[order] / scalars_g[order];
     
-    h_1 = [scalars_f[i] - c_1 * scalars_g[i] for i in range(order)]
-    h_2 = [c_2 * scalars_g[i] - scalars_f[i] for i in range(order)]
+        
+    c_1 = (1/2) * abs(scalars_f[0] / scalars_g[0]);
+    c_2 = (2) * abs(scalars_f[0] / scalars_g[0]);
 
-    M_1 = max(abs(h_1[i]) for i in range(order))
-    M_2 = max(abs(h_2[i]) for i in range(order))
+    if (scalars_g[0] < 0 and scalars_f[0] < 0):
+        c_1 *= 4
+        c_2 *= 0.25
+    elif (scalars_g[0] < 0 and scalars_f[0] > 0):
+        c_1 *= -1
+        c_2 *= -1
+    elif (scalars_g[0] > 0 and scalars_f[0] < 0):
+        c_1 *= -4
+        c_2 *= -0.25
 
-    n_0 = max(M_1 / (c_1 * scalars_g[order]), M_2 / (c_2 * scalars_g[order]))
+    n_0 = 100
+    while True:
+        f_value = 0
+        g_value = 0
+        for i in range(order + 1):
+            f_value += scalars_f[i] * (n_0 ** (order - i))
+            g_value += scalars_g[i] * (n_0 ** (order - i))
 
-    result_list[0] = n_0
-    result_list[1] = c_1
-    result_list[2] = c_2
+        if c_1 * g_value <= f_value and c_2 * g_value >= f_value:
+            break
+
+        n_0 += 100
 
     result = {
-        "Result": f"\\forall x\\geq {result_list[0]:.2f}, {result_list[1]:.2f}g(x)\\leq f(x)\\leq {result_list[2]:.2f}g(x)"
+        "Result": f"\\forall x\\geq {n_0:.2f}, {c_1:.2f}g(x)\\leq f(x)\\leq {c_2:.2f}g(x)"
     }
 
     return json.dumps(result)
