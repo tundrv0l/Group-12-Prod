@@ -92,6 +92,11 @@ const ClosureAxioms = () => {
   // Validate that set conforms to format
   const validateSet = (input) => {
 
+    // Allow empty set {}
+    if (input.trim() === '{}') {
+      return true;
+    }
+
     // Tests if input is in the form {a, b, c, 23}
     const setRegex = /^\{(\s*[a-zA-Z0-9]+\s*,)*\s*[a-zA-Z0-9]+\s*\}$/;
     return setRegex.test(input);
@@ -100,15 +105,25 @@ const ClosureAxioms = () => {
   // Validate that relation conforms to format
   const validateRelation = (input, set) => {
 
+    // Allow empty relation {}
+    if (input.trim() === '{}') {
+      return true;
+    }
+
     // Tests if input is in the form {(a, b), (23, c)}
     const relationRegex = /^\{(\s*\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*,)*\s*\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*\}$/;
     if (!relationRegex.test(input)) {
       return false;
     }
+
+    // If set is empty, no relation can be valid (except empty relation, already handled)
+    if (set.trim() === '{}') {
+      return false;
+    }
     
     // Checks if all elements in the relation are in the set
-    const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/);
-    const relationElements = input.replace(/[{}()]/g, '').split(/\s*,\s*/);
+    const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/).filter(element => element.trim() !== '');
+    const relationElements = input.replace(/[{}()]/g, '').split(/\s*,\s*/).filter(element => element.trim() !== '');
   
     return relationElements.every(element => setElements.includes(element));
   };
@@ -175,16 +190,10 @@ const ClosureAxioms = () => {
                   <strong>{'{a,b,c}'}</strong>
                 </Text>
                 <Text>
-                  For example: <strong>{'{a,b,f,23}'}</strong>
-                </Text>
-                <Text>
                   To input a relation, use the following format:
                 </Text>
                 <Text>
                   <strong>{'{(a,b),(b,c),(c,a)}'}</strong>
-                </Text>
-                <Text>
-                  For example: <strong>{'{(a,b),(b,f),(f,23),(a,a)}'}</strong>
                 </Text>
               </Box>
             </Collapsible>

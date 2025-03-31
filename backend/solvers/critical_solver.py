@@ -43,7 +43,11 @@ def solve(table):
         for prereq in table[set_list[task]][0]:
             latest_finish[task] = max(latest_finish[set_list.index(prereq)] + table[set_list[task]][1], latest_finish[task])
     
-    task = sorted_tasks[-1]
+    task = sorted_tasks[0]
+    for i in range(1, len(sorted_tasks)):
+        if latest_finish[sorted_tasks[i]] > latest_finish[task]:
+            task = sorted_tasks[i]
+
     critical_path = [task]
     time = latest_finish[task] - table[set_list[task]][1]
 

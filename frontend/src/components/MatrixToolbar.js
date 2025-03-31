@@ -39,12 +39,35 @@ const MatrixToolbar = ({ matrix, setMatrix }) => {
     }
   };
 
+  const buttonStyle = {
+    border: '2px solid #444444 !important',
+    borderRadius: '4px',
+    margin: '0 4px',
+    boxShadow: '0 1px 3px rgba(0,0,0,1)'
+  };
+  
   return (
     <Box direction="row" gap="small" margin={{ bottom: 'small' }}>
-      <Button label="Add Row" onClick={addRow} />
-      <Button label="Add Column" onClick={addColumn} />
-      <Button label="Remove Row" onClick={removeRow} />
-      <Button label="Remove Column" onClick={removeColumn} />
+      <Button 
+        label="Add Row" 
+        onClick={addRow} 
+        style={buttonStyle}
+      />
+      <Button 
+        label="Add Column" 
+        onClick={addColumn} 
+        style={buttonStyle}
+      />
+      <Button 
+        label="Remove Row" 
+        onClick={removeRow} 
+        style={buttonStyle}
+      />
+      <Button 
+        label="Remove Column" 
+        onClick={removeColumn} 
+        style={buttonStyle}
+      />
     </Box>
   );
 };

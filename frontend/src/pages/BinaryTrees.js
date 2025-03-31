@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select } from 'grommet';
 import { solveBinaryTrees } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
@@ -14,6 +14,7 @@ import { useDiagnostics } from '../hooks/useDiagnostics';
 
 const BinaryTrees = () => {
   const [input, setInput] = React.useState('');
+  const [treeType, setTreeType] = React.useState('regular');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
@@ -26,48 +27,172 @@ const BinaryTrees = () => {
     setOutput('');
     setError('');
 
-    // Validate input
-    const isValid = validateInput(input);
-    if (!isValid) {
-      setError('Invalid input. Please enter a valid expression.');
+    // Validate the input first
+    const validation = validateInput(input, treeType);
+    if (!validation.isValid) {
+      setError(validation.error);
       setLoading(false);
       return;
     }
 
     setError('');
 
+    // Determine the choice value based on tree type
+    const choice = treeType === 'regular' ? 1 : 2;
+
     // Start timing for performance tracking
     const startTime = performance.now();
 
-    try {
-      const result = await solveBinaryTrees(input);
+    try { 
+      // Do some conversion to display any backend errors
+      let result = await solveBinaryTrees(input, choice);
 
-      trackResults(
-        { input: input },
-        result,
-        performance.now() - startTime
-      );
+      // Parse result if it is a string
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      
+      // Check if there is an error key in the result
+      const errorKey = Object.keys(result).find(key => key.toLowerCase().includes('error'));
+      console.log(errorKey);
+      if (errorKey) {
 
-      setOutput(result);
+        // Track failed execution
+        trackResults(
+          { input: input, treeType: treeType},
+          { error: result[errorKey] }, 
+          performance.now() - startTime
+        );
+
+        setError(result[errorKey]);
+      } else {
+
+        // Track failed execution
+        trackResults(
+          { input: input, treeType: treeType },
+          result, 
+          performance.now() - startTime
+        );
+
+        setOutput(result["image"]);
+      }
     } catch (err) {
+      console.log(err);
 
+      // Track exception
       trackResults(
-        { input: input },
-        {error: err.message || "Error solving Binary Trees"},
-        performance.now() - startTime
+        { input: input, treeType: treeType}, // Input data
+        { error: err.message || 'Unknown error' }, // Error result
+        performance.now() - startTime // Execution time
       );
 
-      setError('An error occurred while generating the graph.');
+      setError('An error occurred while generating the Tree.');
     } finally {
       setLoading(false);
     }
   }
 
-  const validateInput = (input) => {
-    // TODO: Change regex here based on input pattern
-    const wffRegex = /^[A-Z](\s*->\s*[A-Z])?$/;
-    return wffRegex.test(input);
-  }
+  // Get placeholder text based on tree type
+  const getPlaceholder = () => {
+    if (treeType === 'regular') {
+      return "Example: A B C D E None F (space-separated nodes in level order)";
+    } else {
+      return "Example: 2+(3+5-7) (mathematical expression)";
+    }
+  };
+
+  // Convert base64 image string to image element
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here!";
+    }
+
+    // Parse out json object and return out elements one by one
+    return (
+      <Box>
+        <img src={`data:image/png;base64,${output}`} alt="Graph" style={{ maxWidth: '100%', height: 'auto' }} />
+      </Box>
+    );
+  };
+
+  // Validate the input based on the tree type
+  const validateInput = (input, treeType) => {
+    if (!input || input.trim() === '') {
+      return { isValid: false, error: 'Input cannot be empty.' };
+    }
+
+    if (treeType === 'regular') {
+      // Validate for regular binary tree level representation
+      const nodes = input.split(/\s+/);
+      
+      // Check if we have at least a root
+      if (nodes.length === 0) {
+        return { isValid: false, error: 'Tree must have at least a root node.' };
+      }
+
+      const invalidNodes = nodes.filter(node => 
+        node !== 'None' && !(/^[A-Za-z0-9]$/.test(node))  // Changed from + to require exactly one character
+      );
+      
+      if (invalidNodes.length > 0) {
+        return { 
+          isValid: false, 
+          error: `Invalid node value(s): ${invalidNodes.join(', ')}. Use single letters, numbers, or 'None'.` 
+        };
+      }
+
+      // Check for duplicate nodes (excluding 'None')
+      const uniqueNodes = new Set();
+      const duplicates = [];
+      
+      for (const node of nodes) {
+        if (node !== 'None') {
+          if (uniqueNodes.has(node)) {
+            duplicates.push(node);
+          } else {
+            uniqueNodes.add(node);
+          }
+        }
+      }
+      
+      if (duplicates.length > 0) {
+        return { 
+          isValid: false, 
+          error: `Duplicate node value(s): ${duplicates.join(', ')}. Each node must be unique.` 
+        };
+      }
+
+      return { isValid: true };
+      
+    } else if (treeType === 'mathematical') {
+      // Basic validation for mathematical expression
+      if (!/^[0-9a-zA-Z+\-*/()^. ]+$/.test(input)) {
+        return { 
+          isValid: false, 
+          error: 'Expression can only contain numbers, operators (+, -, *, /, ^), and parentheses.' 
+        };
+      }
+      
+      // Check for balanced parentheses
+      let parenCount = 0;
+      for (let char of input) {
+        if (char === '(') parenCount++;
+        else if (char === ')') parenCount--;
+        
+        if (parenCount < 0) {
+          return { isValid: false, error: 'Unbalanced parentheses in expression.' };
+        }
+      }
+      
+      if (parenCount !== 0) {
+        return { isValid: false, error: 'Unbalanced parentheses in expression.' };
+      }
+      
+      return { isValid: true };
+    }
+    
+    return { isValid: false, error: 'Invalid tree type.' };
+  };
 
   return (
     <Page>
@@ -106,8 +231,22 @@ const BinaryTrees = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
+              <Box margin={{ bottom: 'small' }}>
+                <Text margin={{ bottom: 'xsmall' }}>Select Tree Type:</Text>
+                <Select
+                  options={[
+                    { label: 'Regular Binary Tree (Level Order)', value: 'regular' },
+                    { label: 'Mathematical Expression', value: 'mathematical' }
+                  ]}
+                  value={treeType}
+                  labelKey="label"
+                  valueKey="value"
+                  onChange={({ value }) => setTreeType(value.value)}
+                />
+              </Box>
+              <Text margin={{ bottom: 'xsmall' }}>Input Tree:</Text>
               <TextInput 
-                placeholder="Example: Enter your graph here (e.g., [1, 2, 3, 4, 5, 6, 7])"
+                placeholder={getPlaceholder()}
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
               />
@@ -124,7 +263,7 @@ const BinaryTrees = () => {
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
                 <Text>
-                  {output ? JSON.stringify(output) : "Output will be displayed here!"}
+                  {renderOutput()}
                 </Text>
               </Box>
             </CardBody>

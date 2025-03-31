@@ -74,8 +74,9 @@ const SidebarMenu = () => (
           }}
         >
           <CustomAccordionPanel label="1.1: Statements and Tautologies">
+            
             <AccordionPanelContent 
-              content={[{ label: "Well-Formed Formula (wff) to Truth Table", path: "/wff-truthtable" }]} 
+              content={[{ label: "Well-Formed Formula (wff) to Truth Table", path: "/wff-truthtable"}]} 
               size={size}
             />
           </CustomAccordionPanel>
@@ -115,12 +116,23 @@ const SidebarMenu = () => (
           
           <Separator />
           
+          <CustomAccordionPanel label="4.4: Permutations">
+            <AccordionPanelContent 
+              content={[
+                { label: "Compositions Of Permutations", path: "/compositions-of-permutations" },
+              ]} 
+              size={size}
+            />
+          </CustomAccordionPanel>
+          
+          <Separator />
+          
           <CustomAccordionPanel label="5.1: Relations">
             <AccordionPanelContent 
               content={[
                 { label: "Property Of Relations", path: "/properties-of-relations" },
                 { label: "Closure Axioms", path: "/closure-axioms" },
-                { label: "Equivalence Relations", path: "/equivalence-relations" },
+                { label: "Partitions", path: "/partitions" },
                 { label: "Partial Orderings", path: "/partial-orderings" },
                 { label: "Hasse Diagram", path: "/hasse-diagram" }
               ]} 
@@ -147,7 +159,6 @@ const SidebarMenu = () => (
             <AccordionPanelContent 
               content={[
                 { label: "Permutations Of A Cycle", path: "/permutations-cycle" },
-                { label: "Compositions of Permutations", path: "/compositions" },
                 { label: "Permutations Expressed As Disjoint Cycles", path: "/disjoint-cycles" }
               ]} 
               size={size}

@@ -1,5 +1,6 @@
-#Inputs can be "A ^ B v C ^ D > (E > A) ^ (E v D)' ^ ((A' ^ B')' v (C' ^ D')')'"
-#output would be outputStrning
+# Propositinal_solver.py
+# Author: Mathias Buchanan
+# Solves: 1.2 propositinal logic problems
 
 letters = []
 outputString = ""
@@ -745,7 +746,7 @@ def solve(hypothisis, conclusionn):
                             newH2.istrue = not newH2.is_Not
                             newH2.parent1= h1
                             newH2.parent2 = h2
-                            newH2.type = "Motus Ponens"
+                            newH2.type = "Modus Ponens"
                             if newH2 not in hypothesi:
                                 hypothesi.append(newH2)
                             for letter in letters:
@@ -755,7 +756,7 @@ def solve(hypothisis, conclusionn):
                         else:
                                 newH2.parent1 = h1
                                 newH2.parent2 = h2
-                                newH2.type = "Motus Ponens"
+                                newH2.type = "Modus Ponens"
                                 if newH2 not in hypothesi:
                                     hypothesi.append(newH2)
 
@@ -787,7 +788,7 @@ def solve(hypothisis, conclusionn):
                             newH1.istrue = not newH1.is_Not
                             newH1.parent2= h2
                             newH1.parent1 = h1
-                            newH1.type = "Motus Ponens"
+                            newH1.type = "Modus Ponens"
                             if newH1 not in hypothesi:
                                 hypothesi.append(newH1)
                             for letter in letters:
@@ -797,7 +798,7 @@ def solve(hypothisis, conclusionn):
                         elif isinstance(newH1, AND):
                                 newH1.parent1 = h1
                                 newH1.parent2 = h2
-                                newH1.type = "Motus Ponens"
+                                newH1.type = "Modus Ponens"
                                 if newH1 not in hypothesi:
                                     hypothesi.append(newH1)
 
@@ -857,7 +858,7 @@ def solve(hypothisis, conclusionn):
                             newH2.istrue = not newH2.is_Not
                             newH2.parent1= h1
                             newH2.parent2 = h2
-                            newH2.type = "Motus Ponens"
+                            newH2.type = "Modus Ponens"
                             if newH2 not in hypothesi:
                                 hypothesi.append(newH2)
                             for letter in letters:
@@ -874,7 +875,7 @@ def solve(hypothisis, conclusionn):
                             newH2.istrue = not newH2.is_Not
                             newH2.parent1= h1
                             newH2.parent2 = h2
-                            newH2.type = "Motus Ponens"
+                            newH2.type = "Modus Ponens"
                             if newH2 not in hypothesi:
                                 hypothesi.append(newH2)
                             for letter in letters:
@@ -959,7 +960,7 @@ def solve(hypothisis, conclusionn):
                             newH2.istrue = not newH2.is_Not
                             newH2.parent1 = h2
                             newH2.parent2 = h1
-                            newH2.type = "Motus Ponens"
+                            newH2.type = "Modus Ponens"
                             if newH2 not in hypothesi:
                                 hypothesi.append(newH2)
                             for letter in letters:
@@ -968,7 +969,7 @@ def solve(hypothisis, conclusionn):
                                     break
                         elif isinstance(newH2, AND):
                                 newH2.parent1 = h2
-                                newH2.type = "Motus Ponens"
+                                newH2.type = "Modus Ponens"
                                 if newH2 not in hypothesi:
                                     hypothesi.append(newH2)
             if isinstance(h1, IMPLIES) and isinstance(h1.letter1, AND) and h1 >= h2:
@@ -977,7 +978,7 @@ def solve(hypothisis, conclusionn):
                             newH2.istrue = not newH2.is_Not
                             newH2.parent1 = h2
                             newH2.parent2 = h1
-                            newH2.type = "Motus Ponens"
+                            newH2.type = "Modus Ponens"
                             if newH2 not in hypothesi:
                                 hypothesi.append(newH2)
                             for letter in letters:
@@ -986,7 +987,7 @@ def solve(hypothisis, conclusionn):
                                     break
                         elif isinstance(newH2, AND):
                                 newH2.parent1 = h2
-                                newH2.type = "Motus Ponens"
+                                newH2.type = "Modus Ponens"
                                 if newH2 not in hypothesi:
                                     hypothesi.append(newH2)
             if isinstance(h1, Letter) and isinstance(h2, Letter) and not h1 == h2:

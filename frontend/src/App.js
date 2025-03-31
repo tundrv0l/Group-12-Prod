@@ -14,7 +14,7 @@ import BinaryUnaryOperators from './pages/BinaryUnaryOperators';
 import CartesianProducts from './pages/CartesianProducts';
 import RelationProperties from './pages/RelationProperties';
 import ClosureAxioms from './pages/ClosureAxioms';
-import EquivalenceRelations from './pages/EquivalenceRelations';
+import Partitions from './pages/Partitions';
 import PartialOrderings from './pages/PartialOrderings';
 import HasseDiagram from './pages/HasseDiagram';
 import CriticalPaths from './pages/CriticalPaths';
@@ -37,8 +37,9 @@ import WarshallsAlgorithm from './pages/WarshallsAlgorithm';
 
 
 const App = () => (
-  <AppLayout>
-    <Router>
+
+  <Router>
+    <AppLayout>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/wff-truthtable" element={<WFFSolverPage />} />
@@ -52,13 +53,14 @@ const App = () => (
         <Route path="/cartesian-products" element={<CartesianProducts />} />
         <Route path="/properties-of-relations" element={<RelationProperties />} />
         <Route path="/closure-axioms" element={<ClosureAxioms />} />
-        <Route path="/equivalence-relations" element={<EquivalenceRelations />} />
+        <Route path="/partitions" element={<Partitions />} />
         <Route path="/partial-orderings" element={<PartialOrderings />} />
         <Route path="/hasse-diagram" element={<HasseDiagram />} />
         <Route path="/critical-path" element={<CriticalPaths />} />
         <Route path="/pert-diagrams" element={<PERTDiagrams />} />
         <Route path="/topological-sorting" element={<TopologicalSorting />} />
         <Route path="/permutations-cycle" element={<PermutationsOfACycle />} />
+        <Route path="/compositions-of-permutations" element={<CompositionOfPermutations />} />
         <Route path="/compositions" element={<CompositionOfPermutations />} />
         <Route path="/disjoint-cycles" element={<DisjointCycles />} />
         <Route path="/order-of-magnitude" element={<OrderOfMagnitude />} />
@@ -74,8 +76,9 @@ const App = () => (
         <Route path="/warshalls-algorithm" element={<WarshallsAlgorithm />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </Router>
-  </AppLayout>
+    </AppLayout>
+  </Router>
+ 
 );
 
 export default App;
