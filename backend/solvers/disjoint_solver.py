@@ -31,6 +31,7 @@ def convertStringToStrings(nonListedStrings):
     for index, char in enumerate(nonListedStrings):
         if char == ')': 
             iterateString += ")"
+            iterateString = iterateString.strip()
             returnList.append(iterateString)
             iterateString = ""
         else:
