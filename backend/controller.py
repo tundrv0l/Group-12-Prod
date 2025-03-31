@@ -33,8 +33,11 @@ from backend.solvers import binary_trees_solver
 from backend.solvers import tree_to_array_solver
 from backend.solvers import array_to_tree_solver
 from backend.solvers import tree_notation_solver
+from backend.solvers import set_function_solver
 from backend.solvers import order_solver
 from backend.solvers import master_solver
+from backend.solvers import set_complement_solver
+from backend.solvers import power_set_solver 
 from solvers.util import exceptions
 
 #---Imports for the reporter---#
@@ -96,13 +99,15 @@ def solve_algorithim(solver_type, data):
         data = data["formula"]
         return recursion_solver.solve(data['formula'], data['baseCase'], data['n'])
     elif solver_type == 'basic-set-functions':
-        return hasse_solver.solve(data["set"], data["relation"])
+        return set_function_solver.solve(data)
     elif solver_type == 'power-set':
-        # Call the appropriate function for power set
-        pass
+
+        sets_dict = data.get("sets", {})
+        iterations = data.get("iterations", 1)
+
+        return power_set_solver.solve(sets_dict, iterations)
     elif solver_type == 'set-complement':
-        # Call the appropriate function for set complement
-        pass
+        return set_complement_solver.solve(data["universal_set"], data["subset"])
     elif solver_type == 'binary-unary-operators':
         # Call the appropriate function for binary and unary operators
         pass

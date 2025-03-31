@@ -50,12 +50,10 @@ def sorted_set(symbol_set):
 def solve(U, A):
 
     # Convert the input strings to sets of symbols
-    U = create_set_from_input(U)  # Universal set
-    A = create_set_from_input(A)  # Subset
+    U = create_set_from_input(U)
+    A = create_set_from_input(A) 
 
     complement_A = find_complement(U, A)
-    
-
 
     B = Union(Interval(2, 5), Interval(7, S.Infinity))
     complement_B = Complement(S.Reals, B)
