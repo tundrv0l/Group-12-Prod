@@ -51,6 +51,9 @@ def solve(order, scalars_f, scalars_g):
             return json.dumps(result)
         else:
             raise exceptions.CalculateError(f"Not possible.")
+    else:
+        if scalars_f[order] == 0:
+            raise exceptions.CalculateError(f"Not possible.")
 
     c_1 = (1/2) * scalars_f[order] / scalars_g[order];
     c_2 = (2) * scalars_f[order] / scalars_g[order];
