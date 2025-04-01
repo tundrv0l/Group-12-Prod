@@ -15,9 +15,10 @@ def parse_set(set_string):
         if char == ',' and not open_stack:
             element_string = element_string.strip()
 
-            if element_string:
+            if element_string and element_string not in elements:
                 elements.append(element_string)
-                element_string = ''
+
+            element_string = ''
         else:
             element_string += char
 
@@ -37,11 +38,11 @@ def parse_set(set_string):
                     raise exceptions.CalculateError("Mismatched ", last_open, " with ", char)
 
     if open_stack:
-        raise exceptions.CalculateError(f"Too many open chars: ", open_stack)
+        raise exceptions.CalculateError(f"Too many opening chars: ", open_stack)
 
     element_string = element_string.strip()
 
-    if element_string:
+    if element_string and element_string not in elements:
         elements.append(element_string)
 
     return elements
