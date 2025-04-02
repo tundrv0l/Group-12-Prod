@@ -49,7 +49,7 @@ def solve(set_string, relation_string):
     relation = relation - methods.reflexive_filter(set_, relation)
     relation = relation - methods.transitive_filter(set_, relation)
 
-    img_data = generate_diagram(relation, set_list)
+    img_data = generate_diagram(set_list, relation)
 
     result = {
         "Hasse Diagram": img_data 
@@ -57,21 +57,41 @@ def solve(set_string, relation_string):
 
     return json.dumps(result)
 
-def generate_diagram(relation, set_list):
-    # Generate the Hasse diagram using networkx
-    G = nx.DiGraph()
-    for element in set_list:
-        G.add_node(element)
+def generate_diagram(set_list, relation):
+    set_ = {i for i in range(0, len(set_list))}
+    minimals = methods.minimal_elements(set_, relation)
+    maximals = methods.maximal_elements(set_, relation)
+    descendents = generate_descendents(set_, relation)
+    layer_list = [0 for i in range(0, len(set_list))]
+    # determine the graph layer for each element
+    # based on the greatest depth from a minimal element
+    for m in minimals:
+        stack = [m]
+        while stack:
+            e = stack.pop()
+            if e not in maximals:
+                for d in descendents[e]:
+                    layer_list[d] = max(layer_list[d], layer_list[e] + 1)
+                    stack.append(d)
 
-    for pair in relation:
-        G.add_edge(set_list[pair[0]], set_list[pair[1]])
+    layers = {}
+    # construct the subset_key dict from layers computed
+    for i in range(0, len(set_list)):
+        if layer_list[i] not in layers:
+            layers[layer_list[i]] = []
 
-    pos = nx.shell_layout(G)
+        layers[layer_list[i]].append(set_list[i])
+
+    # generate the diagram
+    G = nx.Graph()
+    G.add_nodes_from(set_list)
+    G.add_edges_from([(set_list[a], set_list[b]) for (a, b) in relation])
+    pos = nx.multipartite_layout(G, subset_key=layers, align="horizontal")
     plt.figure()
-    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=15, font_color="black", font_weight="bold", arrows=True)
+    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=15, font_color="black", font_weight="bold")
     plt.title("Hasse Diagram")
 
-    # Convert the diagram to an image in memory
+    # convert to image
     img_buf = BytesIO()
     plt.savefig(img_buf, format='png')
     img_buf.seek(0)
@@ -79,3 +99,14 @@ def generate_diagram(relation, set_list):
     plt.close()
 
     return img_data
+
+def generate_descendents(set_, relation):
+    descendents = {}
+    for e in set_:
+        descendents[e] = []
+        for (a, b) in relation:
+            if a == e:
+                descendents[e].append(b)
+
+    return descendents
+
