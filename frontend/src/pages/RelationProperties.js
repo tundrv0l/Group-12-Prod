@@ -185,16 +185,10 @@ const RelationProperties = () => {
                   <strong>{'{a,b,c}'}</strong>
                 </Text>
                 <Text>
-                  For example: <strong>{'{a,b,f,23}'}</strong>
-                </Text>
-                <Text>
                   To input a relation, use the following format:
                 </Text>
                 <Text>
                   <strong>{'{(a,b),(b,c),(c,a)}'}</strong>
-                </Text>
-                <Text>
-                  For example: <strong>{'{(a,b),(b,f),(f,23),(a,a)}'}</strong>
                 </Text>
               </Box>
             </Collapsible>

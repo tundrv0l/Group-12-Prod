@@ -31,6 +31,7 @@ def convertStringToStrings(nonListedStrings):
     for index, char in enumerate(nonListedStrings):
         if char == ')': 
             iterateString += ")"
+            iterateString = iterateString.strip()
             returnList.append(iterateString)
             iterateString = ""
         else:
@@ -76,7 +77,7 @@ def solve(cycle_strings):
 
     disjoint_string = cycle_solver.not_json(permutation)
 
-    disjoint_string = "(" + disjoint_string.replace("(", "").replace(")", "") + ")"
+    # disjoint_string = "(" + disjoint_string.replace("(", "").replace(")", "") + ")"
 
     result = {
         "Disjoint Cycle Form": disjoint_string

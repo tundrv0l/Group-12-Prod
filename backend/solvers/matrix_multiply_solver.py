@@ -36,7 +36,7 @@ def solve(A, B):
     for i in range(0, len(A)):
         for j in range(0, len(B[0])):
             for k in range(0, len(A[0])):
-                C[i][j] += min(A[i][k], B[k][j])
+                C[i][j] = max(min(A[i][k], B[k][j]), C[i][j])
 
     result = {
         "Product (A × B)": C

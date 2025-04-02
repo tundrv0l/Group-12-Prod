@@ -118,8 +118,9 @@ const PERTDiagrams = () => {
     
     const startTime = performance.now();
     try {
-      const result = await solvePERTDiagrams(tableFormat);
-      setOutput(result);
+      let result = await solvePERTDiagrams(tableFormat);
+      result = JSON.parse(result);
+      setOutput(result["PERT Diagram"]);
       
       // Tracking results for diagnostics
       trackResults(
@@ -137,6 +138,20 @@ const PERTDiagrams = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Convert base64 image string to image element
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here!";
+    }
+
+    // Parse out json object and return out elements one by one
+    return (
+      <Box>
+        <img src={`data:image/png;base64,${output}`} alt="PERT Diagram" />
+      </Box>
+    );
   };
 
   return (
@@ -192,7 +207,7 @@ const PERTDiagrams = () => {
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
                 <Text>
-                  {output ? output : "Output will be displayed here!"}
+                  {renderOutput()}
                 </Text>
               </Box>
             </CardBody>

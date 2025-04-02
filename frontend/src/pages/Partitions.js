@@ -175,19 +175,13 @@ const Partitions = () => {
                   To input a set, use the following format:
                 </Text>
                 <Text>
-                  <strong>{'{a,b,c}'}</strong>
+                  <strong>{'{a,b,c,d}'}</strong>
                 </Text>
                 <Text>
-                  For example: <strong>{'{a,b,f,23}'}</strong>
+                  To input a partition, use the following format:
                 </Text>
                 <Text>
-                  To input a set of sets, use the following format:
-                </Text>
-                <Text>
-                  <strong>{'{{a,b},{b,c},{c,a}}'}</strong>
-                </Text>
-                <Text>
-                  For example: <strong>{'{{a,b},{b,f},{f,23},{a,a}}'}</strong>
+                  <strong>{'{{a,b},{c,d}}'}</strong>
                 </Text>
               </Box>
             </Collapsible>
