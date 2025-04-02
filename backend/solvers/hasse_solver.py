@@ -76,11 +76,21 @@ def generate_diagram(set_list, relation):
 
     layers = {}
     # construct the subset_key dict from layers computed
-    for i in range(0, len(set_list)):
-        if layer_list[i] not in layers:
-            layers[layer_list[i]] = []
+    for m in minimals:
+        stack = [m]
+        while stack:
+            e = stack.pop()
+            if layer_list[e] not in layers:
+                layers[layer_list[e]] = []
 
-        layers[layer_list[i]].append(set_list[i])
+            if set_list[e] not in layers[layer_list[e]]:
+                layers[layer_list[e]].append(set_list[e])
+
+            if e not in maximals:
+                for d in descendents[e]:
+                    stack.append(d)
+
+    print(layers)
 
     # generate the diagram
     G = nx.Graph()
