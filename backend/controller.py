@@ -96,7 +96,6 @@ def solve_algorithim(solver_type, data):
         data = data["hypotheses"]
         return propositional_solver.solve(data['hypotheses'], data['conclusion'])
     elif solver_type == 'recursive-definitions':
-        data = data["formula"]
         return recursion_solver.solve(data['formula'], data['baseCase'], data['n'])
     elif solver_type == 'basic-set-functions':
         return set_function_solver.solve(data)

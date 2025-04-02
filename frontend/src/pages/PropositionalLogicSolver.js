@@ -1,10 +1,12 @@
 import React from 'react';
 import ReportFooter from '../components/ReportFooter';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
+import { CircleInformation } from 'grommet-icons';
 import { solvePropositionalLogic } from '../api';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+import PropositionalLogicOperationsTable from '../components/PropositionalLogicOperationsTable';
 
 
 /*
@@ -19,6 +21,7 @@ const PropositionalLogicSolver = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("PROPOSITIONAL_LOGIC");
 
@@ -46,9 +49,9 @@ const PropositionalLogicSolver = () => {
           
           // Track successful execution with timing
           trackResults(
-            { hypotheses: hypotheses, conclusion: conclusion }, // Input data
-            result,       // Result data
-            performance.now() - startTime      // Execution time in ms
+            { hypotheses: hypotheses, conclusion: conclusion },
+            result,
+            performance.now() - startTime      
           );
           
           setOutput(result);
@@ -128,9 +131,29 @@ const PropositionalLogicSolver = () => {
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
+
+          <Box margin={{bottom : "small" }}><Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+            <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+          </Box>
+          <Collapsible open={showHelp}>
+            <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+              <Text margin={{ bottom: "small" }}>
+                Enter your hypotheses and conclusion in the appropiate fields.
+              </Text>
+              <Text margin={{ bottom: "small" }}>
+                Use the following operators for logical expressions:
+              </Text>
+              <PropositionalLogicOperationsTable />
+              <Text margin={{ top: "small" }}>
+                Ensure that tokens and operators are delimited by spaces or parentheses.
+              </Text>
+            </Box>
+          </Collapsible>
+          </Box>
+
             <Box margin={{bottom : "small" }}>
               <TextInput 
-                placeholder="Example: Enter your hypotheses here (e.g., A > B)"
+                placeholder="Example: Enter your hypotheses here (e.g., A -> B ^ A)"
                 value={hypotheses}
                 onChange={(event) => setHypotheses(event.target.value)}
               />

@@ -99,7 +99,6 @@ const Partitions = () => {
   };
 
   // Validate that relation conforms to format
-  // Validate that relation conforms to format
   const validateRelation = (input, set) => {
     // Tests if input is in the form {{a,b},{c,23}} or {{a,b}} or {{a}}
     const relationRegex = /^\{(\s*\{\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\}\s*,)*\s*\{\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\}\s*\}$/;
@@ -141,7 +140,7 @@ const Partitions = () => {
         </Box>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
-            Paritions
+            Partitions
           </Text>
         </Box>
         <Box align="center" justify="center">
