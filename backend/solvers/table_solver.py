@@ -64,45 +64,18 @@ def not_string(table):
     return set_list, relation
 
 def generate_diagram(table):
+    # determine the layer each element is in
     set_list, relation = not_string(table)
-    set_ = {i for i in range(0, len(set_list))}
+    size = len(set_list)
+    set_ = {i for i in range(0, size)}
     relation = relation - (methods.transitive_closure(relation) - relation)
-    minimals = methods.minimal_elements(set_, relation)
-    maximals = methods.maximal_elements(set_, relation)
-    descendents = methods.generate_descendents(set_, relation)
-    layer_list = [0 for i in range(0, len(set_list))]
-    # determine the graph layer for each element
-    # based on the greatest depth from a minimal element
-    for m in minimals:
-        stack = [m]
-        while stack:
-            e = stack.pop()
-            if e not in maximals:
-                for d in descendents[e]:
-                    layer_list[d] = max(layer_list[d], layer_list[e] + 1)
-                    stack.append(d)
-
-    layers = {}
-    # construct the subset_key dict from layers computed
-    for m in minimals:
-        stack = [m]
-        while stack:
-            e = stack.pop()
-            if layer_list[e] not in layers:
-                layers[layer_list[e]] = []
-            
-            label = f"{set_list[e]}({table[set_list[e]][1]})"
-            if label not in layers[layer_list[e]]:
-                layers[layer_list[e]].append(label)
-
-            if e not in maximals:
-                for d in descendents[e]:
-                    stack.append(d)
+    labels = [f"{set_list[e]}({table[set_list[e]][1]})" for e in range(0, size)]
+    layers = methods.generate_layers(set_, relation, labels, size)
 
     # generate the PERT diagram
     G = nx.DiGraph()
-    G.add_nodes_from([f"{label}({table[label][1]})" for label in set_list])
-    G.add_edges_from([(f"{set_list[a]}({table[set_list[a]][1]})", f"{set_list[b]}({table[set_list[b]][1]})") for (a, b) in relation])
+    G.add_nodes_from([labels[e] for e in set_])
+    G.add_edges_from([(labels[a], labels[b]) for (a, b) in relation])
     pos = nx.multipartite_layout(G, subset_key=layers, align="vertical")
     plt.figure()
     nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=15, font_color="black", font_weight="bold")

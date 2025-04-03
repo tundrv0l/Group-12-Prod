@@ -100,3 +100,38 @@ def generate_descendents(set_, relation):
                 descendents[e].append(b)
 
     return descendents
+
+def generate_layers(set_, relation, labels, size):
+    minimals = minimal_elements(set_, relation)
+    maximals = maximal_elements(set_, relation)
+    descendents = generate_descendents(set_, relation)
+    layer_list = [0 for i in range(0, size)]
+    # determine the graph layer for each element
+    # based on the greatest depth from a minimal element
+    for m in minimals:
+        stack = [m]
+        while stack:
+            e = stack.pop()
+            if e not in maximals:
+                for d in descendents[e]:
+                    layer_list[d] = max(layer_list[d], layer_list[e] + 1)
+                    stack.append(d)
+
+    layers = {}
+    # construct the subset_key dict from layers computed
+    for m in minimals:
+        stack = [m]
+        while stack:
+            e = stack.pop()
+            if layer_list[e] not in layers:
+                layers[layer_list[e]] = []
+            
+            label = labels[e]
+            if label not in layers[layer_list[e]]:
+                layers[layer_list[e]].append(label)
+
+            if e not in maximals:
+                for d in descendents[e]:
+                    stack.append(d)
+
+    return layers

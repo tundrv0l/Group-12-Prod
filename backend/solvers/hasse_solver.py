@@ -58,38 +58,11 @@ def solve(set_string, relation_string):
     return json.dumps(result)
 
 def generate_diagram(set_list, relation):
-    set_ = {i for i in range(0, len(set_list))}
-    minimals = methods.minimal_elements(set_, relation)
-    maximals = methods.maximal_elements(set_, relation)
-    descendents = methods.generate_descendents(set_, relation)
-    layer_list = [0 for i in range(0, len(set_list))]
-    # determine the graph layer for each element
-    # based on the greatest depth from a minimal element
-    for m in minimals:
-        stack = [m]
-        while stack:
-            e = stack.pop()
-            if e not in maximals:
-                for d in descendents[e]:
-                    layer_list[d] = max(layer_list[d], layer_list[e] + 1)
-                    stack.append(d)
-
-    layers = {}
-    # construct the subset_key dict from layers computed
-    for m in minimals:
-        stack = [m]
-        while stack:
-            e = stack.pop()
-            if layer_list[e] not in layers:
-                layers[layer_list[e]] = []
-
-            if set_list[e] not in layers[layer_list[e]]:
-                layers[layer_list[e]].append(set_list[e])
-
-            if e not in maximals:
-                for d in descendents[e]:
-                    stack.append(d)
-
+    # determine the layer each element is in
+    size = len(set_list)
+    set_ = {i for i in range(0, size)}
+    layers = methods.generate_layers(set_, relation, set_list, size)
+    
     # generate the Hasse diagram
     G = nx.Graph()
     G.add_nodes_from(set_list)
