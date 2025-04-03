@@ -2,8 +2,11 @@
 # Author: Mathias Buchanan
 # Solves: 1.2 propositinal logic problems
 
+import json
+
 letters = []
 outputString = ""
+outputStrng = ""
 printedH = []
 HsPrinted = 0
 hypothesi = []
@@ -50,6 +53,15 @@ class Letter:
         else:
             return self.letter + "is acting weird"
         
+    def altPrint(self):
+        if self.is_Not == False:
+            return self.letter
+        elif self.is_Not == True:
+            return self.letter + "'"
+        else:
+            return self.letter + "is acting weird"
+        
+        
     def printParent(self):
         p1 = False
         p2 = False
@@ -67,24 +79,32 @@ class Letter:
                 if h >= self:
                     h.pnumb = HsPrinted
             global outputString
+            global outputStrng
             outputString += str(HsPrinted) + ". " + str(self)
+            outputStrng += str(HsPrinted) + ". " + self.altPrint()
             if self.parent1 == "hypothesis" or self.parent1 == "Hypothesis":
                 outputString += ", Hypothesis"
+                outputStrng += ", Hypothesis"
             if p1:
                 for h in hypothesi:
                     if h >= self.parent1:
                         try:
                             outputString += ", " + str(h.pnumb)
+                            outputStrng += ", " + str(h.pnumb)
                         except:
                             print("Got error from trying this. here's the current output")
                             print(outputString)
+                            print(outputStrng)
             if p2:
                 for h in hypothesi:
                     if h >= self.parent2:
                         outputString += ", " + str(h.pnumb)
+                        outputStrng += ", " + str(h.pnumb)
             if self.type != "none":
                 outputString += ", " + self.type
+                outputStrng += ", " + self.type
             outputString += "\n"
+            outputStrng += "\n"
 
         
     def clone(self):
@@ -105,6 +125,23 @@ class OR:
         if not self.is_Not:
             return f"{self.letter1} or {self.letter2}"
         return f"not ({self.letter1} or {self.letter2})"
+    
+    def altPrint(self):
+        returnStr = ""
+        if self.is_Not:
+            returnStr = "("
+        if isinstance(self.letter1, Letter):
+            returnStr += self.letter1.altPrint() + " ∨ "
+        else:
+            returnStr += f"({self.letter1.altPrint()}) ∨ "
+        
+        if isinstance(self.letter2, Letter):
+            returnStr += self.letter2.altPrint()
+        else:
+            returnStr += f"({self.letter2.altPrint()})"
+        if self.is_Not:
+            returnStr += ")'"
+        return returnStr
     
     def __eq__(self, value):
         if isinstance(value, OR):
@@ -133,20 +170,27 @@ class OR:
                 if h >= self:
                     h.pnumb = HsPrinted
             global outputString
+            global outputStrng
             outputString += str(HsPrinted) + ". " + str(self)
+            outputStrng += str(HsPrinted) + ". " + self.altPrint()
             if self.parent1 == "hypothesis" or self.parent1 == "Hypothesis":
                 outputString += ", Hypothesis"
+                outputStrng += ", Hypothesis"
             if p1:
                 for h in hypothesi:
                     if h >= self.parent1:
                         outputString += ", " + str(h.pnumb)
+                        outputStrng += ", " + str(h.pnumb)
             if p2:
                 for h in hypothesi:
                     if h >= self.parent2:
                         outputString += ", " + str(h.pnumb)
+                        outputStrng += ", " + str(h.pnumb)
             if self.type != "none":
                 outputString += ", " + self.type
+                outputStrng += ", " + self.type
             outputString += "\n"
+            outputStrng += "\n"
     
     def clone(self):
         return OR(self.letter1.clone(), self.letter2.clone(), self.parent1, self.parent2, self.type, self.is_Not)
@@ -168,6 +212,20 @@ class IMPLIES:
         if isinstance(self.letter2, IMPLIES):
             return f"{self.letter1} implies that {self.letter2}"
         return f"{self.letter1} implies {self.letter2}"
+    
+    def altPrint(self):
+        returnStr = ""
+        if isinstance(self.letter1, Letter):
+            returnStr += self.letter1.altPrint() + " > "
+        else:
+            returnStr += f"({self.letter1.altPrint()}) > "
+
+        if isinstance(self.letter2, Letter):
+            returnStr += self.letter2.altPrint()
+        else:
+            returnStr += f"({self.letter2.altPrint()})"
+
+        return returnStr
     
     def __eq__(self, value):
         if isinstance(value, IMPLIES):
@@ -194,9 +252,12 @@ class IMPLIES:
                 if h >= self:
                     h.pnumb = HsPrinted
             global outputString
+            global outputStrng
             outputString += str(HsPrinted) + ". " + str(self)
+            outputStrng += str(HsPrinted) + ". " + self.altPrint()
             if self.parent1 == "hypothesis" or self.parent1 == "Hypothesis":
                 outputString += ", Hypothesis"
+                outputStrng += ", Hypothesis"
             if p1:
                 for h in hypothesi:
                     if h >= self.parent1:
@@ -207,7 +268,9 @@ class IMPLIES:
                         outputString += ", " + str(h.pnumb)
             if self.type != "none":
                 outputString += ", " + self.type
+                outputStrng += ", " + self.type
             outputString += "\n"
+            outputStrng += "\n"
     
     def clone(self):
         return IMPLIES(self.letter1.clone(), self.letter2.clone(), self.parent1, self.parent2, self.type, self.is_Not)
@@ -227,6 +290,24 @@ class AND:
     def __str__(self):
         base_str = f"{self.letter1} and {self.letter2}"
         return f"not ({base_str})" if self.is_Not else base_str
+    
+    def altPrint(self):
+        returnStr = ""
+        if self.is_Not:
+            returnStr += "("
+        if isinstance(self.letter1, Letter):
+            returnStr += self.letter1.altPrint() + " ^ "
+        else:
+            returnStr += f"({self.letter1.altPrint()}) ^ "
+
+        if isinstance(self.letter2, Letter):
+            returnStr += self.letter2.altPrint()
+        else:
+            returnStr += f"({self.letter2.altPrint()})"
+
+        if self.is_Not:
+            returnStr += ")'"
+        return returnStr
     
     def __eq__(self, value):
         if isinstance(value, AND):
@@ -254,20 +335,27 @@ class AND:
                 if h >= self:
                     h.pnumb = HsPrinted
             global outputString
+            global outputStrng
             outputString += str(HsPrinted) + ". " + str(self)
+            outputStrng += str(HsPrinted) + ". " + self.altPrint()
             if self.parent1 == "hypothesis" or self.parent1 == "Hypothesis":
                 outputString += ", Hypothesis"
+                outputStrng += ", Hypothesis"
             if p1:
                 for h in hypothesi:
                     if h >= self.parent1:
                         outputString += ", " + str(h.pnumb)
+                        outputStrng += ", " + str(h.pnumb)
             if p2:
                 for h in hypothesi:
                     if h >= self.parent2:
                         outputString += ", " + str(h.pnumb)
+                        outputStrng += ", " + str(h.pnumb)
             if self.type != "none":
                 outputString += ", " + self.type
+                outputStrng += ", " + self.type
             outputString += "\n"
+            outputStrng += "\n"
     
     def checkTrue(self):
         l1t = "unknown"
@@ -301,10 +389,318 @@ class AND:
         return AND(self.letter1.clone(), self.letter2.clone(), self.parent1, self.parent2, self.type, self.is_Not)
 
 
+def cycleThrough(conclusion):
+
+    global outputString
+    global outputStrng
+    global hypothesi
+    global printedH
+    global HsPrinted
+    global letters
+
+
+    for h1 in hypothesi:
+        for h2 in hypothesi:
+            if isinstance(h1, Letter) and isinstance(h2, IMPLIES):
+                # If h1 is thaZSe left-hand side of the IMPLIES and is true
+                if h1 >= h2.letter1:
+                        newH2 = h2.letter2.clone()
+                        if isinstance(newH2, Letter):
+                            newH2.istrue = not newH2.is_Not
+                            newH2.parent1= h1
+                            newH2.parent2 = h2
+                            newH2.type = "Modus Ponens"
+                            if newH2 not in hypothesi:
+                                hypothesi.append(newH2)
+                            for letter in letters:
+                                if letter == newH2:
+                                    letter.istrue = newH2.istrue
+                                    break
+                        else:
+                                newH2.parent1 = h1
+                                newH2.parent2 = h2
+                                newH2.type = "Modus Ponens"
+                                if newH2 not in hypothesi:
+                                    hypothesi.append(newH2)
+
+                # If h1 is the right-hand side of the IMPLIES and is false
+                elif h1 == h2.letter2 and h1.istrue == h2.letter2.is_Not:
+                    if isinstance(h2.letter1, Letter):
+                        l1_negated = h2.letter1.clone()
+                        l1_negated.is_Not = not l1_negated.is_Not  # Negate the letter
+                        l1_negated.istrue = not l1_negated.is_Not
+                        l1_negated.parent1 = h1
+                        l1_negated.parent2 = h2
+                        l1_negated.type = "modus tollens"
+                        if l1_negated not in hypothesi:
+                            hypothesi.append(l1_negated)
+                            for letter in letters:
+                                if letter == l1_negated:
+                                    letter.istrue = l1_negated.istrue
+                                    break
+                    elif not isinstance(h2.letter1, IMPLIES):
+                        newH2 = h2.letter1.clone()
+                        newH2.is_Not = not newH2.is_Not
+                        if newH2 not in hypothesi:
+                            hypothesi.append(newH2)
+            if isinstance(h2, Letter) and isinstance(h1, IMPLIES):
+                # If h1 is the left-hand side of the IMPLIES and is true
+                if h2 >= h1.letter1:
+                        newH1 = h1.letter1.clone()
+                        if isinstance(newH1, Letter):
+                            newH1.istrue = not newH1.is_Not
+                            newH1.parent2= h2
+                            newH1.parent1 = h1
+                            newH1.type = "Modus Ponens"
+                            if newH1 not in hypothesi:
+                                hypothesi.append(newH1)
+                            for letter in letters:
+                                if letter == newH1:
+                                    letter.istrue = newH1.istrue
+                                    break
+                        elif isinstance(newH1, AND):
+                                newH1.parent1 = h1
+                                newH1.parent2 = h2
+                                newH1.type = "Modus Ponens"
+                                if newH1 not in hypothesi:
+                                    hypothesi.append(newH1)
+
+                # If h1 is the right-hand side of the IMPLIES and is false
+                elif h2 == h1.letter2 and h2.istrue == h1.letter2.is_Not:
+                    if isinstance(h1.letter1, Letter):
+                        l1_negated = h1.letter1.clone()
+                        l1_negated.is_Not = not l1_negated.is_Not  # Negate the letter
+                        l1_negated.istrue = not l1_negated.is_Not
+                        l1_negated.parent1 = h1
+                        l1_negated.parent2 = h2
+                        l1_negated.type = "modus tollens"
+                        if l1_negated not in hypothesi:
+                            hypothesi.append(l1_negated)
+                            for letter in letters:
+                                if letter == l1_negated:
+                                    letter.istrue = l1_negated.istrue
+                                    break
+                    if not isinstance(h1.letter1, IMPLIES):
+                        newH1 = h1.letter1.clone()
+                        newH1.is_Not = not newH1.is_Not
+                        if newH1 not in hypothesi:
+                            hypothesi.append(newH1)
+            if isinstance(h1, IMPLIES) and isinstance(h2, IMPLIES):
+                if h1.letter2 >= h2.letter1 and h1.is_Not == h2.is_Not:
+                    newImp = IMPLIES(h1.letter1.clone(), h2.letter2.clone(), h1, h2, "transitive", h1.is_Not)
+
+                    # Ensure no invalid implications (e.g., A > not A)
+                    if newImp.letter1 == newImp.letter2 and newImp.letter1.is_Not != newImp.letter2.is_Not:
+                        continue  # Skip invalid implications
+                    
+                    # Avoid adding duplicates
+                    if newImp not in hypothesi:
+                        hypothesi.append(newImp)
+
+                        # Apply the "or logic" directly for the new implication
+                        l1 = newImp.letter1.clone()
+                        l2 = newImp.letter2.clone()
+                        
+                        # Add conditional disjunction (A > B becomes not A or B)
+                        l1.is_Not = not l1.is_Not
+                        newOr = OR(l1, l2, newImp, "none", "conditional disjunction", h1.is_Not)
+                        if newOr not in hypothesi:
+                            hypothesi.append(newOr)
+
+                if h1.letter1 == h2.letter1 and h1.letter1.is_Not != h2.letter1.is_Not and h1.letter2 >= h2.letter2:
+                        newL = h1.letter2.clone()
+                        newL.parent1 = h1
+                        newL.parent2 = h2
+                        newL.type = "proof by cases"
+                        if newL not in hypothesi:
+                            hypothesi.append(newL)
+            if isinstance(h1, IMPLIES):
+                if h1.letter1 >= h2:
+                        newH2 = h1.letter2.clone()
+                        if isinstance(newH2, Letter):
+                            newH2.istrue = not newH2.is_Not
+                            newH2.parent1= h1
+                            newH2.parent2 = h2
+                            newH2.type = "Modus Ponens"
+                            if newH2 not in hypothesi:
+                                hypothesi.append(newH2)
+                            for letter in letters:
+                                if letter == newH2:
+                                    letter.istrue = newH2.istrue
+                                    break
+                        elif isinstance(newH2, AND):
+                                if newH2 not in hypothesi:
+                                    hypothesi.append(newH2)
+            if isinstance(h2, IMPLIES):
+                if h2.letter1 >= h1:
+                        newH2 = h2.letter2.clone()
+                        if isinstance(newH2, Letter):
+                            newH2.istrue = not newH2.is_Not
+                            newH2.parent1= h1
+                            newH2.parent2 = h2
+                            newH2.type = "Modus Ponens"
+                            if newH2 not in hypothesi:
+                                hypothesi.append(newH2)
+                            for letter in letters:
+                                if letter == newH2:
+                                    letter.istrue = newH2.istrue
+                                    break
+                        elif isinstance(newH2, AND):
+                                if newH2 not in hypothesi:
+                                    hypothesi.append(newH2)
+
+            if isinstance(h1, OR) and isinstance(h1.letter1, Letter) and isinstance(h1.letter2, Letter) and isinstance(h2, Letter) and not h1.is_Not and not h2 == h1.letter1 and not h2 == h1.letter2:
+                newOREO = OR(AND(h1.letter1.clone(), h2.clone(), h1.clone(), h2.clone(), "Distributive", False), AND(h1.letter2.clone(), h2.clone(), h1.clone(), h2.clone(), "Distributive", False), h1, h2, "Distributive", False)
+                if newOREO not in hypothesi:
+                    hypothesi.append(newOREO)
+            if isinstance(h2, OR) and isinstance(h2.letter1, Letter) and isinstance(h2.letter2, Letter) and isinstance(h1, Letter) and not h2.is_Not and not h1 == h2.letter1 and not h1 == h2.letter2:
+                newOREY = OR(AND(h1.clone(), h2.letter1.clone(), h1.clone(), h2.clone(), "Distributive", False), AND(h1.clone(), h2.letter2.clone(), h1.clone(), h2.clone(), "Distributive", False), h1, h2, "Distributive", False)
+                if newOREY not in hypothesi:
+                    hypothesi.append(newOREY)
+            if isinstance(h2, AND):
+                if not h2.is_Not:
+                    l1s = h2.letter1.clone()
+                    l1s.istrue = not l1s.is_Not
+                    l2s = h2.letter2.clone()
+                    l2s.istrue = not l2s.is_Not
+                    l1s.parent1 = h2
+                    l1s.type = h2.type
+                    l2s.parent1 = h2
+                    l2s.type = h2.type
+                    if l1s not in letters and isinstance(l1s, Letter):
+                        letters.append(l1s)
+                    if l2s not in letters and isinstance(l2s, Letter):
+                        letters.append(l2s)
+                    for letter in letters:
+                        if letter == l1s:
+                            letter.istrue = l1s.istrue
+                        if letter == l2s:
+                            letter.istrue = l2s.istrue
+                    if l1s not in hypothesi:
+                        hypothesi.append(l1s)
+                    if l2s not in hypothesi:
+                        hypothesi.append(l2s)
+
+                    orl1 = l1s.clone()
+                    orl2 = l2s.clone()
+                    orl1.is_Not = not orl1.is_Not
+                    orl2.is_Not = not orl2.is_Not
+                    newOR = OR(orl1, orl2, h2, "none", "De Morgan's law", True)
+                    if newOR not in hypothesi:
+                        hypothesi.append(newOR)
+                else:
+                    l1s = h2.letter1.clone()
+                    l1s.is_Not = not l1s.is_Not
+                    l2s = h2.letter2.clone()
+                    l2s.is_Not = not l2s.is_Not
+
+                    newOr = OR(l1s, l2s, h2, "none", "De Morgan's law", False)
+                    if newOr not in hypothesi:
+                        hypothesi.append(newOr)
+            if isinstance(h2, OR):
+                        notA = h2.letter1.clone()
+                        notA.is_Not = not notA.is_Not
+                        newImp1 = IMPLIES(notA, h2.letter2, h2, "none", "Conditional Dysjunction", False)
+                        if newImp1 not in hypothesi:
+                            hypothesi.append(newImp1)
+
+                        notB = h2.letter2.clone()
+                        notB.is_Not = not notB.is_Not
+                        newImp2 = IMPLIES(notB, h2.letter1, h2, "none", "Conditional Dysjunction", False)
+                        if newImp2 not in hypothesi:
+                            hypothesi.append(newImp2)
+
+                        if h2.letter1 >= h2.letter2:
+                            newL = h2.letter1.clone()
+                            newL.parent1 = h2
+                            newL.type = "Self Refrence"
+                            if newL not in hypothesi:
+                                hypothesi.append(newL)
+
+            if isinstance(h2, IMPLIES) and isinstance(h2.letter1, AND) and h2.letter1 >= h1:
+                        newH2 = h2.letter2.clone()
+                        if isinstance(newH2, Letter):
+                            newH2.istrue = not newH2.is_Not
+                            newH2.parent1 = h2
+                            newH2.parent2 = h1
+                            newH2.type = "Modus Ponens"
+                            if newH2 not in hypothesi:
+                                hypothesi.append(newH2)
+                            for letter in letters:
+                                if letter == newH2:
+                                    letter.istrue = newH2.istrue
+                                    break
+                        elif isinstance(newH2, AND):
+                                newH2.parent1 = h2
+                                newH2.type = "Modus Ponens"
+                                if newH2 not in hypothesi:
+                                    hypothesi.append(newH2)
+            if isinstance(h1, IMPLIES) and isinstance(h1.letter1, AND) and h1.letter1 >= h2:
+                        newH2 = h1.letter2.clone()
+                        if isinstance(newH2, Letter):
+                            newH2.istrue = not newH2.is_Not
+                            newH2.parent1 = h2
+                            newH2.parent2 = h1
+                            newH2.type = "Modus Ponens"
+                            if newH2 not in hypothesi:
+                                hypothesi.append(newH2)
+                            for letter in letters:
+                                if letter == newH2:
+                                    letter.istrue = newH2.istrue
+                                    break
+                        elif isinstance(newH2, AND):
+                                newH2.parent1 = h2
+                                newH2.type = "Modus Ponens"
+                                if newH2 not in hypothesi:
+                                    hypothesi.append(newH2)
+            if isinstance(h1, Letter) and isinstance(h2, Letter) and not h1 == h2:
+                newAND = AND(h1.clone(), h2.clone(), h1, h2, "Conjunction", False)
+                if newAND not in hypothesi:
+                    hypothesi.append(newAND)
+
+    hypothesi = [
+        h for h in hypothesi
+        if not (isinstance(h, IMPLIES) and h.letter1 == h.letter2)
+    ]
+
+    
+    print([str(h) for h in hypothesi])
+
+        # Check the conclusion
+    hasntThing = True
+    for i in hypothesi:
+        if i >= conclusion:
+            hasntThing = False
+            i.printParent()
+
+    if hasntThing:
+        if isinstance(conclusion, IMPLIES):
+
+            while isinstance(conclusion, IMPLIES):
+                outputString += "Because this conclusion only matters if " + str(conclusion.letter1) + " is true, then we can assume that it is, and place it in our hypothesises. This also means our new conclusion is " + str(conclusion.letter2) + "\n"
+                outputStrng += "Because this conclusion only matters if " + str(conclusion.letter1) + " is true, then we can assume that it is, and place it in our hypothesises. This also means our new conclusion is " + str(conclusion.letter2) + "\n"
+                conclusion.letter1.parent1 = "hypothesis"
+                hypothesi.append(conclusion.letter1)
+                conclusion = conclusion.letter2
+
+            cycleThrough(conclusion)
+        else:
+            outputString = "Unfortunately, your inputted hypothesis does not derive this conclusion"
+            outputStrng = "Unfortunately, your inputted hypothesis does not derive this conclusion"
+
+    returnJson = {
+        "String": outputString,
+        "Symbol": outputStrng
+    }
+
+    return json.dumps(returnJson)
+
+
 # Input hypothesis
 def solve(hypothisis, conclusionn):
 
     global outputString
+    global outputStrng
     global hypothesi
     global printedH
     global HsPrinted
@@ -314,6 +710,7 @@ def solve(hypothisis, conclusionn):
     hypothisises = []
     hypothesi.clear()
     outputString = ""
+    outputStrng = ""
     letters.clear()
     printedH.clear()
     HsPrinted = 0
@@ -627,21 +1024,16 @@ def solve(hypothisis, conclusionn):
 
     if isinstance(conclusion, IMPLIES) and conclusion.is_Not:
         outputString += "Because the conclusion is " + str(conclusion) + ", and A > B is the same as A' v B, then we can rearange the conclusion as: "
+        outputStrng += "Because the conclusion is " + str(conclusion) + ", and A > B is the same as A' v B, then we can rearange the conclusion as: "
         l1 = conclusion.letter1.clone()
         l1.is_Not = not l1.is_Not
         l1.type = "hypothesis"
         conclusion = OR(l1, conclusion.letter2, conclusion.parent1, conclusion.parent2, conclusion.type, True)
         outputString += str(conclusion) + "\n"
+        outputStrng += str(conclusion) + "\n"
 
     # Output the parsed conclusion
     print("Parsed Conclusion:", conclusion)
-
-
-    while isinstance(conclusion, IMPLIES):
-        outputString += "Because this conclusion only matters if " + str(conclusion.letter1) + " is true, then we can assume that it is, and place it in our hypothesises. This also means our new conclusion is " + str(conclusion.letter2) + "\n"
-        conclusion.letter1.parent1 = "hypothesis"
-        hypothesi.append(conclusion.letter1)
-        conclusion = conclusion.letter2
                     
     print([str(h) for h in hypothesi])
 
@@ -736,282 +1128,4 @@ def solve(hypothisis, conclusionn):
 
     # Double for loop to add valid transitive implications
     # Check the conclusion and update based on single letters and implications
-    for h1 in hypothesi:
-        for h2 in hypothesi:
-            if isinstance(h1, Letter) and isinstance(h2, IMPLIES):
-                # If h1 is thaZSe left-hand side of the IMPLIES and is true
-                if h1 >= h2.letter1:
-                        newH2 = h2.letter2.clone()
-                        if isinstance(newH2, Letter):
-                            newH2.istrue = not newH2.is_Not
-                            newH2.parent1= h1
-                            newH2.parent2 = h2
-                            newH2.type = "Modus Ponens"
-                            if newH2 not in hypothesi:
-                                hypothesi.append(newH2)
-                            for letter in letters:
-                                if letter == newH2:
-                                    letter.istrue = newH2.istrue
-                                    break
-                        else:
-                                newH2.parent1 = h1
-                                newH2.parent2 = h2
-                                newH2.type = "Modus Ponens"
-                                if newH2 not in hypothesi:
-                                    hypothesi.append(newH2)
-
-                # If h1 is the right-hand side of the IMPLIES and is false
-                elif h1 == h2.letter2 and h1.istrue == h2.letter2.is_Not:
-                    if isinstance(h2.letter1, Letter):
-                        l1_negated = h2.letter1.clone()
-                        l1_negated.is_Not = not l1_negated.is_Not  # Negate the letter
-                        l1_negated.istrue = not l1_negated.is_Not
-                        l1_negated.parent1 = h1
-                        l1_negated.parent2 = h2
-                        l1_negated.type = "modus tollens"
-                        if l1_negated not in hypothesi:
-                            hypothesi.append(l1_negated)
-                            for letter in letters:
-                                if letter == l1_negated:
-                                    letter.istrue = l1_negated.istrue
-                                    break
-                    elif not isinstance(h2.letter1, IMPLIES):
-                        newH2 = h2.letter1.clone()
-                        newH2.is_Not = not newH2.is_Not
-                        if newH2 not in hypothesi:
-                            hypothesi.append(newH2)
-            if isinstance(h2, Letter) and isinstance(h1, IMPLIES):
-                # If h1 is the left-hand side of the IMPLIES and is true
-                if h2 >= h1.letter1:
-                        newH1 = h1.letter1.clone()
-                        if isinstance(newH1, Letter):
-                            newH1.istrue = not newH1.is_Not
-                            newH1.parent2= h2
-                            newH1.parent1 = h1
-                            newH1.type = "Modus Ponens"
-                            if newH1 not in hypothesi:
-                                hypothesi.append(newH1)
-                            for letter in letters:
-                                if letter == newH1:
-                                    letter.istrue = newH1.istrue
-                                    break
-                        elif isinstance(newH1, AND):
-                                newH1.parent1 = h1
-                                newH1.parent2 = h2
-                                newH1.type = "Modus Ponens"
-                                if newH1 not in hypothesi:
-                                    hypothesi.append(newH1)
-
-                # If h1 is the right-hand side of the IMPLIES and is false
-                elif h2 == h1.letter2 and h2.istrue == h1.letter2.is_Not:
-                    if isinstance(h1.letter1, Letter):
-                        l1_negated = h1.letter1.clone()
-                        l1_negated.is_Not = not l1_negated.is_Not  # Negate the letter
-                        l1_negated.istrue = not l1_negated.is_Not
-                        l1_negated.parent1 = h1
-                        l1_negated.parent2 = h2
-                        l1_negated.type = "modus tollens"
-                        if l1_negated not in hypothesi:
-                            hypothesi.append(l1_negated)
-                            for letter in letters:
-                                if letter == l1_negated:
-                                    letter.istrue = l1_negated.istrue
-                                    break
-                    if not isinstance(h1.letter1, IMPLIES):
-                        newH1 = h1.letter1.clone()
-                        newH1.is_Not = not newH1.is_Not
-                        if newH1 not in hypothesi:
-                            hypothesi.append(newH1)
-            if isinstance(h1, IMPLIES) and isinstance(h2, IMPLIES):
-                if h1.letter2 >= h2.letter1 and h1.is_Not == h2.is_Not:
-                    newImp = IMPLIES(h1.letter1.clone(), h2.letter2.clone(), h1, h2, "transitive", h1.is_Not)
-
-                    # Ensure no invalid implications (e.g., A > not A)
-                    if newImp.letter1 == newImp.letter2 and newImp.letter1.is_Not != newImp.letter2.is_Not:
-                        continue  # Skip invalid implications
-                    
-                    # Avoid adding duplicates
-                    if newImp not in hypothesi:
-                        hypothesi.append(newImp)
-
-                        # Apply the "or logic" directly for the new implication
-                        l1 = newImp.letter1.clone()
-                        l2 = newImp.letter2.clone()
-                        
-                        # Add conditional disjunction (A > B becomes not A or B)
-                        l1.is_Not = not l1.is_Not
-                        newOr = OR(l1, l2, newImp, "none", "conditional disjunction", h1.is_Not)
-                        if newOr not in hypothesi:
-                            hypothesi.append(newOr)
-
-                if h1.letter1 == h2.letter1 and h1.letter1.is_Not != h2.letter1.is_Not and h1.letter2 >= h2.letter2:
-                        newL = h1.letter2.clone()
-                        newL.parent1 = h1
-                        newL.parent2 = h2
-                        newL.type = "proof by cases"
-                        if newL not in hypothesi:
-                            hypothesi.append(newL)
-            if isinstance(h1, IMPLIES):
-                if h1.letter1 >= h2:
-                        newH2 = h1.letter2.clone()
-                        if isinstance(newH2, Letter):
-                            newH2.istrue = not newH2.is_Not
-                            newH2.parent1= h1
-                            newH2.parent2 = h2
-                            newH2.type = "Modus Ponens"
-                            if newH2 not in hypothesi:
-                                hypothesi.append(newH2)
-                            for letter in letters:
-                                if letter == newH2:
-                                    letter.istrue = newH2.istrue
-                                    break
-                        elif isinstance(newH2, AND):
-                                if newH2 not in hypothesi:
-                                    hypothesi.append(newH2)
-            if isinstance(h2, IMPLIES):
-                if h2.letter1 >= h1:
-                        newH2 = h2.letter2.clone()
-                        if isinstance(newH2, Letter):
-                            newH2.istrue = not newH2.is_Not
-                            newH2.parent1= h1
-                            newH2.parent2 = h2
-                            newH2.type = "Modus Ponens"
-                            if newH2 not in hypothesi:
-                                hypothesi.append(newH2)
-                            for letter in letters:
-                                if letter == newH2:
-                                    letter.istrue = newH2.istrue
-                                    break
-                        elif isinstance(newH2, AND):
-                                if newH2 not in hypothesi:
-                                    hypothesi.append(newH2)
-
-            if isinstance(h1, OR) and isinstance(h1.letter1, Letter) and isinstance(h1.letter2, Letter) and isinstance(h2, Letter) and not h1.is_Not and not h2 == h1.letter1 and not h2 == h1.letter2:
-                newOREO = OR(AND(h1.letter1.clone(), h2.clone(), h1.clone(), h2.clone(), "Distributive", False), AND(h1.letter2.clone(), h2.clone(), h1.clone(), h2.clone(), "Distributive", False), h1, h2, "Distributive", False)
-                if newOREO not in hypothesi:
-                    hypothesi.append(newOREO)
-            if isinstance(h2, OR) and isinstance(h2.letter1, Letter) and isinstance(h2.letter2, Letter) and isinstance(h1, Letter) and not h2.is_Not and not h1 == h2.letter1 and not h1 == h2.letter2:
-                newOREY = OR(AND(h1.clone(), h2.letter1.clone(), h1.clone(), h2.clone(), "Distributive", False), AND(h1.clone(), h2.letter2.clone(), h1.clone(), h2.clone(), "Distributive", False), h1, h2, "Distributive", False)
-                if newOREY not in hypothesi:
-                    hypothesi.append(newOREY)
-            if isinstance(h2, AND):
-                if not h2.is_Not:
-                    l1s = h2.letter1.clone()
-                    l1s.istrue = not l1s.is_Not
-                    l2s = h2.letter2.clone()
-                    l2s.istrue = not l2s.is_Not
-                    l1s.parent1 = h2
-                    l1s.type = h2.type
-                    l2s.parent1 = h2
-                    l2s.type = h2.type
-                    if l1s not in letters and isinstance(l1s, Letter):
-                        letters.append(l1s)
-                    if l2s not in letters and isinstance(l2s, Letter):
-                        letters.append(l2s)
-                    for letter in letters:
-                        if letter == l1s:
-                            letter.istrue = l1s.istrue
-                        if letter == l2s:
-                            letter.istrue = l2s.istrue
-                    if l1s not in hypothesi:
-                        hypothesi.append(l1s)
-                    if l2s not in hypothesi:
-                        hypothesi.append(l2s)
-
-                    orl1 = l1s.clone()
-                    orl2 = l2s.clone()
-                    orl1.is_Not = not orl1.is_Not
-                    orl2.is_Not = not orl2.is_Not
-                    newOR = OR(orl1, orl2, h2, "none", "De Morgan's law", True)
-                    if newOR not in hypothesi:
-                        hypothesi.append(newOR)
-                else:
-                    l1s = h2.letter1.clone()
-                    l1s.is_Not = not l1s.is_Not
-                    l2s = h2.letter2.clone()
-                    l2s.is_Not = not l2s.is_Not
-
-                    newOr = OR(l1s, l2s, h2, "none", "De Morgan's law", False)
-                    if newOr not in hypothesi:
-                        hypothesi.append(newOr)
-            if isinstance(h2, OR):
-                        notA = h2.letter1.clone()
-                        notA.is_Not = not notA.is_Not
-                        newImp1 = IMPLIES(notA, h2.letter2, h2, "none", "Conditional Dysjunction", False)
-                        if newImp1 not in hypothesi:
-                            hypothesi.append(newImp1)
-
-                        notB = h2.letter2.clone()
-                        notB.is_Not = not notB.is_Not
-                        newImp2 = IMPLIES(notB, h2.letter1, h2, "none", "Conditional Dysjunction", False)
-                        if newImp2 not in hypothesi:
-                            hypothesi.append(newImp2)
-
-                        if h2.letter1 >= h2.letter2:
-                            newL = h2.letter1.clone()
-                            newL.parent1 = h2
-                            newL.type = "Self Refrence"
-                            if newL not in hypothesi:
-                                hypothesi.append(newL)
-
-            if isinstance(h2, IMPLIES) and isinstance(h2.letter1, AND) and h2 >= h1:
-                        newH2 = h2.letter2.clone()
-                        if isinstance(newH2, Letter):
-                            newH2.istrue = not newH2.is_Not
-                            newH2.parent1 = h2
-                            newH2.parent2 = h1
-                            newH2.type = "Modus Ponens"
-                            if newH2 not in hypothesi:
-                                hypothesi.append(newH2)
-                            for letter in letters:
-                                if letter == newH2:
-                                    letter.istrue = newH2.istrue
-                                    break
-                        elif isinstance(newH2, AND):
-                                newH2.parent1 = h2
-                                newH2.type = "Modus Ponens"
-                                if newH2 not in hypothesi:
-                                    hypothesi.append(newH2)
-            if isinstance(h1, IMPLIES) and isinstance(h1.letter1, AND) and h1 >= h2:
-                        newH2 = h1.letter2.clone()
-                        if isinstance(newH2, Letter):
-                            newH2.istrue = not newH2.is_Not
-                            newH2.parent1 = h2
-                            newH2.parent2 = h1
-                            newH2.type = "Modus Ponens"
-                            if newH2 not in hypothesi:
-                                hypothesi.append(newH2)
-                            for letter in letters:
-                                if letter == newH2:
-                                    letter.istrue = newH2.istrue
-                                    break
-                        elif isinstance(newH2, AND):
-                                newH2.parent1 = h2
-                                newH2.type = "Modus Ponens"
-                                if newH2 not in hypothesi:
-                                    hypothesi.append(newH2)
-            if isinstance(h1, Letter) and isinstance(h2, Letter) and not h1 == h2:
-                newAND = AND(h1.clone(), h2.clone(), h1, h2, "Conjunction", False)
-                if newAND not in hypothesi:
-                    hypothesi.append(newAND)
-
-    hypothesi = [
-        h for h in hypothesi
-        if not (isinstance(h, IMPLIES) and h.letter1 == h.letter2)
-    ]
-
-    
-    print([str(h) for h in hypothesi])
-
-        # Check the conclusion
-    hasntThing = True
-    for i in hypothesi:
-        if i >= conclusion:
-            hasntThing = False
-            i.printParent()
-
-    if hasntThing:
-        outputString = "Unfortunately, your inputted hypothesis does not derive this conclusion"
-
-
-    return outputString
+    return cycleThrough(conclusion)
