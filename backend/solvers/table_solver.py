@@ -15,6 +15,7 @@ import base64
 # Append the parent directory to the path so we can import in utility
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from solvers.util import exceptions
+from solvers.util import methods
 
 '''
 ==========
@@ -63,29 +64,51 @@ def not_string(table):
     return set_list, relation
 
 def generate_diagram(table):
-    # Generate the Hasse diagram using networkx
+    set_list, relation = not_string(table)
+    set_ = {i for i in range(0, len(set_list))}
+    relation = relation - (methods.transitive_closure(relation) - relation)
+    minimals = methods.minimal_elements(set_, relation)
+    maximals = methods.maximal_elements(set_, relation)
+    descendents = methods.generate_descendents(set_, relation)
+    layer_list = [0 for i in range(0, len(set_list))]
+    # determine the graph layer for each element
+    # based on the greatest depth from a minimal element
+    for m in minimals:
+        stack = [m]
+        while stack:
+            e = stack.pop()
+            if e not in maximals:
+                for d in descendents[e]:
+                    layer_list[d] = max(layer_list[d], layer_list[e] + 1)
+                    stack.append(d)
+
+    layers = {}
+    # construct the subset_key dict from layers computed
+    for m in minimals:
+        stack = [m]
+        while stack:
+            e = stack.pop()
+            if layer_list[e] not in layers:
+                layers[layer_list[e]] = []
+            
+            label = f"{set_list[e]}({table[set_list[e]][1]})"
+            if label not in layers[layer_list[e]]:
+                layers[layer_list[e]].append(label)
+
+            if e not in maximals:
+                for d in descendents[e]:
+                    stack.append(d)
+
+    # generate the PERT diagram
     G = nx.DiGraph()
-    for task in table:
-        if table[task][1] < 0:
-            raise exceptions.CalculateError(f"{task} has a negative time.")
-
-        G.add_node(task + f"({table[task][1]})")
-
-        for prereq in table[task][0]:
-            if prereq == task:
-                raise exceptions.CalculateError(f"{task} can not be its own prereq.")
-
-            try:
-                G.add_edge(prereq + f"({table[prereq][1]})", task + f"({table[task][1]})")
-            except ValueError:
-                raise exceptions.CalculateError(f"{task} has a non-existent prereq.")
-
-    pos = nx.shell_layout(G)
+    G.add_nodes_from([f"{label}({table[label][1]})" for label in set_list])
+    G.add_edges_from([(f"{set_list[a]}({table[set_list[a]][1]})", f"{set_list[b]}({table[set_list[b]][1]})") for (a, b) in relation])
+    pos = nx.multipartite_layout(G, subset_key=layers, align="vertical")
     plt.figure()
-    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=15, font_color="black", font_weight="bold", arrows=True)
-    plt.title("PERT Diagram")
+    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=15, font_color="black", font_weight="bold")
+    plt.title("Hasse Diagram")
 
-    # Convert the diagram to an image in memory
+    # convert to image
     img_buf = BytesIO()
     plt.savefig(img_buf, format='png')
     img_buf.seek(0)

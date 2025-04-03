@@ -61,7 +61,7 @@ def generate_diagram(set_list, relation):
     set_ = {i for i in range(0, len(set_list))}
     minimals = methods.minimal_elements(set_, relation)
     maximals = methods.maximal_elements(set_, relation)
-    descendents = generate_descendents(set_, relation)
+    descendents = methods.generate_descendents(set_, relation)
     layer_list = [0 for i in range(0, len(set_list))]
     # determine the graph layer for each element
     # based on the greatest depth from a minimal element
@@ -90,9 +90,7 @@ def generate_diagram(set_list, relation):
                 for d in descendents[e]:
                     stack.append(d)
 
-    print(layers)
-
-    # generate the diagram
+    # generate the Hasse diagram
     G = nx.Graph()
     G.add_nodes_from(set_list)
     G.add_edges_from([(set_list[a], set_list[b]) for (a, b) in relation])
@@ -109,14 +107,4 @@ def generate_diagram(set_list, relation):
     plt.close()
 
     return img_data
-
-def generate_descendents(set_, relation):
-    descendents = {}
-    for e in set_:
-        descendents[e] = []
-        for (a, b) in relation:
-            if a == e:
-                descendents[e].append(b)
-
-    return descendents
 
