@@ -27,7 +27,7 @@ class DiagnosticService {
         this._intervalId = setInterval(() => {
             console.log("5-minute interval triggered");
             this.sendData(true);  // This function doesn't exist
-        }, 5000);
+        }, 300000);
         
         window.addEventListener('beforeunload', () => {
             console.log("Page unload - sending final data");
