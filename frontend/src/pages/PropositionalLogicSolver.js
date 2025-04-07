@@ -82,7 +82,7 @@ const PropositionalLogicSolver = () => {
       const betterText = (
         <>
           <Text margin={{"bottom":"small"}} textAlign="center">This tool demonstrates the steps used to prove a tautology.</Text>
-          <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
+          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
             Propositional logic is a branch of logic that determines whether a tautology is valid based on its premises. For example, consider the statement:  
             "If the grass is green, then the sky is blue. The grass is green, therefore, the sky is blue."  
             This is a tautology. Typically, tautologies are expressed using logical variables, such as [(A → B) ∧ A] → B.  
@@ -91,8 +91,10 @@ const PropositionalLogicSolver = () => {
             "If I have a hat, then it is green. I have a TV, therefore, my house is blue."  
             is not a tautology, as the conclusion does not logically follow from the premises.
           </Text>
-          <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
-            Propositional logic verifies whether given premises logically lead to a conclusion.  
+          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            Propositional logic verifies whether given premises logically lead to a conclusion. 
+          </Text>
+          <Text margin={{"bottom":"small"}} textAlign="center" weight="normal"> 
             Enter a tautology below to see a step-by-step proof.
           </Text>
         </>
@@ -103,7 +105,7 @@ const PropositionalLogicSolver = () => {
           <Text margin={{"bottom":"small"}} textAlign="center">
             This tool show how to prove big smart statement true.
           </Text>
-          <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
+          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
             Logic good. Logic check if big smart statement always true. Example:  
             "If grass green, then sky blue. Grass green. So, sky blue."  
             That always true. That tautology.  
