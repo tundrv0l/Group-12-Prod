@@ -8,7 +8,7 @@ import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
 * Name: CompositionOfPermutations.js
-* Author: Parker Clark
+* Author: Parker Clark and Mathias Buchanan
 * Description: Solver page for ganalyzing permutations of a cycle.
 */
 

@@ -3,7 +3,7 @@ import { Box, Button } from 'grommet';
 
 /*
 * Name: WarshallToolbar.js
-* Author: Parker Clark
+* Author: Mathias Buchanan
 * Description: Altered MatrixToolbar.js to only have 2 buttons and always be a square
 */
 

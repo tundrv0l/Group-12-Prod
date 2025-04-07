@@ -12,7 +12,7 @@ import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
 * Name: PropositionalLogicSolver.js
-* Author: Parker Clark
+* Author: Parker Clark and Mathias Buchanan
 * Description: Solver page for the propositional logic solver.
 */
 

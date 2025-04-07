@@ -1,3 +1,7 @@
+# compisitions_solver.py
+# Author: Mathias Buchanan
+# Solves: 4.4 permutation problems
+
 import json
 
 def strike(text):
@@ -45,6 +49,9 @@ def solve(setOneSize, setTwoSize):
     compositions = " * ".join(composition_parts)
 
     compositions += " / (" + " * ".join(str(x) for x in l) + ")"
+
+    if setOneSize == setTwoSize:
+        compositions = "1"
 
     result = {
         "perm": permutations,

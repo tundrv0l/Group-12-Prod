@@ -11,13 +11,13 @@ import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
 * Name: WarshallsAlgorithm.js
-* Author: Parker Clark
+* Author: Parker Clark and Mathias Buchanan
 * Description: Solver page for solving Warhsall's Algorithm problems.
 */
 
 const WarshallsAlgorithm = () => {
   const [isCaveman, setIsCaveman] = useState(false);
-  const [matrix, setMatrix] = React.useState([[0]]);
+  const [matrix, setMatrix] = React.useState([['0']]);
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);

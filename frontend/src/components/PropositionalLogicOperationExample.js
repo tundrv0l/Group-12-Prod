@@ -2,9 +2,9 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHeader, TableRow, Text, Box } from 'grommet';
 
 /*
-* Name: WFFOperationsTable.js
-* Author: Parker Clark
-* Description: Defines the WFFOperationsTable component for displaying a table of WFF operations.
+* Name: PropositionalLogicOperationExample.js
+* Author: Parker Clark and Mathias Buchanan
+* Description: altered WFFOperationsTable.js 
 */
 
 const WFFOperationsTable = () => {
