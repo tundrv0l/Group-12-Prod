@@ -158,7 +158,7 @@ const MasterTheorem = () => {
               />
               {error && <Text color="status-critical">{error}</Text>}
             </CardBody>
-            <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
+            <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"xxsmall"}}>
               <Button label={loading ? <Spinner /> : "Analyze"} onClick={handleSolve} disabled={loading} />
             </CardFooter>
           </Card>

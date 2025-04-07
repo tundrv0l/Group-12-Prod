@@ -6,6 +6,7 @@ import ReportFooter from '../components/ReportFooter';
 import HomeButton from '../components/HomeButton';
 import Background from '../components/Background';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+import PartitionInput from '../components/PartitionInput';
 
 /*
 * Name: Partitions.js
@@ -100,18 +101,75 @@ const Partitions = () => {
 
   // Validate that relation conforms to format
   const validateRelation = (input, set) => {
-    // Tests if input is in the form {{a,b},{c,23}} or {{a,b}} or {{a}}
-    const relationRegex = /^\{(\s*\{\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\}\s*,)*\s*\{\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\}\s*\}$/;
-  
-    if (!relationRegex.test(input)) {
+    // Check if input starts with { and ends with }
+    if (!input.startsWith('{') || !input.endsWith('}')) {
       return false;
     }
-  
-    // Checks if all elements in the relation are in the set
-    const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/);
-    const relationElements = input.replace(/[{}]/g, '').split(/\s*,\s*/);
-  
-    return relationElements.every(element => setElements.includes(element));
+    
+    // Handle empty relation case - just return true
+    if (input === '{}') {
+      return true;
+    }
+    
+    try {
+      // Remove outer braces
+      const withoutOuterBraces = input.substring(1, input.length - 1);
+      
+      // Find individual partitions by properly parsing the nested braces
+      const partitions = [];
+      let bracketCount = 0;
+      let currentPartition = '';
+      
+      for (let i = 0; i < withoutOuterBraces.length; i++) {
+        const char = withoutOuterBraces[i];
+        
+        if (char === '{') bracketCount++;
+        if (char === '}') bracketCount--;
+        
+        // We only split on commas that are at the top level between partitions
+        if (char === ',' && bracketCount === 0) {
+          partitions.push(currentPartition.trim());
+          currentPartition = '';
+        } else {
+          currentPartition += char;
+        }
+      }
+      
+      // Add the last partition
+      if (currentPartition.trim()) {
+        partitions.push(currentPartition.trim());
+      }
+      
+      // Check each partition starts with { and ends with }
+      if (!partitions.every(p => p.startsWith('{') && p.endsWith('}'))) {
+        return false;
+      }
+      
+      // Extract all elements from the set for validation
+      const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/).filter(Boolean);
+      
+      // Extract all elements from partitions (flattened)
+      const partitionElements = [];
+      for (const partition of partitions) {
+        // Remove outer braces and split by commas
+        const elements = partition.substring(1, partition.length - 1)
+                                .split(/\s*,\s*/)
+                                .filter(Boolean);
+        partitionElements.push(...elements);
+      }
+      
+      // Check if all elements in partitions are in the set
+      return partitionElements.every(element => {
+        // If the element contains braces, it's a nested structure
+        // We should extract just the alphanumeric parts for checking
+        const cleanElement = element.replace(/[{}]/g, '').trim();
+        return setElements.includes(cleanElement);
+      });
+      
+    } catch (e) {
+      console.error("Error validating relation:", e);
+      return false;
+    }
   };
 
   // Pretty print the output
@@ -192,11 +250,9 @@ const Partitions = () => {
               />
             </Box>
             <Box margin={{top : "small" }}>
-              <TextInput 
-                placeholder="Example: Enter your set of sets here (e.g., {{a, b}, {23, c}})"
+              <PartitionInput
                 value={relation}
-                onChange={(event) => setRelation(event.target.value)}
-              />
+                onChange={setRelation} />
             </Box>
             {error && <Text color="status-critical">{error}</Text>}
           </CardBody>

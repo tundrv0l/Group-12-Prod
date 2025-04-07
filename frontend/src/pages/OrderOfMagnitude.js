@@ -13,8 +13,6 @@ import { useDiagnostics } from '../hooks/useDiagnostics';
 * Name: OrderOfMagnitude.js
 * Author: Parker Clark
 * Description: Solver page for analyzing order of magnitude.
-* NOTE: This is framed differently then other pages, it imports the entire input logic, so 
-*   the page code acts more like an interface for its own input logic.
 */
 
 const OrderOfMagnitude = () => {

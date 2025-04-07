@@ -93,8 +93,13 @@ export const solveSetComplement = async (input) => {
 }
 
 // Call binary and unary operators solver to the backend
-export const solveBinaryUnaryOperators = async (input) => {
-    return await solve('binary-unary-operators', { input });
+export const solveBinaryUnaryOperators = async (choice, set, table, expression) => {
+    return await solve('binary-unary-operators', { 
+        choice, 
+        set, 
+        table, 
+        expression 
+    });
 }
 
 // Call cartesian products solver to the backend

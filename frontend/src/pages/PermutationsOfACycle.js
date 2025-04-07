@@ -6,7 +6,6 @@ import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 import MatrixTable from '../components/PermutationsInput';
 import MatrixToolbar from '../components/PermutatinsToolbar';
-import MatrixOutput from '../components/MatrixOutput';
 
 import { useDiagnostics } from '../hooks/useDiagnostics';
 

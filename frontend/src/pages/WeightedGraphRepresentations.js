@@ -156,7 +156,7 @@ const WeightedGraphRepresentations = () => {
                     <strong>{'{(x1, y1; w1), (x2, y2: w2), ...}'}</strong>
                   </Text>
                   <Text>
-                    For example: <strong>{'{(0, 1: 4), (1, 2; 2), (2, 0; 3)}'}</strong>
+                    For example: <strong>{'{(0, 1; 4), (1, 2; 2), (2, 0; 3)}'}</strong>
                   </Text>
                   <Text>
                     Each tuple represents a connection between two vertices with a weight. So (0, 1; 4) represents an edge between vertex 0 and vertex 1 with a weight of 4.
