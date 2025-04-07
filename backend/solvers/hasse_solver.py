@@ -49,7 +49,7 @@ def solve(set_string, relation_string):
     relation = relation - methods.reflexive_filter(set_, relation)
     relation = relation - methods.transitive_filter(set_, relation)
 
-    img_data = generate_diagram(relation, set_list)
+    img_data = generate_diagram(set_list, relation)
 
     result = {
         "Hasse Diagram": img_data 
@@ -57,21 +57,22 @@ def solve(set_string, relation_string):
 
     return json.dumps(result)
 
-def generate_diagram(relation, set_list):
-    # Generate the Hasse diagram using networkx
-    G = nx.DiGraph()
-    for element in set_list:
-        G.add_node(element)
-
-    for pair in relation:
-        G.add_edge(set_list[pair[0]], set_list[pair[1]])
-
-    pos = nx.shell_layout(G)
+def generate_diagram(set_list, relation):
+    # determine the layer each element is in
+    size = len(set_list)
+    set_ = {i for i in range(0, size)}
+    layers = methods.generate_layers(set_, relation, set_list, size)
+    
+    # generate the Hasse diagram
+    G = nx.Graph()
+    G.add_nodes_from(set_list)
+    G.add_edges_from([(set_list[a], set_list[b]) for (a, b) in relation])
+    pos = nx.multipartite_layout(G, subset_key=layers, align="horizontal")
     plt.figure()
-    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=15, font_color="black", font_weight="bold", arrows=True)
+    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=15, font_color="black", font_weight="bold")
     plt.title("Hasse Diagram")
 
-    # Convert the diagram to an image in memory
+    # convert to image
     img_buf = BytesIO()
     plt.savefig(img_buf, format='png')
     img_buf.seek(0)
@@ -79,3 +80,4 @@ def generate_diagram(relation, set_list):
     plt.close()
 
     return img_data
+

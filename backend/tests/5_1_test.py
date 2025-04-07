@@ -45,11 +45,11 @@ def main():
         ("{a, b, c}", "{(a, a), (b, b), (c, c), (a, b), (b, c), (a, c)}"),    # 31.a/32.a
         ("{a, b, c, d}", "{(a, a), (b, b), (c, c), (d, d), (a, b), (a, c)}"), # 31.b/32.b
         # I think this set is invalid under our requirements                    31.c/32.c
-        ("{}", "{}")                                                          # edge case
+        ("{}", "{}")
     ]
 
-#    for (set_, relation) in problems:
-#        print(f"Hasse Diagram {problems.index((set_, relation))}:", hasse_solver.solve(set_, relation))
+    for (set_, relation) in problems:
+        hasse_solver.solve(set_, relation)
 
     for (set_, relation) in problems:
         print(f"Special Elements {problems.index((set_, relation))}:", special_solver.solve(set_, relation))
