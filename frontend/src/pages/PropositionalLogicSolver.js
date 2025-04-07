@@ -6,8 +6,6 @@ import HomeButton from '../components/HomeButton';
 import WFFOperationsTable from '../components/PropositionalLogicOperationExample';
 import Background from '../components/Background';
 import ReportFooter from '../components/ReportFooter';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
-import { CircleInformation } from 'grommet-icons';
 import { solvePropositionalLogic } from '../api';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import PropositionalLogicOperationsTable from '../components/PropositionalLogicOperationsTable';
