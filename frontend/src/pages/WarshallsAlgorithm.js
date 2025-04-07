@@ -1,22 +1,23 @@
-import React from 'react';
+import React, { useState} from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
 import { solveWarshallsAlgorithm } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import MatrixTable from '../components/MatrixTable';
-import MatrixToolbar from '../components/MatrixToolbar';
+import MatrixToolbar from '../components/WarshallToolbar';
 import HomeButton from '../components/HomeButton';
 import MatrixOutput from '../components/MatrixOutput';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
 * Name: WarshallsAlgorithm.js
-* Author: Parker Clark
+* Author: Parker Clark and Mathias Buchanan
 * Description: Solver page for solving Warhsall's Algorithm problems.
 */
 
 const WarshallsAlgorithm = () => {
-  const [matrix, setMatrix] = React.useState([['']]);
+  const [isCaveman, setIsCaveman] = useState(false);
+  const [matrix, setMatrix] = React.useState([['0']]);
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
@@ -66,6 +67,65 @@ const WarshallsAlgorithm = () => {
     }
   };
 
+  const toggleText = () => setIsCaveman(!isCaveman);
+    
+          const betterText = (
+            <>
+              <Box align="center" justify="center">
+                <Text size="large" margin="none" weight={500}>
+                  Topic: Directed Graphs, Binary Relations, and Warshall's Algorithm
+                </Text>
+              </Box>
+              <Box align="center" justify="start" direction="column" cssGap={false} width="large">
+                <Text margin={{ bottom: "small" }} textAlign="center">
+                  This tool helps you analyze graphs using Warshall's Algorithm, a fundamental concept in discrete mathematics.
+                </Text>
+                
+                <Text margin={{ bottom: "small" }} textAlign="start" weight="normal">
+                  Warshall's Algorithm is used to compute the transitive closure of a directed graph. The transitive closure determines which vertices are reachable from others, making the algorithm especially useful for applications like network analysis and pathfinding.
+                </Text>
+                
+                <Text margin={{ bottom: "small" }} textAlign="start" weight="normal">
+                  The algorithm operates on the graph's adjacency matrix, iteratively updating it to reflect reachability. If a path exists from vertex <i>i</i> to vertex <i>j</i> through vertex <i>k</i>, the matrix is updated to show that <i>j</i> is reachable from <i>i</i>.
+                </Text>
+                
+                <Text textAlign="start" weight="normal" margin={{ bottom: "medium" }}>
+                  While not the most efficient algorithm due to its time complexity of O(n³), Warshall's Algorithm is one of the simplest to understand. It systematically processes each row of the matrix: for each intermediate vertex, it updates the reachability information by combining (OR-ing) relevant rows. This tool visually demonstrates each step of the algorithm, making it easier to follow how the matrix evolves.
+                </Text>
+                
+                <Text textAlign="start" weight="normal" margin={{ bottom: "medium" }}>
+                  Enter your graph below to generate and analyze its transitive closure using Warshall's Algorithm!
+                </Text>
+              </Box>
+            </>
+          );
+        
+          const cavemanText = (
+            <>
+              <Box align="center" justify="start" direction="column" cssGap={false} width="large">
+                <Text margin={{ bottom: "small" }} textAlign="center">
+                  This tool analyzes graphs using Warshall’s Algorithm which is definitely what any advanced starship crew would use unless you’re using the Force to guide you through graph theory which honestly makes more sense than some ancient Vulcan logic no offense to logic but like come on
+                </Text>
+
+                <Text margin={{ bottom: "small" }} textAlign="start" weight="normal">
+                  Warshall’s Algorithm calculates the transitive closure of a directed graph which means it figures out which planets no nodes are reachable from others like plotting warp paths or maybe charting connections in the Jedi Council archive except this doesn’t involve any holocrons or dilithium just matrices so stop yelling
+                </Text>
+
+                <Text margin={{ bottom: "small" }} textAlign="start" weight="normal">
+                  You start with an adjacency matrix then go row by row column by column whatever it updates itself to show if there’s a path from i to j through k and yes that sounds like a transporter buffer protocol but it’s also literally how droids map their target reach no it’s math pure math no Force ghosts involved just logic and OR operations
+                </Text>
+
+                <Text textAlign="start" weight="normal" margin={{ bottom: "medium" }}>
+                  It’s got a time complexity of O(n³) which isn’t ideal but neither is getting tractor-beamed into a cube or accidentally jumping into a binary star system so it’s fine it works okay each step combines reachability info like merging nav charts or scanning for subspace anomalies or mind-merging with an ancient being that lives inside a matrix metaphorically not literally although that would be cool too
+                </Text>
+
+                <Text textAlign="start" weight="normal" margin={{ bottom: "medium" }}>
+                  Just enter your graph already and watch the adjacency matrix evolve with every iteration yes like evolution on a galactic scale no like tactical recalibration in real time no like fate guiding every connection shut up it’s a matrix just press go
+                </Text>
+              </Box>
+            </>
+          );
+
   const validateMatrices = (matrix) => {
 
     // Check for empty matrix
@@ -106,32 +166,16 @@ const WarshallsAlgorithm = () => {
           <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
             <HomeButton />
           </Box>
+          <Box align="end" style={{ position: 'absolute', top: 0, right: 0, padding: '10px' }}>
+            <Button label={isCaveman ? "Switch to Normal" : "Switch"} onClick={toggleText} style={{ color: 'white', border: '1px solid white' }}/>
+          </Box>
           <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
             <Text size="xxlarge" weight="bold">
               Warshall's Algorithm Solver
             </Text>
           </Box>
-          <Box align="center" justify="center">
-            <Text size="large" margin="none" weight={500}>
-              Topic: Directed Graphs, Binary Relations, and Warshall's Algorithm
-            </Text>
-          </Box>
-          <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{"bottom":"small"}} textAlign="center">
-              This tool helps you analyze graphs using Warshall's Algorithm in discrete mathematics.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              Warshall's Algorithm is used to find the transitive closure of a directed graph. The transitive closure of a graph is a measure of which vertices are reachable from other vertices. This algorithm is useful in various applications such as finding the reachability of nodes in a network.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              In Warshall's Algorithm, we start with the adjacency matrix of the graph. The algorithm iteratively updates the matrix to reflect the reachability of vertices. If there is a path from vertex i to vertex j through vertex k, the algorithm updates the matrix to indicate that vertex j is reachable from vertex i.
-            </Text>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-              By analyzing graphs using Warshall's Algorithm, you can understand the reachability and connectivity of different nodes in a graph. This is useful in various applications such as network analysis, algorithm design, and optimization problems. This tool allows you to input a graph and explore its transitive closure using Warshall's Algorithm.
-            </Text>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-              Enter your graph below to generate and analyze its transitive closure using Warshall's Algorithm!
-            </Text>
+          <Box align="center" justify="start" direction="column" width={'large'}>
+            {isCaveman ? cavemanText : betterText}
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
