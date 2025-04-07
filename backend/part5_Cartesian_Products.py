@@ -211,37 +211,44 @@ def replace_nested_sets(input_str):
 
 def parse_set(input_str):
     try:
-        # Ensure input is a string
         if not isinstance(input_str, str):
             raise ValueError("Input must be a string")
-
-        # Ensure input_str is not None
         if input_str is None:
             raise ValueError("Input cannot be None")
-        input_str = input_str.replace("π", "pi").replace("pi", "math.pi")
-        # # Remove any unexpected non-ASCII characters (optional safety measure)
-        # input_str = re.sub(r'[^\x00-\x7F]+', '', input_str)
-        # Replace characters using the mapping dictionary
-        
-        
-        # Use regex to replace characters based on the dictionary
-        
-        input_str = re.sub(r'[a-zA-Z]', replace_char, input_str)
-        # Replace ∅ safely before Python tries to parse it
-        input_str = input_str.replace("\u2205", "frozenset()")
-        # Print the input string after replacements (for debugging)
-        print(f"After replacements: {input_str}")
-        # Remove any unexpected non-ASCII characters (optional safety measure)
-        input_str = re.sub(r'[^a-zA-Z0-9\+\-\*/\(\)\[\]\{\}\.\^=,]', '', input_str)
+
+        input_str = input_str.strip()
+
+        # Handle ∅ explicitly
+        if input_str == "∅":
+            return frozenset()
+
+        # Replace ∅ inside expressions
+        input_str = input_str.replace("∅", "frozenset()")
+
+        # Don't quote keywords like frozenset, math, sqrt
+        reserved_keywords = {"frozenset", "math", "sqrt", "pi"}
+
+        def quote_var(match):
+            word = match.group(0)
+            return f"'{word}'" if word not in reserved_keywords else word
+
+        # Quote any standalone word that isn't a reserved keyword
+        input_str = re.sub(r'\b[a-zA-Z]+\b', quote_var, input_str)
+
+        # Handle nested frozensets
         input_str = replace_nested_sets(input_str)
         input_str = input_str.replace("{", "frozenset({").replace("}", "})")
-        parsed = eval(input_str, {"__builtins__": None, "math": math, "frozenset": frozenset, "sqrt": math.sqrt, "pi": math.pi})
+
+        parsed = eval(input_str, {"__builtins__": None, "frozenset": frozenset, "math": math, "sqrt": math.sqrt})
+
         if isinstance(parsed, set):
             parsed = frozenset(parsed)
+
         return parsed
     except Exception as e:
         print(f"Error parsing set: {e}")
         return frozenset()
+
 
 def check_subset(A, B):
     # if A.isdigit():
@@ -282,57 +289,23 @@ def check_difference(A, B):
 def check_cartesian_product(A, B):
     return frozenset((a, b) for a in A for b in B)
 
-# Choose input format
-original_sets = {}  # To keep track of original inputs
-sets = {}
-while True:
-    
-    name = input("Enter a name for the set (or type 'done' to stop adding sets): ").strip()
-    if not name:
-        print("Set name cannot be empty.")
-        continue
-    if name.lower() == "done":
-        break
-    if name in sets:
-        print(f"Set '{name}' already exists.")
-        continue
-    set_format = input("Choose input format (1 for regular set, 2 for set builder): ").strip()
-    if set_format == "1":
-        set_input = input(f"Enter elements for {name} (e.g., {{1, 2, 3}} or {{ {1, 3, 'pi'}, 1 }})): ").strip()
-        if not set_input:
-            print("Set cannot be empty.")
-            continue
-        sets[name] = parse_set(set_input)
-    elif set_format == "2":
-        set_input = input(f"Enter elements for {name} in set builder format (e.g., {{x | x ∈ Z and x^2 > 625}}): ").strip()
-        if not set_input:
-            print("Set cannot be empty.")
-            continue
-        sets[name] = generate_set_from_builder(set_input)
 
-original_sets = {k: v.copy() for k, v in sets.items()}  # Save original state
 
 # Convert characters to numbers in frozensets
-sets = {
-    key: frozenset(char_mapping.get(x, x) for x in value)
-    for key, value in sets.items()
-}
+# sets = {
+#     key: frozenset(char_mapping.get(x, x) for x in value)
+#     for key, value in sets.items()
+# }
 # Define the universal set as the union of all sets
-universal_set = frozenset().union(*sets.values())
-
-print("\nDefined Sets:")
-for name, value in sets.items():
-    print(f"{name} = {value}")
-
-print(f"\nUniversal Set (U) = {universal_set}")
 
 # Define operator precedence
 PRECEDENCE = {
-    "∪": 1,   # Union
-    "∩": 2,   # Intersection
-    "-": 2,   # Difference
-    "×": 3,   # Cartesian product
-    "=": 0    # Equality (lowest precedence)
+    "'": 4,  # Complement
+    "×": 3,
+    "∩": 2,
+    "-": 2,
+    "∪": 1,
+    "=": 0
 }
 
 def convert_numbers_to_chars(frozenset_obj):
@@ -342,29 +315,26 @@ def convert_numbers_to_chars(frozenset_obj):
     )
 
 def tokenize(expression):
-    """
-    Tokenizes the input expression into sets, operators, and parentheses.
-    """
-    tokens = re.findall(r"[A-Z]|\∪|\∩|-|×|=|\(|\)|∅", expression)
+    tokens = re.findall(r"[A-Z]|\∪|\∩|-|×|=|'|\(|\)|∅", expression)
     return tokens
 
 def infix_to_postfix(tokens):
-    """
-    Converts an infix expression (tokens) to postfix using the Shunting-Yard algorithm.
-    """
     output = []
     operator_stack = []
 
-    for token in tokens:
-        if token in sets or token == "∅":  # Set names or empty set
+    for i, token in enumerate(tokens):
+        if token in sets or token == "∅":
             output.append(token)
         elif token == "(":
             operator_stack.append(token)
         elif token == ")":
             while operator_stack and operator_stack[-1] != "(":
                 output.append(operator_stack.pop())
-            operator_stack.pop()  # Remove the "("
-        else:  # Operators
+            operator_stack.pop()
+        elif token == "'":
+            # Postfix operator – immediately apply to previous operand
+            output.append(token)
+        else:  # Regular infix operators
             while (operator_stack and operator_stack[-1] != "(" and
                    PRECEDENCE[operator_stack[-1]] >= PRECEDENCE[token]):
                 output.append(operator_stack.pop())
@@ -375,10 +345,8 @@ def infix_to_postfix(tokens):
 
     return output
 
+
 def evaluate_postfix(postfix_tokens):
-    """
-    Evaluates a postfix expression and selectively converts numbers back into characters.
-    """
     stack = []
 
     for token in postfix_tokens:
@@ -386,7 +354,11 @@ def evaluate_postfix(postfix_tokens):
             stack.append(sets[token])
         elif token == "∅":
             stack.append(frozenset())
-        else:  # Operators
+        elif token == "'":  # Complement
+            a = stack.pop()
+            result = universal_set - a
+            stack.append(result)
+        else:  # Binary operators
             b = stack.pop()
             a = stack.pop() if stack else None
 
@@ -399,36 +371,92 @@ def evaluate_postfix(postfix_tokens):
             elif token == "×":
                 result = {(x, y) for x in a for y in b}
             elif token == "=":
-                result = a == b  # Boolean comparison
+                result = a == b
 
             stack.append(result)
 
     final_result = stack[0] if stack else None
 
-    # Convert back only if it was originally a character
     if isinstance(final_result, frozenset):
-        converted_result = frozenset(
-            replace_char(re.match(r"\d+", str(x))) if isinstance(x, int) else x for x in final_result
+        return frozenset(
+            replace_char(re.match(r"\d+", str(x))) if isinstance(x, int) else x
+            for x in final_result
         )
-        return converted_result
 
     return final_result
 
-statements = []
 
-while True:
-    expr = input("\nEnter a statement to check or type 'done' to finish: ").strip()
-    if expr.lower() == "done":
-        break
 
-    try:
-        tokens = tokenize(expr)
-        postfix = infix_to_postfix(tokens)
-        result = evaluate_postfix(postfix)
-        statements.append((expr, result))
-    except Exception as e:
-        print(f"Error evaluating statement: {e}")
 
-print("\nResults:")
-for statement, result in statements:
-    print(f"{statement}: {result}")
+
+
+def format_element(elem):
+    if isinstance(elem, frozenset):
+        return format_frozenset(elem)
+    elif isinstance(elem, str):
+        return elem
+    elif isinstance(elem, float):
+        # Format π nicely if close to math.pi
+        return "π" if abs(elem - math.pi) < 1e-10 else str(elem)
+    else:
+        return str(elem)
+
+def format_frozenset(fs):
+    if not fs:
+        return "∅"
+    formatted_elements = sorted(format_element(e) for e in fs)
+    return "{" + ", ".join(formatted_elements) + "}"
+
+def solver(predefined_sets, predefined_statements):
+    global sets
+    global universal_set
+    sets = {}
+
+    # Handle predefined sets
+    for name, set_input, set_format in predefined_sets:
+        if name in sets:
+            print(f"Set '{name}' already exists. Skipping duplicate.")
+            continue
+
+        if set_format == "1":
+            sets[name] = parse_set(set_input)
+        elif set_format == "2":
+            sets[name] = generate_set_from_builder(set_input)
+        else:
+            print(f"Unknown set format '{set_format}' for set {name}. Skipping.")
+
+    # Define universal set
+    universal_set = frozenset().union(*sets.values())
+
+    print("\nDefined Sets:")
+    for name, value in sets.items():
+        print(f"{name} = {format_frozenset(value)}")
+
+    print(f"\nUniversal Set (U) = {format_frozenset(universal_set)}")
+
+    # Evaluate predefined statements
+    statements = []
+    for expr in predefined_statements:
+        try:
+            tokens = tokenize(expr)
+            postfix = infix_to_postfix(tokens)
+            result = evaluate_postfix(postfix)
+            statements.append((expr, result))
+        except Exception as e:
+            print(f"Error evaluating statement '{expr}': {e}")
+
+    print("\nResults:")
+    for statement, result in statements:
+        print(f"{statement}: {format_frozenset(result)}")
+
+sets_input = [
+    ("A", "{a, b, c, d, e}", "1"),
+    ("B", "{a, b, c}", "1"),
+    ("C", "{a, b, c, d, e, f, g, h, i, j}", "1")
+]
+
+statements_input = [
+    "A ∩ (B' ∩ C)'"
+]
+
+solver(sets_input, statements_input)
