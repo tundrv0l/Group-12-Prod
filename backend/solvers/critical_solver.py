@@ -48,9 +48,9 @@ def solve(table):
         if latest_finish[sorted_tasks[i]] > latest_finish[task]:
             task = sorted_tasks[i]
 
+    last_task = task
     critical_path = [task]
     time = latest_finish[task] - table[set_list[task]][1]
-
     while time > 0:
         for prereq in table[set_list[task]][0]:
             if latest_finish[task] - table[set_list[task]][1] == latest_finish[set_list.index(prereq)]:
@@ -69,7 +69,7 @@ def solve(table):
     if critical_path:
         critical_string = critical_string[:-2]
 
-    minimum_time = latest_finish[sorted_tasks[-1]]
+    minimum_time = latest_finish[last_task]
 
     # json stuff
     result = {

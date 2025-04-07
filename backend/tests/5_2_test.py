@@ -86,7 +86,7 @@ def main():
         print(f"Total order {i}: ", topological_solver.solve(tables[i]))
 
     for i in range (0, len(tables)):
-        print(f"PERT arrows {i}: ", table_solver.solve(tables[i]))
+        table_solver.solve(tables[i])
 
 if __name__ == "__main__":
     main()

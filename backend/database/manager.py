@@ -3,15 +3,21 @@
 # Purpose: manage the diagnostics database
 
 import sqlite3
-import time
 
 from datetime import datetime
 
-
 class Database:
     def __init__(self, name):
-        self.connection = sqlite3.connect(name)
+        self.connection = sqlite3.connect(name, timeout=5)
         self.cursor = self.connection.cursor()
+
+
+        # drop existing tables for testing 
+        # self.cursor.execute("DROP TABLE IF EXISTS output")
+        # self.cursor.execute("DROP TABLE IF EXISTS input")
+        # self.cursor.execute("DROP TABLE IF EXISTS solver")
+        # self.cursor.execute("DROP TABLE IF EXISTS user")
+
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS user (
                 uid INTEGER PRIMARY KEY,
@@ -24,39 +30,38 @@ class Database:
 
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS solver (
-                sid INTEGER PRIMARY KEY,
-                sname TEXT NOT NULL,
+                sname TEXT PRIMARY KEY,
                 used_count INTEGER NOT NULL DEFAULT 0
             )
         """)
-        
+
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS input (
-                iid INTEGER PRIMARY KEY,
                 uid INTEGER NOT NULL,
-                sid INTEGER NOT NULL,
+                sname TEXT NOT NULL,
                 input_text TEXT,
                 in_time INTEGER NOT NULL,
+                PRIMARY KEY (uid, in_time),
                 FOREIGN KEY (uid) REFERENCES user(uid),
-                FOREIGN KEY (sid) REFERENCES solver(sid)
+                FOREIGN KEY (sname) REFERENCES solver(sname)
             )
         """)
 
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS output (
-                oid INTEGER PRIMARY KEY,
-                iid INTEGER NOT NULL,
+                uid INTEGER NOT NULL,
+                in_time INTEGER NOT NULL,
                 success INTEGER NOT NULL,
                 execution_time REAL NOT NULL,
-                out_time INTEGER NOT NULL,
-                FOREIGN KEY (iid) references input(iid)
+                PRIMARY KEY (uid, in_time),
+                FOREIGN KEY (uid, in_time) REFERENCES input(uid, in_time),
+                FOREIGN KEY (uid) REFERENCES user(uid)
             )
         """)
 
         self.connection.commit()
 
-    def add_user(self, uid, user_agent, language):
-        current_time = int(time.time())
+    def add_user(self, uid, user_agent, language, in_time):
         self.cursor.execute(
             """
                 INSERT INTO user(
@@ -68,57 +73,53 @@ class Database:
                 )
                 VALUES(?, ?, ?, ?, ?)
             """,
-            (uid, user_agent, language, current_time, current_time)
+            (uid, user_agent, language, in_time, in_time)
         )
         
         self.connection.commit()
 
-    def add_solver(self, sid, sname):
+    def add_solver(self, sname):
         self.cursor.execute(
             """
-                INSERT INTO solver(sid, sname)
-                VALUES(?, ?)
+                INSERT INTO solver(sname)
+                VALUES(?)
             """,
-            (sid, sname)
+            (sname,)
         )
         
         self.connection.commit()
 
-    def add_input(self, iid, uid, sid, input_text):
-        current_time = int(time.time())
+    def add_input(self, uid, sname, input_text, in_time):
         self.cursor.execute(
             """
                 INSERT INTO input(
-                    iid,
                     uid,
-                    sid,
+                    sname,
                     input_text,
                     in_time
                 )
-                VALUES(?, ?, ?, ?, ?)
+                VALUES(?, ?, ?, ?)
             """,
-            (iid, uid, sid, input_text, current_time)
+            (uid, sname, input_text, in_time)
         )
         
-        self.update_user(uid)
-        self.update_solver(sid)
+        self.update_user(uid, in_time)
+        self.update_solver(sname)
         
         self.connection.commit()
 
-    def add_output(self, oid, iid, success, execution_time):
-        current_time = int(time.time())
+    def add_output(self, uid, in_time, success, execution_time):
         self.cursor.execute(
             """
                 INSERT INTO output(
-                    oid,
-                    iid,
+                    uid,
+                    in_time,
                     success,
-                    execution_time,
-                    out_time
+                    execution_time
                 )
-                VALUES(?, ?, ?, ?, ?)
+                VALUES(?, ?, ?, ?)
             """,
-            (oid, iid, success, execution_time, current_time)
+            (uid, in_time, success, execution_time)
         )
         
         self.connection.commit()
@@ -130,7 +131,7 @@ class Database:
                 FROM user
                 WHERE uid = ?
             """,
-            (uid, )
+            (uid,)
         )
         
         row = self.cursor.fetchone()
@@ -146,92 +147,88 @@ class Database:
 
         return result
 
-    def get_solver(self, sid):
+    def get_solver(self, sname):
         self.cursor.execute(
             """
                 SELECT *
                 FROM solver
-                WHERE sid = ?
+                WHERE sname = ?
             """,
-            (sid, )
+            (sname,)
         )
         
         row = self.cursor.fetchone()
         result = None
         if row:
             result = {
-                "sid": row[0],
-                "sname": row[1],
-                "used_count": row[2]
+                "sname": row[0],
+                "used_count": row[1]
             }
 
         return result
 
-    def get_input(self, iid):
+    def get_input(self, uid, in_time):
         self.cursor.execute(
             """
                 SELECT *
                 FROM input
-                WHERE iid = ?
+                WHERE uid = ? AND in_time = ?
             """,
-            (iid, )
+            (uid, in_time)
         )
         
         row = self.cursor.fetchone()
         result = None
         if row:
             result = {
-                "iid": row[0],
-                "uid": row[1],
-                "sid": row[2],
-                "input_text": row[3],
-                "in_time": datetime.fromtimestamp(row[4]).isoformat()
+                "uid": row[0],
+                "sname": row[1],
+                "input_text": row[2],
+                "in_time": datetime.fromtimestamp(row[3]).isoformat()
             }
 
         return result
 
-    def get_output(self, oid):
+    def get_output(self, uid, in_time):
         self.cursor.execute(
             """
                 SELECT *
                 FROM output
-                WHERE oid = ?
+                WHERE uid = ? AND in_time = ?
             """,
-            (oid, )
+            (uid, in_time)
         )
         
         row = self.cursor.fetchone()
         result = None
         if row:
             result = {
-                "oid": row[0],
-                "iid": row[1],
+                "uid": row[0],
+                "in_time": datetime.fromtimestamp(row[1]).isoformat(),
                 "success": row[2],
-                "execution_time": row[3],
-                "out_time": datetime.fromtimestamp(row[4]).isoformat()
+                "execution_time(ms)": row[3]
             }
 
         return result
 
-    def update_user(self, uid):
-        current_time = int(time.time())
+    def update_user(self, uid, in_time):
         self.cursor.execute(
             """
                 UPDATE user
                 SET last_connect_time = ?
                 WHERE uid = ?
             """,
-            (current_time, uid)
+            (in_time, uid)
         )
 
-    def update_solver(self, sid):
+    def update_solver(self, sname):
        self.cursor.execute(
             """
                 UPDATE solver
                 SET used_count = used_count + 1
-                WHERE sid = ?
+                WHERE sname = ?
             """,
-            (sid, )
+            (sname,)
         )
 
     def close(self):
@@ -246,7 +243,7 @@ class Database:
                 FROM user
             """
         )
-        
+
         result = {
             "user_count": self.cursor.fetchone()[0]
         }
@@ -260,18 +257,17 @@ class Database:
                 FROM input
                 WHERE uid = ?
             """,
-            (uid, )
+            (uid,)
         )
         
         rows = self.cursor.fetchall()
         result = []
         for row in rows:
             result.append({
-                "iid": row[0],
-                "uid": row[1],
-                "sid": row[2],
-                "input_text": row[3],
-                "in_time": datetime.fromtimestamp(row[4]).isoformat()
+                "uid": row[0],
+                "sname": row[1],
+                "input_text": row[2],
+                "in_time": datetime.fromtimestamp(row[3]).isoformat()
             })
 
         return result
@@ -279,9 +275,9 @@ class Database:
     def get_user_outputs(self, uid):
         self.cursor.execute(
             """
-                SELECT o.oid, o.iid, o.success, o.execution_time, o.out_time
-                FROM output o JOIN input i ON o.iid = i.iid
-                WHERE i.uid = ?
+                SELECT *
+                FROM output
+                WHERE uid = ?
             """,
             (uid, )
         )
@@ -290,23 +286,22 @@ class Database:
         result = []
         for row in rows:
             result.append({
-                "oid": row[0],
-                "iid": row[1],
+                "uid": row[0],
+                "in_time": datetime.fromtimestamp(row[1]).isoformat(),
                 "success": row[2],
-                "execution_time": row[3],
-                "out_time": datetime.fromtimestamp(row[4]).isoformat()
+                "execution_time(ms)": row[3]
             })
 
         return result
 
-    def get_average_execution(self, sid, success_only):
+    def get_average_execution(self, sname, success_only):
         query = """
                 SELECT AVG(o.execution_time) 
-                FROM output o JOIN input i ON o.iid = i.iid
-                WHERE i.sid = ?
+                FROM output o JOIN input i ON o.uid = i.uid AND o.in_time = i.in_time
+                WHERE i.sname = ?
         """
-        
-        parameters = [sid]
+
+        parameters = [sname]
         if success_only:
             query += " AND o.success = 1"
 
@@ -315,5 +310,5 @@ class Database:
         result = None
         if aggregate:
             result = aggregate[0]
-        
+
         return result
