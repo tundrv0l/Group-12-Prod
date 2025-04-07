@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
 import { solveCompositions } from '../api';
 import ReportFooter from '../components/ReportFooter';
@@ -8,11 +8,12 @@ import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
 * Name: CompositionOfPermutations.js
-* Author: Parker Clark
+* Author: Parker Clark and Mathias Buchanan
 * Description: Solver page for ganalyzing permutations of a cycle.
 */
 
 const CompositionOfPermutations = () => {
+  const [isCaveman, setIsCaveman] = useState(false);
   const [setOne, setSetOne] = React.useState('');
   const [setTwo, setSetTwo] = React.useState('');
   const [perm, setPerm] = React.useState('');
@@ -35,7 +36,7 @@ const CompositionOfPermutations = () => {
     // Validate input
     const isValid = validateInput(setOne, setTwo);
     if (!isValid) {
-      setError('Invalid input. Please enter 2 positive integers.');
+      setError('Invalid input. Please enter 2 positive integers less than 1001.');
       setLoading(false);
       return;
     }
@@ -74,7 +75,111 @@ const CompositionOfPermutations = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }; 
+
+  const toggleText = () => setIsCaveman(!isCaveman);
+  
+        const betterText = (
+          <>
+            <Box align="center" justify="center">
+              <Text size="large" margin="none" weight={500}>
+                Topic: Functions
+              </Text>
+            </Box>
+            <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
+              <Text margin={{"bottom":"small"}} textAlign="start">
+              When given a set of numbers, you can form multiple permutations by selecting a few or all of the elements from the set. A permutation refers to an arrangement of elements in a specific order. For example, consider the set (1,2,3). If we want to select 2 elements at a time, there are 6 possible permutations:
+              </Text>
+              <ul>
+                <li>(1 2)</li>
+                <li>(1 3)</li>
+                <li>(2 1)</li>
+                <li>(2 3)</li>
+                <li>(3 1)</li>
+                <li>(3 2)</li>
+              </ul>
+              <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+              The formula for calculating the number of permutations of r elements from a set of n elements is:
+              </Text>
+              <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
+                P(n, r) = n!/(n - r)!
+              </Text>
+              <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+              Where n! (n factorial) is the product of all positive integers up to n, and r is the number of elements you want to arrange.
+              </Text>
+              <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+              In contrast, a combination refers to selecting elements where the order does not matter. For example, in combinations, (1 3) is considered the same as (3 1). The formula to calculate the number of combinations of r elements chosen from a set of n elements is:
+              </Text>
+              <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
+                C(n, r) = n!/((n - r)!(r!))
+              </Text>
+              <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+              Using the tool provided on this website, we will show you how to calculate the amount of compositions and permutations, although performing the math is left up to you. Simply enter the total number of elements in your set and the number of elements you want to select per permutation or combination. The tool will then compute the results for you based on the formulas above.
+              </Text>
+            </Box>
+          </>
+        );
+      
+        const cavemanText = (
+          <>
+            <Box align="center" justify="center">
+              <Text size="large" margin="none" weight={500}>
+                Topic: Functions (This is a DougDoug stream now)
+              </Text>
+            </Box>
+            <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
+              <Text margin={{"bottom":"small"}} textAlign="start">
+                Hey, uh, hi—this is DougDoug, professional streamer, fast food tournament bracketologist, and yes, a guy with a computer science degree. Today we're diving into permutations. That's like... when order matters. Not like my hairline—ORDER matters here.
+              </Text>
+
+              <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+                So like, let’s say we have the set (1, 2, 3). If we want to pick two numbers at a time and care about the order—which we DO, Chat, unlike your attempts at mod applications—then there are exactly 6 ways to do that. Let me show you before you start yelling “WHAT IS THIS??”
+              </Text>
+
+              <ul>
+                <li>(1 2)</li>
+                <li>(1 3)</li>
+                <li>(2 1)</li>
+                <li>(2 3)</li>
+                <li>(3 1)</li>
+                <li>(3 2)</li>
+              </ul>
+
+              <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+                See? That’s all the possible *permutations* of picking 2 numbers from (1,2,3). You rearrange them, and it totally changes the result. That’s what we mean by “order matters.” Unlike in my stream schedule. Or my platforming skills.
+              </Text>
+
+              <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
+                The formula is: P(n, r) = n! / (n - r)!
+              </Text>
+
+              <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+                Where n is the number of items in the full set, and r is how many you’re choosing. Factorials mean you multiply n by every number under it. It's like stacking Whoppers—just, uh, with math.
+              </Text>
+
+              <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+                *[TTS INTERRUPTS]*  
+                <i>“Hey Doug, if permutations are about order, can you finally order some skill in 2D platformers? Also bald. GOTTEM. Alright bye Doug I love you.”</i>
+              </Text>
+
+              <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+                Mods, send him out back.
+              </Text>
+
+              <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+                Now—combinations are like, same idea, but you don’t care about order. So (1 3) and (3 1) are just one thing now. It’s lazier, but sometimes that's all Chat can handle. The formula for combinations is:
+              </Text>
+
+              <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
+                C(n, r) = n! / ((n - r)! * r!)
+              </Text>
+
+              <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+                So this tool I made will handle all that messy math for you. You just input the total elements and how many you want to pick. That's it. It’s not rigged. Why are you saying RIGGED. It’s literally just math. Chat. Stop. It’s factorials, not Mario. Stop saying rigged.
+              </Text>
+            </Box>
+          </>
+        );
 
   const validateInput = (setOne, setTwo) => {
     // Convert inputs to numbers
@@ -82,7 +187,7 @@ const CompositionOfPermutations = () => {
     const numTwo = Number(setTwo);
   
     // Check if both values are positive integers
-    return Number.isInteger(numOne) && Number.isInteger(numTwo) && numOne > 0 && numTwo > 0;
+    return Number.isInteger(numOne) && Number.isInteger(numTwo) && numOne > 0 && numTwo > 0 && numOne <= 1000;
   };
 
   const validateSizes = (setOne, setTwo) => {
@@ -97,46 +202,16 @@ const CompositionOfPermutations = () => {
           <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
             <HomeButton />
           </Box>
-          <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-            <Text size="xxlarge" weight="bold">
-              Composition Of Permutations
-            </Text>
+          <Box align="end" style={{ position: 'absolute', top: 0, right: 0, padding: '10px' }}>
+            <Button label={isCaveman ? "Switch to Normal" : "Switch to DougDoug"} onClick={toggleText} style={{ color: 'white', border: '1px solid white' }}/>
           </Box>
-          <Box align="center" justify="center">
-            <Text size="large" margin="none" weight={500}>
-              Topic: Functions
-            </Text>
-          </Box>
-          <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{"bottom":"small"}} textAlign="center">
-            When given a set of numbers, you can form multiple permutations by selecting a few or all of the elements from the set. A permutation refers to an arrangement of elements in a specific order. For example, consider the set (1,2,3). If we want to select 2 elements at a time, there are 6 possible permutations:
-            </Text>
-            <ul>
-              <li>(1 2)</li>
-              <li>(1 3)</li>
-              <li>(2 1)</li>
-              <li>(2 3)</li>
-              <li>(3 1)</li>
-              <li>(3 2)</li>
-            </ul>
-            <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
-            The formula for calculating the number of permutations of r elements from a set of n elements is:
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
-              P(n, r) = n!/(n - r)!
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
-            Where n! (n factorial) is the product of all positive integers up to n, and r is the number of elements you want to arrange.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
-            In contrast, a combination refers to selecting elements where the order does not matter. For example, in combinations, (1 3) is considered the same as (3 1). The formula to calculate the number of combinations of r elements chosen from a set of n elements is:
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
-              C(n, r) = n!/((n - r)!(r!))
-            </Text>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-            Using the tool provided on this website, you can easily calculate the number of permutations and combinations. Simply enter the total number of elements in your set and the number of elements you want to select per permutation or combination. The tool will then compute the results for you based on the formulas above.
-            </Text>
+            <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
+              <Text size="xxlarge" weight="bold">
+                Composition Of Permutations
+              </Text>
+            </Box>
+          <Box align="center" justify="start" direction="column" width={'large'}>
+            {isCaveman ? cavemanText : betterText}
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
@@ -178,9 +253,11 @@ const CompositionOfPermutations = () => {
                 <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} margin={{"bottom":"medium"}}>
                 <Text>
                   {perm
-                    ? Number(perm) >= 1e9
-                      ? Number(perm).toExponential(3) // Use scientific notation with 3 decimal places
-                      : Number(perm).toLocaleString() // Use standard number format with commas
+                    ? perm.split(' ').map((word, i) => (
+                        <span key={i} style={{ textDecoration: word.includes('\u0336') ? 'line-through' : 'none' }}>
+                          {word.replace(/\u0336/g, '') + ' '}
+                        </span>
+                      ))
                     : "Output will be displayed here!"}
                 </Text>
                 </Box>
@@ -190,9 +267,11 @@ const CompositionOfPermutations = () => {
                 <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
                 <Text>
                   {comp
-                    ? Number(comp) >= 1e9
-                      ? Number(comp).toExponential(3) // Use scientific notation with 3 decimal places
-                      : Number(comp).toLocaleString() // Use standard number format with commas
+                    ? comp.split(' ').map((word, i) => (
+                        <span key={i} style={{ textDecoration: word.includes('\u0336') ? 'line-through' : 'none' }}>
+                          {word.replace(/\u0336/g, '') + ' '}
+                        </span>
+                      ))
                     : "Output will be displayed here!"}
                 </Text>
                 </Box>
