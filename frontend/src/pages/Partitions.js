@@ -87,7 +87,7 @@ const Partitions = () => {
       );
 
       console.log(err);
-      setError('An error occurred while analyzing the closure axioms.');
+      setError('An error occurred while analyzing the Partition.');
     } finally {
       setLoading(false);
     }
@@ -95,8 +95,8 @@ const Partitions = () => {
 
   // Validate that set conforms to format
   const validateSet = (input) => {
-    // Tests if input is in the form {a, b, c, 23}
-    const setRegex = /^\{(\s*[a-zA-Z0-9]+\s*,)*\s*[a-zA-Z0-9]+\s*\}$/;
+    // Tests if input is in the form {a, b, c, 23} or {}
+    const setRegex = /^\{\s*\}$|^\{(\s*[a-zA-Z0-9]+\s*,)*\s*[a-zA-Z0-9]+\s*\}$/;
     return setRegex.test(input);
   };
 
@@ -209,20 +209,24 @@ const Partitions = () => {
           </Text>
         </Box>
         <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{"bottom":"small"}} textAlign="center">
-                This tool helps you analyze equivalence relations.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                An equivalence relation on a set is a relation that is reflexive, symmetric, and transitive. For example, a relation R on a set A is:
-            </Text>
-            <Box margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                <Text>- Reflexive if every element is related to itself, i.e., (a, a) ∈ R for all a ∈ A.</Text>
-                <Text>- Symmetric if for every (a, b) ∈ R, (b, a) ∈ R.</Text>
-                <Text>- Transitive if for every (a, b) ∈ R and (b, c) ∈ R, (a, c) ∈ R.</Text>
-            </Box>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-                Enter your relation below to analyze its properties and determine if it is an equivalence relation!
-            </Text>
+          <Text margin={{"bottom":"small"}} textAlign="center">
+            This tool helps you analyze partitions and their corresponding equivalence relations.
+          </Text>
+          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            A partition of a set A is a collection of non-empty, disjoint subsets whose union equals A. Each subset in a partition is called a part or a block.
+          </Text>
+          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            Every partition corresponds to a unique equivalence relation, where elements are related if and only if they belong to the same part of the partition. 
+          </Text>
+          <Box margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            <Text>An equivalence relation is a relation that is:</Text>
+            <Text>- Reflexive: Every element is related to itself, i.e., (a, a) ∈ R for all a ∈ A.</Text>
+            <Text>- Symmetric: For every (a, b) ∈ R, (b, a) ∈ R.</Text>
+            <Text>- Transitive: For every (a, b) ∈ R and (b, c) ∈ R, (a, c) ∈ R.</Text>
+          </Box>
+          <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+            Enter a set and its partition below to generate the corresponding equivalence relation!
+          </Text>
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">

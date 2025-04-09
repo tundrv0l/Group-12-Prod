@@ -135,15 +135,8 @@ export const solveClosureAxioms = async (set, relation) => {
 
 // Call equivalence relations solver to the backend
 export const solvePartitions = async (set, relation) => {
-    try {
-        const response = await solve('partitions', { set, relation });
-        if (response.error) {
-            throw new Error(response.error);
-        }
-        return response;
-    } catch (error) {
-        throw new Error(error.message);
-    }
+    const response = await solve('partitions', { set, relation });
+    return response;
 }
 
 // Call adjacency matrices and lists solver to the backend
