@@ -38,7 +38,7 @@ just use the polynomial inside them as the input data.
 
 5.5.5 is unsolved for now.
 '''
-def solve(order, scalars_f, scalars_g):
+def solve(order, scalars_f, scalars_g, root):
     # order of magnitude theorem only applies to nonnegative leading
     # coefficient, and 0 implies its not the right order
     if scalars_g[0] <= 0 or scalars_f[0] <= 0:
@@ -67,6 +67,12 @@ def solve(order, scalars_f, scalars_g):
     # no more zeros (the point where the scaled polynomials can 
     # never cross f again)
     n_0 = max(bound_1, bound_2)
+
+    # if enclosed in a squareroot, all that changes is that
+    # the constant is moved out of the root
+    if root:
+        c_1 = c_1 ** (1/2)
+        c_2 = c_2 ** (1/2)
 
     result = {
         "Result": f"\\forall x\\geq {n_0:.2f}, {c_1:.2f}g(x)\\leq f(x)\\leq {c_2:.2f}g(x)"

@@ -144,7 +144,7 @@ def solve_algorithim(solver_type, data):
         use_log = data.get("useLog", False)
         use_root = data.get("useRoot", False)
 
-        return order_solver.solve(order, scalars_f, scalars_g)
+        return order_solver.solve(order, scalars_f, scalars_g, use_root)
     elif solver_type == 'master-theorem':
         return master_solver.solve(data["a"], data["b"], data["c"])
     elif solver_type == 'boolean-matrices':
