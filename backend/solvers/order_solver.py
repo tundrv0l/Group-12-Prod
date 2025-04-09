@@ -23,7 +23,7 @@ scalar_f: a list representing of floats reprenting the scalars of the
     - restrictions: length is equal to order
 scalar_g: a list representing of floats reprenting the scalars of the 
           second function in order-descending order
-    - example: [0, 3.44]
+    - example: [1, 3.44]
     - restrictions: length is equal to order
 ======
 result
@@ -39,46 +39,34 @@ just use the polynomial inside them as the input data.
 5.5.5 is unsolved for now.
 '''
 def solve(order, scalars_f, scalars_g):
-    result = {
-        "Result": "\\forall x\\geq 0, 0g(x)\\leq f(x)\\leq 0g(x)" 
-    }
-
-    if scalars_g[0] == 0:
-        if scalars_f[0] != 0:
-            return json.dumps(result)
-        else:
-            raise exceptions.CalculateError(f"Not possible.")
-    else:
-        if scalars_f[0] == 0:
-            raise exceptions.CalculateError(f"Not possible.")
-
-    
+    # order of magnitude theorem only applies to nonnegative leading
+    # coefficient, and 0 implies its not the right order
+    if scalars_g[0] <= 0 or scalars_f[0] <= 0:
+        raise exceptions.CalculateError(f"Bad leading coefficient.")
         
-    c_1 = (1/2) * abs(scalars_f[0] / scalars_g[0]);
-    c_2 = (2) * abs(scalars_f[0] / scalars_g[0]);
+    # simple coefficients that work
+    c_1 = (1/2) * scalars_f[0] / scalars_g[0];
+    c_2 = (2) * scalars_f[0] / scalars_g[0];
 
-    if (scalars_g[0] < 0 and scalars_f[0] < 0):
-        c_1 *= 4
-        c_2 *= 0.25
-    elif (scalars_g[0] < 0 and scalars_f[0] > 0):
-        c_1 *= -1
-        c_2 *= -1
-    elif (scalars_g[0] > 0 and scalars_f[0] < 0):
-        c_1 *= -4
-        c_2 *= -0.25
+    # leading coefficients of difference polynomials
+    d_1 = (1/2) * scalars_f[0]
+    d_2 = scalars_f[0]
 
-    n_0 = 100
-    while True:
-        f_value = 0
-        g_value = 0
-        for i in range(order + 1):
-            f_value += scalars_f[i] * (n_0 ** (order - i))
-            g_value += scalars_g[i] * (n_0 ** (order - i))
+    # difference polynomials normalized by leading coefficient (same zeros)
+    scalars_1 = [(c_1 * scalars_g[i] - scalars_f[i]) / d_1 for i in range(0, order + 1)]
+    scalars_2 = [(scalars_f[i] - c_2 * scalars_g[i]) / d_2 for i in range(0, order + 1)]
 
-        if c_1 * g_value <= f_value and c_2 * g_value >= f_value:
-            break
+    # Cauchy Bound (pre-divided by leading)
+    bound_1 = 1
+    bound_2 = 1
+    for i in range(1, order + 1):
+        bound_1 = max(bound_1, 1 + abs(scalars_1[i]))
+        bound_2 = max(bound_2, 1 + abs(scalars_2[i]))
 
-        n_0 += 100
+    # the point at which neither difference polynomial can have 
+    # no more zeros (the point where the scaled polynomials can 
+    # never cross f again)
+    n_0 = max(bound_1, bound_2)
 
     result = {
         "Result": f"\\forall x\\geq {n_0:.2f}, {c_1:.2f}g(x)\\leq f(x)\\leq {c_2:.2f}g(x)"
