@@ -137,7 +137,7 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'permutations-cycle':
         return cycle_solver.solve(data['input'])
     elif solver_type == 'compositions':
-        return compisitions_solver.solve(data['setOne']['setOne'], data['setOne']['setTwo'])
+        return compositions_solver.solve(data['setOne']['setOne'], data['setOne']['setTwo'])
     elif solver_type == 'disjoint-cycles':
         return disjoint_solver.solve(data['input'])
     elif solver_type == 'order-of-magnitude':
