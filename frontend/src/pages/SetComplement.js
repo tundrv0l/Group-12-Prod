@@ -10,6 +10,7 @@ import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import SetComplementInput from '../components/SetComplementInput';
+import PageTopScroller from '../components/PageTopScroller';
 
 /*
 * Name: SetComplement.js
@@ -133,6 +134,7 @@ const SetComplement = () => {
   };
 
   return (
+    <PageTopScroller>
     <Page>
       <Background />
       <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '60%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -222,6 +224,7 @@ const SetComplement = () => {
       </PageContent>
       </Box>
     </Page>
+    </PageTopScroller>
   );
 };
 

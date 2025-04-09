@@ -143,7 +143,7 @@ const BasicSetFunctions = () => {
           {/* Display sets */}
           {result.sets && (
             <Box margin={{ bottom: "xxsmall" }}>
-              <Heading level={5} margin={{ bottom: "xsmall" }}>Sets:</Heading>
+              <Heading level={5} margin={{ top: "none", bottom: "xsmall" }}>Sets:</Heading>
               {Object.entries(result.sets).map(([name, value]) => (
                 <Box key={name} direction="row" margin={{ bottom: "xsmall" }}>
                   <Text weight="bold">{name} = </Text>
@@ -160,11 +160,13 @@ const BasicSetFunctions = () => {
               {result.statements.map((stmt, index) => (
                 <Box key={index} direction="row" margin={{ bottom: "xsmall" }}>
                   <Text weight="bold">{stmt.expression}: </Text>
-                  <Text>
-                    {typeof stmt.result === 'boolean' 
-                      ? (stmt.result ? "True" : "False") 
-                      : stmt.result}
-                  </Text>
+                  <Box margin={{ left: "xsmall" }}> {/* Add left margin for spacing */}
+                    <Text>
+                      {typeof stmt.result === 'boolean' 
+                        ? (stmt.result ? "True" : "False") 
+                        : stmt.result}
+                    </Text>
+                  </Box>
                 </Box>
               ))}
             </Box>

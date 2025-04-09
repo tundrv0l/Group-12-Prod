@@ -1,11 +1,13 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Heading, Collapsible } from 'grommet';
 import { solveRecursion } from '../api';
+import { CircleInformation } from 'grommet-icons';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-import { base } from 'grommet-icons';
+import BaseCaseInput from '../components/BaseCaseInput';
+import PageTopScroller from '../components/PageTopScroller';
 
 /*
 * Name: RecursiveDefinitions.js
@@ -15,11 +17,12 @@ import { base } from 'grommet-icons';
 
 const RecursiveDefinitions = () => {
   const [formula, setFormula] = React.useState('');
-  const [baseCaseInput, setBaseCaseInput] = React.useState('');
+  const [baseCases, setBaseCases] = React.useState([{ n: 0, value: '' }]);
   const [n, setN] = React.useState('');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("RECURSIVE_DEFINITIONS");
 
@@ -28,49 +31,85 @@ const RecursiveDefinitions = () => {
     setLoading(true);
     setOutput('');
     setError('');
-
+  
+    // Format base cases into the required string format
+    const formattedBaseCases = baseCases
+      .map(bc => `${bc.n}:${bc.value}`)
+      .join(', ');
+    
+    const baseCase = `{${formattedBaseCases}}`;
+  
     // Validate input
-    const baseCase = `{${baseCaseInput}}`;
     const isValidFormula = validateFormula(formula);
     const isValidBaseCase = validateBaseCase(baseCase);
     const isValidN = validateN(n);
-
-    console.log(isValidFormula, isValidBaseCase, isValidN);
+  
     if (!isValidFormula || !isValidBaseCase || !isValidN) {
       setError('Invalid input. Please enter a valid recursive statement.');
       setLoading(false);
       return;
     }
-
+  
     setError('');
     const startTime = performance.now();
         
+    try {
+      // Log the request for debugging
+      console.log("Sending request with:", { formula, baseCase, n });
+      
+      const result = await solveRecursion(formula, baseCase, n);
+      console.log("Raw API result:", result);
+      
+      // Handle if result is already an object
+      let parsedResult;
+      if (typeof result === 'string') {
         try {
-          const result = await solveRecursion(formula, baseCase, n);
-          const parsedResult = JSON.parse(result);
-          console.log(parsedResult);
-          
-          // Track successful execution with timing
-          trackResults(
-            { formula: formula, baseCase: baseCase, n: n  }, // Input data
-            parsedResult,       // Result data
-            performance.now() - startTime      // Execution time in ms
-          );
-          
-          setOutput(parsedResult);
-        } catch (err) {
-          // Track failed execution with timing
-          trackResults(
-            { formula: formula, baseCase: baseCase, n: n  }, // Input data
-            { error: err.message || 'Unknown error' },
-            performance.now() - startTime
-          );
-          
-          setError('An error occurred while calculating the solution.');
-        } finally {
-          setLoading(false);
+          parsedResult = JSON.parse(result);
+        } catch (parseErr) {
+          console.error("JSON parsing error:", parseErr);
+          // If parsing fails, use the raw result
+          parsedResult = { success: false, error: "Invalid result format" };
         }
-      };
+      } else {
+        parsedResult = result;
+      }
+      
+      console.log("Processed result:", parsedResult);
+      
+      // Check if the response contains an error
+      if (!parsedResult.success && parsedResult.error) {
+        setError(`Calculation error: ${parsedResult.error}`);
+        
+        trackResults(
+          { formula, baseCase, n },
+          parsedResult,
+          performance.now() - startTime
+        );
+      } else {
+        setOutput(parsedResult);
+        
+        trackResults(
+          { formula, baseCase, n },
+          parsedResult,
+          performance.now() - startTime
+        );
+      }
+    } catch (err) {
+      // Log the full error object for debugging
+      console.error("Error in recursion solver:", err);
+      
+      // Track failed execution with networking/unexpected error
+      trackResults(
+        { formula, baseCase, n },
+        { success: false, error: err.message || 'Unknown error' },
+        performance.now() - startTime
+      );
+      
+      setError(`API error: ${err.message || 'An unexpected error occurred'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const validateFormula = (input) => {
     // Regex to validate the recursive formula (e.g., 2 * f(n-1) + 1)
@@ -90,13 +129,37 @@ const RecursiveDefinitions = () => {
     return nRegex.test(input);
   }
 
-  const formatOutput = (results) => {
-    return Object.entries(results)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join('\n');
-  }
+  const renderOutput = (data) => {
+    if (!data) return "Output will be displayed here!";
+    
+    try {
+      // Handle both string and object data formats
+      const result = typeof data === 'string' ? JSON.parse(data) : data;
+      
+      // Format the result object into human-readable output
+      if (result.success && result.results) {
+        // Extract and format the recursive function results
+        const steps = Object.entries(result.results)
+          .map(([key, value]) => `${key} = ${value}`)
+          .join('\n');
+        
+        return steps;
+      } else if (result.error) {
+        // Handle error messages from the backend
+        return `Error: ${result.error}`;
+      } else {
+        // Fallback for other formats
+        return JSON.stringify(result, null, 2);
+      }
+    } catch (e) {
+      // If parsing fails, return the raw string
+      console.error("Error rendering output:", e);
+      return String(data);
+    }
+  };
 
   return (
+    <PageTopScroller>
     <Page>
       <Background />
       <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -130,6 +193,42 @@ const RecursiveDefinitions = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
+             <Box margin={{bottom : "small" }}><Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+                <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+              </Box>
+              <Collapsible open={showHelp}>
+                <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                  <Text weight="bold" margin={{ top: "small", bottom: "xsmall" }}>Recursive Formula:</Text>
+                  <Text>
+                    Enter a formula using f(n-1), f(n-2), etc. to reference previous terms.
+                  </Text>
+                  <Text margin={{ vertical: "xsmall" }}>
+                    <strong>Examples:</strong>
+                  </Text>
+                  <Text margin={{ bottom: "xsmall" }}>• <strong>2 * f(n-1) + 1</strong> - Each term is twice the previous term plus 1</Text>
+                  <Text margin={{ bottom: "xsmall" }}>• <strong>f(n-1) + f(n-2)</strong> - Fibonacci sequence (each term is the sum of the two preceding terms)</Text>
+                  <Text margin={{ bottom: "xsmall" }}>• <strong>3 * f(n-1) - 2</strong> - Each term is three times the previous term minus 2</Text>
+                  
+                  <Text weight="bold" margin={{ top: "medium", bottom: "xsmall" }}>Base Cases:</Text>
+                  <Text>
+                    Define initial values for your sequence. You can add multiple base cases as needed.
+                  </Text>
+                  <Text margin={{ vertical: "xsmall" }}>
+                    <strong>Examples:</strong>
+                  </Text>
+                  <Text margin={{ bottom: "xsmall" }}>• For Fibonacci: f(0) = 0, f(1) = 1, etc</Text>
+                  <Text margin={{ bottom: "xsmall" }}>• For geometric sequence: f(0) = 1, etc </Text>
+                  
+                  <Text weight="bold" margin={{ top: "medium", bottom: "xsmall" }}>Value of n:</Text>
+                  <Text>
+                    Enter the term number you want to calculate up to.
+                  </Text>
+                  <Text margin={{ bottom: "xsmall" }}>
+                    The solver will show all values from the base cases up to f(n).
+                  </Text>
+                </Box>
+              </Collapsible>
+            </Box>
               <Box margin={{bottom : "small" }}>
                 <TextInput 
                   placeholder="Example: Enter your recursive formula here (e.g., 2 * f(n-1) + 1)"
@@ -137,16 +236,15 @@ const RecursiveDefinitions = () => {
                   onChange={(event) => setFormula(event.target.value)}
                 />
               </Box>
+              
+              <BaseCaseInput
+                baseCases={baseCases}
+                onChange={setBaseCases}
+              />
+              
               <Box margin={{top : "small" }}>
                 <TextInput 
-                  placeholder='Example: Enter your base cases here (e.g., "0:1, 1:2")'
-                  value={baseCaseInput}
-                  onChange={(event) => setBaseCaseInput(event.target.value)}
-                />
-              </Box>
-              <Box margin={{top : "small" }}>
-                <TextInput 
-                  placeholder="Example: Enter your value of f(n) to calculate (e.g., 5)"
+                  placeholder="Example: Enter your value of 'n' to calculate (e.g., 5)"
                   value={n}
                   onChange={(event) => setN(event.target.value)}
                 />
@@ -163,9 +261,9 @@ const RecursiveDefinitions = () => {
                 Output:
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                <Text>
-                  {output ? <pre>{output}</pre> : "Output will be displayed here!"}
-                </Text>
+                <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                  {output ? renderOutput(output) : "Output will be displayed here!"}
+                </pre>
               </Box>
             </CardBody>
           </Card>
@@ -173,6 +271,7 @@ const RecursiveDefinitions = () => {
         </PageContent>
       </Box>
     </Page>
+    </PageTopScroller>
   );
 };
 

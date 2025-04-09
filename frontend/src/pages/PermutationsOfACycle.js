@@ -6,10 +6,8 @@ import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 import MatrixTable from '../components/PermutationsInput';
 import MatrixToolbar from '../components/PermutatinsToolbar';
-import MatrixOutput from '../components/MatrixOutput';
-
+import PageTopScroller from '../components/PageTopScroller';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-
 
 /*
 * Name: PermutationsOfACycle.js
@@ -86,6 +84,7 @@ const PermutationsOfACycle = () => {
   };
 
   return (
+    <PageTopScroller>
     <Page>
       <Background />
       <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -148,6 +147,7 @@ const PermutationsOfACycle = () => {
         </PageContent>
       </Box>
     </Page>
+    </PageTopScroller>
   );
 };
 

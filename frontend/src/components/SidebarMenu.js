@@ -107,8 +107,7 @@ const SidebarMenu = () => (
                 { label: "Basic Set Functions", path: "/basic-set-functions" },
                 { label: "Power Set", path: "/power-set" },
                 { label: "Set Complement", path: "/set-complement" },
-                { label: "Binary/Unary Operators", path: "/binary-unary-operators" },
-                { label: "Cartesian Products", path: "/cartesian-products" }
+                { label: "Binary/Unary Operators", path: "/binary-unary-operators" }
               ]} 
               size={size}
             />

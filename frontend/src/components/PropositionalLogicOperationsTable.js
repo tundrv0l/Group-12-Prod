@@ -1,15 +1,15 @@
 import React from 'react';
-import { Table, TableBody, TableCell, TableHeader, TableRow, Text, Box } from 'grommet';
+import { Box, Table, TableBody, TableCell, TableHeader, TableRow, Text } from 'grommet';
 
 /*
-* Name: WFFOperationsTable.js
+* Name: PropositionalLogicOperationsTable.js
 * Author: Parker Clark
-* Description: Defines the WFFOperationsTable component for displaying a table of WFF operations.
+* Description: Component that displays the operations table for propositional logic.
 */
 
-const WFFOperationsTable = () => {
+const PropositionalLogicOperationsTable = () => {
   return (
-    <Box margin={{"bottom":"medium"}}>
+    <Box margin={{"vertical":"medium"}}>
       <Table>
         <TableHeader>
           <TableRow>
@@ -75,7 +75,7 @@ const WFFOperationsTable = () => {
               <Text>IMPLIES</Text>
             </TableCell>
             <TableCell>
-              <Text>-{'>'} | → | S </Text>
+              <Text>-{'>'} | → | {">"} </Text>
             </TableCell>
             <TableCell>
               <Text>Logical implication</Text>
@@ -104,4 +104,4 @@ const WFFOperationsTable = () => {
   );
 };
 
-export default WFFOperationsTable;
+export default PropositionalLogicOperationsTable;

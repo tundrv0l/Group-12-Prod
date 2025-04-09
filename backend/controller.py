@@ -37,7 +37,8 @@ from backend.solvers import set_function_solver
 from backend.solvers import order_solver
 from backend.solvers import master_solver
 from backend.solvers import set_complement_solver
-from backend.solvers import power_set_solver 
+from backend.solvers import power_set_solver
+from backend.solvers import binary_unary_solver
 from solvers.util import exceptions
 
 #---Imports for the reporter---#
@@ -96,7 +97,6 @@ def solve_algorithim(solver_type, data):
         data = data["hypotheses"]
         return propositional_solver.solve(data['hypotheses'], data['conclusion'])
     elif solver_type == 'recursive-definitions':
-        data = data["formula"]
         return recursion_solver.solve(data['formula'], data['baseCase'], data['n'])
     elif solver_type == 'basic-set-functions':
         return set_function_solver.solve(data)
@@ -109,8 +109,12 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'set-complement':
         return set_complement_solver.solve(data["universal_set"], data["subset"])
     elif solver_type == 'binary-unary-operators':
-        # Call the appropriate function for binary and unary operators
-        pass
+        return binary_unary_solver.solve(
+        data.get('choice', '1'),
+        data.get('set', ''),
+        data.get('table', []),
+        data.get('expression', '')
+        )
     elif solver_type == 'cartesian-products':
         # Call the appropriate function for cartesian products
         pass
