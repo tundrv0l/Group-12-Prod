@@ -50,7 +50,7 @@ def receive_diagnostics():
         '''
         # Start Database Stuff
         # Author: Jacob Warren
-        '''
+        
         # the db filename
         database = manager.Database(os.path.join(LOGS_DIR, "diagnostics.db"))
 
@@ -102,7 +102,7 @@ def receive_diagnostics():
         
         # close cursor and connection for db
         database.close()
-        '''
+        
         # End Database Stuff
         '''
 

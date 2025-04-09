@@ -41,32 +41,9 @@ def solve(set_string, relation_string):
     symmetric_diff = methods.symmetric_closure(relation) - relation
     transitive_diff = methods.transitive_closure(relation) - relation
 
-    reflexive_string = "{"
-    symmetric_string = "{"
-    transitive_string = "{"
-
-    for pair in reflexive_diff:
-        reflexive_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
-
-    for pair in symmetric_diff:
-        symmetric_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
-
-    for pair in transitive_diff:
-        transitive_string += f"({set_list[pair[0]]}, {set_list[pair[1]]}), "
-
-    if reflexive_diff:
-        reflexive_string = reflexive_string[:-2]
-
-    if symmetric_diff:
-        symmetric_string = symmetric_string[:-2]
-
-    if transitive_diff:
-        transitive_string = transitive_string[:-2]
-    
-    reflexive_string += "}"
-    symmetric_string += "}"
-    transitive_string += "}"
-
+    reflexive_string = strings.relation_to_string(set_list, reflexive_diff)
+    symmetric_string = strings.relation_to_string(set_list, symmetric_diff)
+    transitive_string = strings.relation_to_string(set_list, transitive_diff)
 
     # Return the result as json
     result = {
