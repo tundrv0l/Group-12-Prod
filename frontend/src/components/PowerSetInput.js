@@ -104,7 +104,7 @@ const PowerSetInput = ({
               value={iterations}
               onChange={(e) => onIterationsChange(e.target.value)}
               min={1}
-              max={3}
+              max={2}
               step={1}
             />
           </FormField>

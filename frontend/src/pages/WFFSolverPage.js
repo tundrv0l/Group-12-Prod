@@ -121,29 +121,74 @@ const WFFSolverPage = () => {
   };
  
   const validateInput = (input) => {
-    // Regular expression to validate WFF general form, including operators, NOT, parentheses, and brackets.
-    // Regex accomodates for symbols used in unicode, keyboard and book format. To see a mapping of this check /backend/solvers/wff_solver.py
-    const wffRegex = /^(\(*\[*\s*((not\s*)|¬)?[A-Z]('|′)?\s*\]*\)*(\s*(->|→|v|∨|V|~|S|`|\^|∧|>|<>|4|↔)\s*\(*\[*\s*((not\s*)|¬)?[A-Z]('|′)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|′)?|\[\s*.*\s*\]('|′)?$/;
-  
+    // First, check if input is empty or only whitespace
+    if (!input || !input.trim()) {
+      return false;
+    }
+    
     // Check for balanced parentheses and brackets
     const balancedParentheses = (input.match(/\(/g) || []).length === (input.match(/\)/g) || []).length;
     const balancedBrackets = (input.match(/\[/g) || []).length === (input.match(/\]/g) || []).length;
-  
-    // Check for at least one operator in the input
-    const containsOperator = /->|→|v|∨|V|~|S|`|>|\^|∧|<>|↔|4|not|¬|′/.test(input);
-  
-    // Reject single pair of parentheses or brackets. Backend doesn't handle input like: (A V B), but does support A V B
-    const singlePairParentheses = /^\([^()]*\)$/.test(input);
-    const singlePairBrackets = /^\[[^[\]]*\]$/.test(input);
-  
-    // Allow single negated variables like ¬A, A', and not A
-    const singleNegatedVariable = /^(not\s*)?[A-Z]('|′|¬)?$/.test(input);
-  
-    // Allow negated expressions with parentheses or brackets like (A V B)' or [A V B]'
-    const negatedExpressionWithParentheses = /^\(\s*.*\s*\)('|′|¬)?$/.test(input);
-    const negatedExpressionWithBrackets = /^\[\s*.*\s*\]('|′|¬)?$/.test(input);
-  
-    return (wffRegex.test(input) && balancedParentheses && balancedBrackets && containsOperator && !singlePairParentheses && !singlePairBrackets) || singleNegatedVariable || negatedExpressionWithParentheses || negatedExpressionWithBrackets;
+    if (!balancedParentheses || !balancedBrackets) {
+      return false;
+    }
+    
+    // Sanitize the input - only allow valid logical operators, letters, and structural characters
+    // Valid operators: and, or, not, implies, equivalent, negation
+    // Valid symbols: ->, →, v, ∨, V, ~, S, `, ^, ∧, >, <>, 4, ↔, ¬, ', ′
+    // Valid variables: A-Z (single uppercase letters)
+    // Valid structural: (, ), [, ]
+    
+    // Replace all valid tokens with spaces to help check if any invalid characters remain
+    let sanitized = input;
+    
+    // Replace all variables
+    sanitized = sanitized.replace(/\b[A-Z]\b/g, ' ');
+    
+    // Replace all valid operators and symbols
+    const validSymbols = [
+      '->', '→', 'v', '∨', 'V', '~', 'S', '`', '^', '∧', '>', '<>', '4', '↔', '¬', "'", '′',
+      'and', 'or', 'not'
+    ];
+    
+    for (const symbol of validSymbols) {
+      sanitized = sanitized.replace(new RegExp(symbol.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), ' ');
+    }
+    
+    // Replace structural characters
+    sanitized = sanitized.replace(/[\(\)\[\]]/g, ' ');
+    
+    // Replace whitespace
+    sanitized = sanitized.replace(/\s+/g, '');
+    
+    // If anything remains, it's an invalid character
+    if (sanitized.length > 0) {
+      return false;
+    }
+    
+    // Check that we have at least one variable
+    const hasVariable = /\b[A-Z]\b/.test(input);
+    if (!hasVariable) {
+      return false;
+    }
+    
+    // Check that we have at least one operator (if more than one variable)
+    // Otherwise, formulas like just "A" would be invalid, which seems wrong
+    const variableMatches = input.match(/\b[A-Z]\b/g) || [];
+    if (variableMatches.length > 1) {
+      const containsOperator = /->|→|v|∨|V|~|S|`|>|\^|∧|<>|↔|4|not|¬|′/.test(input);
+      if (!containsOperator) {
+        return false;
+      }
+    }
+    
+    // Reject single pair of parentheses or brackets without operators
+    const singlePairNoOperator = /^\([A-Z]\)$|^\[[A-Z]\]$/.test(input.trim());
+    if (singlePairNoOperator) {
+      return false;
+    }
+    
+    return true;
   };
 
   return (
@@ -174,9 +219,22 @@ const WFFSolverPage = () => {
           <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
             A truth table is a systematic way to list all possible truth values for a given logical expression. It shows how the truth value of the entire formula depends on the truth values of its components. Truth tables are especially useful for verifying tautologies (statements that are always true) or contradictions (statements that are always false).
           </Text>
+          <Box 
+            background="light-2" 
+            pad="small" 
+            margin={{ bottom: "medium" }} 
+            round="small"
+            border={{ color: "dark-3", size: "1px" }}
+          >
+            <Text weight="bold" size="small" color="dark-3">NOTE:</Text>
+            <Text textAlign="start" size="small" color="dark-1">
+              This solver uses left-to-right associativity for operations at the same precedence level. This means that expressions like "A ∧ B ∧ C" are evaluated as "(A ∧ B) ∧ C" rather than "A ∧ (B ∧ C)". Use parentheses to enforce specific grouping if needed.
+            </Text>
+          </Box>
           <Text textAlign="center" weight="normal" margin={{"bottom":"medium"}}>
             Enter your logical statement below, by using the list of symbols to generate its truth table and analyze its properties!
           </Text>
+          
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
@@ -189,6 +247,9 @@ const WFFSolverPage = () => {
                  Use the symbols from the table below to create your wff. In the symbol column, from left to right, the solver supports keyboard, unicode, and book syntax.
                 </Text>
                 <WFFOperationsTable />
+                <Text margin={{ top: "small" }}>
+                  Ensure that tokens and operators are delimited by spaces or parentheses.
+                </Text>
               </Box>
             </Collapsible>
 

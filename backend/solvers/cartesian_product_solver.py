@@ -1,10 +1,16 @@
-# Cartesian Products
+'''----------------- 
+# Title: cartesian_product_solver.py
+# Author: Michael Lowder
+# Date: 3/14/2025
+# Description: A solver for cartesian products and set operations.
+-----------------'''
 
 # -*- coding: utf-8 -*-
 import math
 import re
 from fractions import Fraction
 import cmath
+import json
 
 # empty_set = set()
 # print(empty_set)
@@ -386,10 +392,6 @@ def evaluate_postfix(postfix_tokens):
     return final_result
 
 
-
-
-
-
 def format_element(elem):
     if isinstance(elem, frozenset):
         return format_frozenset(elem)
@@ -407,7 +409,7 @@ def format_frozenset(fs):
     formatted_elements = sorted(format_element(e) for e in fs)
     return "{" + ", ".join(formatted_elements) + "}"
 
-def solver(predefined_sets, predefined_statements):
+def solve(predefined_sets, predefined_statements):
     global sets
     global universal_set
     sets = {}
@@ -445,18 +447,10 @@ def solver(predefined_sets, predefined_statements):
         except Exception as e:
             print(f"Error evaluating statement '{expr}': {e}")
 
-    print("\nResults:")
+    
+    # Create a dictionary to store results
+    results = {}
     for statement, result in statements:
-        print(f"{statement}: {format_frozenset(result)}")
-
-sets_input = [
-    ("A", "{a, b, c, d, e}", "1"),
-    ("B", "{a, b, c}", "1"),
-    ("C", "{a, b, c, d, e, f, g, h, i, j}", "1")
-]
-
-statements_input = [
-    "A ∩ (B' ∩ C)'"
-]
-
-solver(sets_input, statements_input)
+        results.update({statement: result})
+    
+    return json.dumps(results)

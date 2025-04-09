@@ -10,6 +10,7 @@ import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import PowerSetInput from '../components/PowerSetInput';
+import PageTopScroller from '../components/PageTopScroller';
 
 /*
 * Name: PowerSets.js
@@ -204,6 +205,7 @@ const PowerSets = () => {
   };
 
   return (
+    <PageTopScroller>
     <Page>
       <Background />
       <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '65%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -311,6 +313,7 @@ const PowerSets = () => {
       </PageContent>
       </Box>
     </Page>
+    </PageTopScroller>
   );
 };
 
