@@ -254,6 +254,11 @@ const SetFunctionInput = ({
                   align: { top: 'bottom' },
                   overflow: "auto"
                 }}
+                valueLabel={
+                  <Box pad="xsmall">
+                    <Text size="small">{SET_OPERATORS.find(op => op.value === expr.operator)?.label || expr.operator}</Text>
+                  </Box>
+                }
               />
             </Box>
             

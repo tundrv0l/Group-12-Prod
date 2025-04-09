@@ -175,21 +175,6 @@ const PropositionalLogicSolver = () => {
             <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
           </Box>
           <Collapsible open={showHelp}>
-              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-                <Text>
-                 Use the symbols from the table below to create your tautology. The solver supports keyboard, unicode, and book syntax.
-                </Text>
-                <WFFOperationsTable />
-              </Box>
-            </Collapsible>
-          </Box>
-          </CardBody>
-          <CardBody pad="small">
-
-          <Box margin={{bottom : "small" }}><Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-            <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-          </Box>
-          <Collapsible open={showHelp}>
             <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
               <Text margin={{ bottom: "small" }}>
                 Enter your hypotheses and conclusion in the appropiate fields.

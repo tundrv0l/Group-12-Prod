@@ -454,16 +454,3 @@ def solve(predefined_sets, predefined_statements):
         results.update({statement: result})
     
     return json.dumps(results)
-
-
-sets_input = [
-    ("A", "{a, b, c, d, e}", "1"),
-    ("B", "{a, b, c}", "1"),
-    ("C", "{a, b, c, d, e, f, g, h, i, j}", "1")
-]
-
-statements_input = [
-    "A ∩ (B' ∩ C)'"
-]
-
-solve(sets_input, statements_input)

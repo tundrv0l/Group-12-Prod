@@ -18,6 +18,9 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from solvers.util import exceptions
 
+# Import cartesian product solver
+from solvers.cartesian_product_solver import format_element, check_cartesian_product
+
 # Character mappings for set element representation
 char_mapping = {
     "a": "1", "b": "2", "c": "3", "d": "4", "e": "5", "f": "6",
@@ -189,7 +192,7 @@ def check_cartesian_product(A, B):
     return frozenset((a, b) for a in A for b in B)
 
 def format_set_for_display(set_obj):
-    """Format a set for display in output"""
+    """Format a set for display in output with better handling for cartesian products"""
     if isinstance(set_obj, frozenset):
         # For empty set
         if len(set_obj) == 0:
@@ -198,11 +201,24 @@ def format_set_for_display(set_obj):
         # Sort elements for consistent display
         elements = sorted(set_obj, key=lambda x: str(x))
         
+        # Check if this is likely a cartesian product (contains tuples)
+        is_cartesian = any(isinstance(e, tuple) and len(e) == 2 for e in elements)
+        
         # For sets with many elements, truncate
         if len(elements) > 10:
-            elements_str = ", ".join(str(e) for e in elements[:5]) + ", ..., " + ", ".join(str(e) for e in elements[-5:])
+            if is_cartesian:
+                # Format as ordered pairs for cartesian product
+                formatted_elements = [f"({format_element(e[0])}, {format_element(e[1])})" if isinstance(e, tuple) else str(e) for e in elements[:5]]
+                formatted_elements_end = [f"({format_element(e[0])}, {format_element(e[1])})" if isinstance(e, tuple) else str(e) for e in elements[-5:]]
+                elements_str = ", ".join(formatted_elements) + ", ..., " + ", ".join(formatted_elements_end)
+            else:
+                elements_str = ", ".join(str(e) for e in elements[:5]) + ", ..., " + ", ".join(str(e) for e in elements[-5:])
         else:
-            elements_str = ", ".join(str(e) for e in elements)
+            if is_cartesian:
+                # Format as ordered pairs for cartesian product
+                elements_str = ", ".join(f"({format_element(e[0])}, {format_element(e[1])})" if isinstance(e, tuple) else str(e) for e in elements)
+            else:
+                elements_str = ", ".join(str(e) for e in elements)
             
         return "{" + elements_str + "}"
     else:
@@ -362,9 +378,20 @@ def solve(data):
                 if B == "∅":
                     set_B = frozenset()
                     
+                # Use the imported check_cartesian_product function
                 result = check_cartesian_product(set_A, set_B)
                 result = format_set_for_display(result)
                 
+                # Add as a statement with more metadata
+                results["statements"].append({
+                    "expression": expr,
+                    "result": result,
+                    "type": "cartesian_product",
+                    "set_a": format_set_for_display(set_A),
+                    "set_b": format_set_for_display(set_B)
+                })
+                continue
+                            
             else:
                 raise exceptions.CalculateError(f"Invalid expression: {expr}")
                 

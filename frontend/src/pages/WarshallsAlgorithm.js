@@ -8,6 +8,7 @@ import MatrixToolbar from '../components/WarshallToolbar';
 import HomeButton from '../components/HomeButton';
 import MatrixOutput from '../components/MatrixOutput';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+import PageTopScroller from '../components/PageTopScroller';
 
 /*
 * Name: WarshallsAlgorithm.js
@@ -159,6 +160,7 @@ const WarshallsAlgorithm = () => {
   };
 
   return (
+    <PageTopScroller>
     <Page>
       <Background />
       <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -207,6 +209,7 @@ const WarshallsAlgorithm = () => {
         </PageContent>
       </Box>
     </Page>
+    </PageTopScroller>
   );
 };
 

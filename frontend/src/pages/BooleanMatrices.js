@@ -8,6 +8,7 @@ import MatrixTable from '../components/MatrixTable';
 import MatrixToolbar from '../components/MatrixToolbar';
 import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+import PageTopScroller from '../components/PageTopScroller';
 
 /*
 * Name: BooleanMatrices.js
@@ -119,6 +120,7 @@ const BooleanMatrices = () => {
   };
 
   return (
+    <PageTopScroller>
     <Page>
       <Background />
       <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -189,6 +191,7 @@ const BooleanMatrices = () => {
         </PageContent>
       </Box>
     </Page>
+    </PageTopScroller>
   );
 };
 

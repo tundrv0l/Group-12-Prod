@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, Collapsible } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, Collapsible, Tab, Tabs } from 'grommet';
 import { solveWeightedGraphs } from '../api';
 import { CircleInformation } from 'grommet-icons';
 import ReportFooter from '../components/ReportFooter';
@@ -8,6 +8,7 @@ import HomeButton from '../components/HomeButton';
 import AdjacencyMatrix from '../components/AdjacencyMatrix';
 import AdjacencyList from '../components/AdjacencyList';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+import WeightedGraphInput from '../components/WeightedGraphInput';
 
 /*
 * Name: WeightedGraphRepresentations.js
@@ -72,40 +73,54 @@ const WeightedGraphRepresentations = () => {
   }
 
   const validateInput = (input) => {
-    // Regular expression to match 'coordinate' pairs with weights in the form of {(x1, y1; w1), (x2, y2; w2), ...}
-    const graphRegex = /^\{\s*(\(\s*\d+\s*,\s*\d+\s*;\s*\d+\s*\)\s*,\s*)*(\(\s*\d+\s*,\s*\d+\s*;\s*\d+\s*\))\s*\}$/;
+    // Updated regex to allow alphanumeric characters (letters and numbers) for vertex names
+    const graphRegex = /^\{\s*(\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*;\s*\d+\s*\)\s*,\s*)*(\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*;\s*\d+\s*\))\s*\}$/;
     return graphRegex.test(input);
   }
 
   // Render output for graph image, adjacency matrix, and adjacency list
-  const renderOutput = () => {
+  // Render output for graph image, adjacency matrix, and adjacency list
+const renderOutput = () => {
+  if (!output.Graph && !output.Matrix && !output.List) {
+    return "Output will be displayed here!";
+  }
 
-    if (!output.Graph && !output.Matrix && !output.List) {
-      return "Output will be displayed here!";
-    }
-
-    return (
-      <Box>
-        {output.Graph && (
-          <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'light-3' }} round="xsmall">
-            <img src={`data:image/png;base64,${output.Graph}`} alt="Graph" style={{ maxWidth: '100%', height: 'auto' }} />
+  return (
+    <Box>
+      <Tabs>
+        <Tab title="Graph Visualization">
+          <Box pad="small">
+            {output.Graph && (
+              <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'white' }} round="small">
+                <img src={`data:image/png;base64,${output.Graph}`} alt="Graph" style={{ maxWidth: '100%', height: 'auto' }} />
+              </Box>
+            )}
           </Box>
-        )}
-        {output.Matrix && (
-          <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'light-3' }} round="xsmall">
-            <Text>Matrix Representation:</Text>
-            <AdjacencyMatrix matrix={output.Matrix} />
+        </Tab>
+        
+        <Tab title="Matrix Representation">
+          <Box pad="small">
+            {output.Matrix && (
+              <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'white' }} round="small">
+                <AdjacencyMatrix matrix={output.Matrix} />
+              </Box>
+            )}
           </Box>
-        )}
-        {output.List && (
-          <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'light-3' }} round="xsmall">
-            <Text>List Representation:</Text>
-            <AdjacencyList list={output.List} />
+        </Tab>
+        
+        <Tab title="List Representation">
+          <Box pad="small">
+            {output.List && (
+              <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'white' }} round="small">
+                <AdjacencyList list={output.List} />
+              </Box>
+            )}
           </Box>
-        )}
-      </Box>
-    );
-  };
+        </Tab>
+      </Tabs>
+    </Box>
+  );
+};
 
   return (
     <Page>
@@ -163,10 +178,9 @@ const WeightedGraphRepresentations = () => {
                   </Text>
                 </Box>
               </Collapsible>
-              <TextInput 
-                placeholder="Example: Enter your graph here (e.g., {(0, 1; 5), (1, 2; 3), (2, 0; 2)})"
+              <WeightedGraphInput 
                 value={input}
-                onChange={(event) => setInput(event.target.value)}
+                onChange={setInput}
               />
               {error && <Text color="status-critical">{error}</Text>}
             </CardBody>
@@ -186,10 +200,14 @@ const WeightedGraphRepresentations = () => {
               <Text weight="bold">
                 Output:
               </Text>
-              <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                <Text>
-                  {renderOutput()}
-                </Text>
+              <Box>
+                {loading ? (
+                  <Box align="center" pad="medium">
+                    <Spinner />
+                  </Box>
+                ) : (
+                  renderOutput()
+                )}
               </Box>
             </CardBody>
           </Card>

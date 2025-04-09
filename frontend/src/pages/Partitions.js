@@ -7,6 +7,7 @@ import HomeButton from '../components/HomeButton';
 import Background from '../components/Background';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import PartitionInput from '../components/PartitionInput';
+import PageTopScroller from '../components/PageTopScroller';
 
 /*
 * Name: Partitions.js
@@ -189,6 +190,7 @@ const Partitions = () => {
   };
 
   return (
+    <PageTopScroller>
     <Page>
       <Background />
       <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -276,6 +278,7 @@ const Partitions = () => {
       </PageContent>
       </Box>
     </Page>
+    </PageTopScroller>
   );
 };
 
