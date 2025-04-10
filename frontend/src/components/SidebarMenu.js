@@ -144,9 +144,7 @@ const SidebarMenu = () => (
           <CustomAccordionPanel label="5.2: Topological Sorting">
             <AccordionPanelContent 
               content={[
-                { label: "Critical Path", path: "/critical-path" },
-                { label: "PERT Diagrams", path: "/pert-diagrams" },
-                { label: "Topological Sorting", path: "/topological-sorting" }
+                { label: "PERT Diagrams", path: "/pert-diagrams" }
               ]} 
               size={size}
             />

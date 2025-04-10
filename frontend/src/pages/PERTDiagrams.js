@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
-import { solvePERTDiagrams } from '../api';
+import { solveCriticalPaths, solvePERTDiagrams, solveTopologicalSorting } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
@@ -55,7 +55,7 @@ const PERTDiagrams = () => {
       return false;
     }
     
-    // Check for negative times
+    // Check for non-positive times
     if (isTimed && tasks.some(task => task.time < 0)) {
       setError('Task times cannot be negative.');
       return false;
@@ -119,9 +119,20 @@ const PERTDiagrams = () => {
     
     const startTime = performance.now();
     try {
-      let result = await solvePERTDiagrams(tableFormat);
-      result = JSON.parse(result);
-      setOutput(result["PERT Diagram"]);
+      // combine them
+      let critical_result;
+      if (isTimed) { critical_result = await solveCriticalPaths(tableFormat); }
+      let pert_result = await solvePERTDiagrams(tableFormat);
+      let topological_result = await solveTopologicalSorting(tableFormat);
+
+      if (isTimed) { critical_result = JSON.parse(critical_result); }
+      pert_result = JSON.parse(pert_result);
+      topological_result = JSON.parse(topological_result);
+
+      let result = Object.assign({}, pert_result, topological_result);
+      if (isTimed) { result = Object.assign({}, result, critical_result) }
+
+      setOutput(result);
       
       // Tracking results for diagnostics
       trackResults(
@@ -132,26 +143,46 @@ const PERTDiagrams = () => {
     } catch (err) {
       trackResults(
         { tasks: tableFormat, isTimed },
-        { error: err.message || "Error solving PERT diagram" },
+        { error: err.message || "Error solving table" },
         performance.now() - startTime
       );
-      setError('An error occurred while generating the PERT Diagram.');
+      setError('An error occurred while solving the table.');
     } finally {
       setLoading(false);
     }
   };
-
-  // Convert base64 image string to image element
+  
   const renderOutput = () => {
     if (!output) {
       return "Output will be displayed here!";
     }
 
-    // Parse out json object and return out elements one by one
+    let critical_path;
+    if (isTimed) { critical_path = output["Critical Path"]; }
+    const minimum_time = output["Minimum Time"];
+    const diagram = output["PERT Diagram"];
+    const total_relation = output["Relation"];
+
     return (
-      <Box>
-        <img src={`data:image/png;base64,${output}`} alt="PERT Diagram" />
-      </Box>
+      <>
+          {isTimed && (
+              <>
+                  <div>
+                    Critcal Path: {critical_path}
+                  </div>
+                  <div>
+                    Minimum Time: {minimum_time}
+                  </div>
+              </>
+          )}
+          <div>
+            Total Relation: {total_relation}
+          </div>
+          <Box>
+            {/* Convert base64 image string to image element */}
+            <img src={`data:image/png;base64,${diagram}`} alt="PERT Diagram" />
+          </Box>
+      </>
     );
   };
 

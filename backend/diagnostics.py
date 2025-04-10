@@ -21,8 +21,6 @@ diagnostics_bp = Blueprint('diagnostics', __name__)
 LOGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../logs/diagnostics')
 os.makedirs(LOGS_DIR, exist_ok=True)
 
-print(LOGS_DIR)
-
 @diagnostics_bp.route('/diagnostics', methods=['POST'])
 def receive_diagnostics():
     '''

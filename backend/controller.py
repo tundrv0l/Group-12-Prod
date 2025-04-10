@@ -25,7 +25,7 @@ from backend.solvers import matrix_solver
 from backend.solvers import matrix_multiply_solver
 from backend.solvers import cycle_solver
 from backend.solvers import disjoint_solver
-from backend.solvers import compisitions_solver
+from backend.solvers import compositions_solver
 from backend.solvers import table_solver
 from backend.solvers import topological_solver
 from backend.solvers import critical_solver
