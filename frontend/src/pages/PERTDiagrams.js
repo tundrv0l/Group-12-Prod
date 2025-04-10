@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Collapsible } from 'grommet';
 import { solvePERTDiagrams } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
@@ -7,6 +7,7 @@ import HomeButton from '../components/HomeButton';
 import TaskTableInput from '../components/TaskTableInput';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import PageTopScroller from '../components/PageTopScroller';
+import { CircleInformation } from 'grommet-icons';
 
 const PERTDiagrams = () => {
   const [tasks, setTasks] = React.useState([{ name: '', prerequisites: new Set(), time: 0 }]);
@@ -14,9 +15,22 @@ const PERTDiagrams = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
   
   // Add diagnostics
   const { trackResults } = useDiagnostics("PERT_DIAGRAMS");
+
+  const SAMPLE_TASKS = [
+    { name: 'A', prerequisites: new Set(), time: 3 },
+    { name: 'B', prerequisites: new Set(['A']), time: 4 },
+    { name: 'C', prerequisites: new Set(['A']), time: 2 },
+    { name: 'D', prerequisites: new Set(['B', 'C']), time: 5 },
+    { name: 'E', prerequisites: new Set(['D']), time: 1 }
+  ];
+  
+  const fillWithSample = () => {
+    setTasks(SAMPLE_TASKS);
+  };
 
   const formatTasksForBackend = () => {
     // Create an object to hold the formatted data
@@ -190,6 +204,37 @@ const PERTDiagrams = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
+              <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+                <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+              </Box>
+              <Collapsible open={showHelp}>
+                <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                  <Text weight="bold" margin={{ bottom: "xsmall" }}>
+                    PERT Diagram Analysis:
+                  </Text>
+                  <Text>
+                    Program Evaluation and Review Technique (PERT) is a method to analyze the tasks involved in completing a project.
+                  </Text>
+                  <Text margin={{ top: "xsmall" }}>
+                    To use this tool:
+                  </Text>
+                  <Text>1. Add tasks with descriptive names (A, B, C, etc.)</Text>
+                  <Text>2. For each task, select its prerequisites (tasks that must be completed before it can start)</Text>
+                  <Text>3. Enter the time required to complete each task</Text>
+                  <Text>4. Click Solve to generate the PERT diagram and analyze the project schedule</Text>
+                  
+                  <Box margin={{ top: 'medium' }} align="center">
+                    <Button 
+                      label="Fill with Sample" 
+                      onClick={fillWithSample} 
+                      primary 
+                      size="small"
+                      border={{ color: 'black', size: '2px' }}
+                      pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                    />
+                  </Box>
+                </Box>
+              </Collapsible>
               <TaskTableInput 
                 tasks={tasks} 
                 setTasks={setTasks}

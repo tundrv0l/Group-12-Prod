@@ -1,5 +1,5 @@
 import React from 'react';
-import { PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, Tab, Tabs } from 'grommet';
+import { PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, Tab, Tabs, Collapsible } from 'grommet';
 import { solveTreeToArray } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
@@ -7,6 +7,7 @@ import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import TreeToArrayOutput from '../components/TreeToArrayOutput';
 import PageTopScroller from '../components/PageTopScroller';
+import { CircleInformation } from 'grommet-icons';
 
 /*
 * Name: TreeToArray.js
@@ -21,9 +22,17 @@ const TreeToArray = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [treeData, setTreeData] = React.useState(null); // Add state for full tree data
+  const [treeData, setTreeData] = React.useState(null);
+  const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("TREE_TO_ARRAY");
+
+  const SAMPLE_REGULAR_TREE = "A B C D E None F";
+  const SAMPLE_MATH_EXPRESSION = "3*(x+4)";
+
+  const fillWithSample = () => {
+    setInput(treeType === 'regular' ? SAMPLE_REGULAR_TREE : SAMPLE_MATH_EXPRESSION);
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -181,7 +190,7 @@ const TreeToArray = () => {
     }
 
     if (treeType === 'regular') {
-      // Validate for regular binary tree level representation
+      // Existing validation for regular binary tree level representation
       const nodes = input.split(/\s+/);
       
       // Check if we have at least a root
@@ -225,7 +234,34 @@ const TreeToArray = () => {
       return { isValid: true };
       
     } else if (treeType === 'mathematical') {
-      // Basic validation for mathematical expression
+      // Enhanced validation for mathematical expression
+      
+      // Check if it contains the "None" keyword which would indicate a level-order input
+      if (input.includes('None')) {
+        return { 
+          isValid: false, 
+          error: 'Your input appears to be a level-order tree format. Please select "Regular Binary Tree" option instead.' 
+        };
+      }
+      
+      // Check if it looks like space-separated single characters (typical of level-order format)
+      const tokens = input.split(/\s+/);
+      if (tokens.length > 2 && tokens.every(token => token.length === 1 && /^[A-Za-z0-9]$/.test(token))) {
+        return { 
+          isValid: false, 
+          error: 'Your input appears to be single characters separated by spaces. For math expressions, use operators like +, -, *, / between values.' 
+        };
+      }
+      
+      // Check that it contains at least one operator for a valid expression
+      if (!/[+\-*/^]/.test(input)) {
+        return { 
+          isValid: false, 
+          error: 'Mathematical expression must contain at least one operator (+, -, *, /, ^).' 
+        };
+      }
+      
+      // Basic validation for mathematical expression characters
       if (!/^[0-9a-zA-Z+\-*/()^. ]+$/.test(input)) {
         return { 
           isValid: false, 
@@ -322,6 +358,58 @@ const TreeToArray = () => {
                 </Box>
               <Card width="large" pad="medium" background={{"color":"light-1"}}>
                 <CardBody pad="small">
+                <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+                  <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+                </Box>
+                <Collapsible open={showHelp}>
+                  <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                    <Text weight="bold" margin={{ bottom: "xsmall" }}>
+                      Tree Input Format:
+                    </Text>
+                    {treeType === 'regular' ? (
+                      <>
+                        <Text>
+                          Enter nodes in level-order traversal (breadth-first).
+                        </Text>
+                        <Text>
+                          Each node should be a single character. Use 'None' for empty nodes.
+                        </Text>
+                        <Text>
+                          Example: <strong>A B C D E None F</strong>
+                        </Text>
+                        <Text margin={{ top: "xsmall" }}>
+                          This creates a tree with A as root, B and C as children of A, D and E as children of B, and F as the right child of C.
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                        <Text>
+                          Enter a mathematical expression using operators and values.
+                        </Text>
+                        <Text>
+                          Supported operators: +, -, *, /, ^ (exponentiation)
+                        </Text>
+                        <Text>
+                          Example: <strong>3*(x+4)</strong>
+                        </Text>
+                        <Text margin={{ top: "xsmall" }}>
+                            This generates an expression tree representing the mathematical formula.
+                          </Text>
+                        </>
+                      )}
+                      
+                      <Box margin={{ top: 'medium' }} align="center">
+                        <Button 
+                          label="Fill with Sample" 
+                          onClick={fillWithSample} 
+                          primary 
+                          size="small"
+                          border={{ color: 'black', size: '2px' }}
+                          pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                        />
+                      </Box>
+                    </Box>
+                  </Collapsible>
                   <Box margin={{ bottom: 'small' }}>
                     <Text margin={{ bottom: 'xsmall' }}>Select Tree Type:</Text>
                     <Select

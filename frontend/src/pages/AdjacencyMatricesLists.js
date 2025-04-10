@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, Collapsible } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Select, Collapsible, Tab, Tabs } from 'grommet';
 import { solveAdjacencyMatricesLists } from '../api';
 import { CircleInformation } from 'grommet-icons';
 import ReportFooter from '../components/ReportFooter';
@@ -9,6 +9,7 @@ import AdjacencyMatrix from '../components/AdjacencyMatrix';
 import AdjacencyList from '../components/AdjacencyList';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import PageTopScroller from '../components/PageTopScroller';
+import GraphInput from '../components/GraphInput';
 
 /*
 * Name: AdjacencyMatricesLists.js
@@ -25,6 +26,13 @@ const AdjacencyMatricesLists = () => {
   const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("ADJACENCY_MATRICES_LISTS");
+
+  // Sample graph data for "Fill with Sample" button
+  const SAMPLE_GRAPH = "{(0, 1), (1, 2), (2, 0)}";
+  
+  const fillWithSample = () => {
+    setInput(SAMPLE_GRAPH);
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -104,27 +112,41 @@ const AdjacencyMatricesLists = () => {
     }
 
     return (
-      <Box>
-        {output.Graph && (
-          <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'light-3' }} round="xsmall">
-            <img src={`data:image/png;base64,${output.Graph}`} alt="Graph" style={{ maxWidth: '100%', height: 'auto' }} />
-          </Box>
-        )}
-        {output.Matrix && (
-          <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'light-3' }} round="xsmall">
-            <Text>Matrix Representation:</Text>
-            <AdjacencyMatrix matrix={output.Matrix} />
-          </Box>
-        )}
-        {output.List && (
-          <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'light-3' }} round="xsmall">
-            <Text>List Representation:</Text>
-            <AdjacencyList list={output.List} />
-          </Box>
-        )}
-      </Box>
-    );
-  };
+        <Box>
+          <Tabs>
+            <Tab title="Graph Visualization">
+              <Box pad="small">
+                {output.Graph && (
+                  <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'white' }} round="small">
+                    <img src={`data:image/png;base64,${output.Graph}`} alt="Graph" style={{ maxWidth: '100%', height: 'auto' }} />
+                  </Box>
+                )}
+              </Box>
+            </Tab>
+            
+            <Tab title="Matrix Representation">
+              <Box pad="small">
+                {output.Matrix && (
+                  <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'white' }} round="small">
+                    <AdjacencyMatrix matrix={output.Matrix} />
+                  </Box>
+                )}
+              </Box>
+            </Tab>
+            
+            <Tab title="List Representation">
+              <Box pad="small">
+                {output.List && (
+                  <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'white' }} round="small">
+                    <AdjacencyList list={output.List} />
+                  </Box>
+                )}
+              </Box>
+            </Tab>
+          </Tabs>
+        </Box>
+      );
+    };
 
 
   return (
@@ -165,29 +187,39 @@ const AdjacencyMatricesLists = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
-            <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-              <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-            </Box>
-            <Collapsible open={showHelp}>
-              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-                <Text>
-                  To input a graph, use the following format:
-                </Text>
-                <Text>
-                  <strong>{'{(x1, y1), (x2, y2), ...}'}</strong>
-                </Text>
-                <Text>
-                  For example: <strong>{'{(0, 1), (1, 2), (2, 0)}'}</strong>
-                </Text>
-                <Text>
-                  Each tuple represents a connection between two vertices. So (0, 1) represents an edge between vertex 0 and vertex 1.
-                </Text>
+          <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+            <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+          </Box>
+          <Collapsible open={showHelp}>
+            <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+              <Text>
+                To input a graph, use the following format:
+              </Text>
+              <Text>
+                <strong>{'{(x1, y1), (x2, y2), ...}'}</strong>
+              </Text>
+              <Text>
+                For example: <strong>{'{(0, 1), (1, 2), (2, 0)}'}</strong>
+              </Text>
+              <Text>
+                Each tuple represents a connection between two vertices. So (0, 1) represents an edge between vertex 0 and vertex 1.
+              </Text>
+              
+              <Box margin={{ top: 'medium' }} align="center">
+                <Button 
+                  label="Fill with Sample" 
+                  onClick={fillWithSample} 
+                  primary 
+                  size="small"
+                  border={{ color: 'black', size: '2px' }}
+                  pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                />
               </Box>
-            </Collapsible>
-            <TextInput 
-              placeholder="Example: Enter your notation here (e.g., {(0, 1), (1, 2), (2, 0)})"
+            </Box>
+          </Collapsible>
+          <GraphInput 
               value={input}
-              onChange={(event) => setInput(event.target.value)}
+              onChange={setInput}
             />
             {error && <Text color="status-critical">{error}</Text>}
           </CardBody>
@@ -207,11 +239,15 @@ const AdjacencyMatricesLists = () => {
               <Text weight="bold">
                 Output:
               </Text>
-              <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                <Text>
-                  {renderOutput()}
-                </Text>
-              </Box>
+                <Box>
+                  {loading ? (
+                    <Box align="center" pad="medium">
+                      <Spinner />
+                    </Box>
+                  ) : (
+                    renderOutput()
+                  )}
+                </Box>
             </CardBody>
           </Card>
           <ReportFooter />

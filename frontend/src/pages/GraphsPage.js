@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, CheckBox, Collapsible } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Select, CheckBox, Collapsible } from 'grommet';
 import { solveGraphs } from '../api';
 import { CircleInformation } from 'grommet-icons';
 import ReportFooter from '../components/ReportFooter';
@@ -7,6 +7,7 @@ import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import PageTopScroller from '../components/PageTopScroller';
+import GraphInput from '../components/GraphInput';
 
 /*
 * Name: GraphsPage.js
@@ -25,6 +26,16 @@ const GraphsPage = () => {
   const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("GRAPHS");
+
+  const SAMPLE_GRAPH = "{(0, 1), (1, 2), (2, 0)}";  
+  const SAMPLE_GRAPH_ISOMORPHIC = "{(3, 4), (4, 5), (5, 3)}";
+
+  const fillWithSample = () => {
+    setInput(SAMPLE_GRAPH);
+    if (isIsomorphic) {
+      setSecondInput(SAMPLE_GRAPH_ISOMORPHIC);
+    }
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -105,8 +116,8 @@ const GraphsPage = () => {
   };
 
   const validateInput = (input) => {
-    // Regular expression to match 'coordinate' pairs in the form of {(x1, y1), (x2, y2), ...}
-    const graphRegex = /^\{\s*(\(\s*\d+\s*,\s*\d+\s*\)\s*,\s*)*(\(\s*\d+\s*,\s*\d+\s*\))\s*\}$/;
+    // Update regex to allow alphanumeric characters (letters and numbers) for vertex names
+    const graphRegex = /^\{\s*(\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\)\s*,\s*)*(\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\))\s*\}$/;
     return graphRegex.test(input);
   }
 
@@ -176,22 +187,33 @@ const GraphsPage = () => {
                 <Text>
                   Each tuple represents a connection between two vertices. So (0, 1) represents an edge between vertex 0 and vertex 1.
                 </Text>
+                
+                <Box margin={{ top: 'medium' }} align="center">
+                  <Button 
+                    label="Fill with Sample" 
+                    onClick={fillWithSample} 
+                    primary 
+                    size="small"
+                    border={{ color: 'black', size: '2px' }}
+                    pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                  />
+                </Box>
               </Box>
             </Collapsible>
-              <TextInput 
-                placeholder="Example: Enter your graph here (e.g., {(0, 1), (1, 2), (2, 0)})"
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-              />
-              {isIsomorphic && (
+
+            <GraphInput 
+              value={input}
+              onChange={setInput}
+            />
+
+            {isIsomorphic && (
               <Box margin={{ top: 'small' }}>
-                <TextInput
-                  placeholder="Example: Enter your second graph here (e.g., {(0, 1), (1, 2), (2, 0)})"
+                <GraphInput
                   value={secondInput}
-                  onChange={(event) => setSecondInput(event.target.value)}
+                  onChange={setSecondInput}
                 />
               </Box>
-            )}
+)}
               {error && <Text color="status-critical">{error}</Text>}
             </CardBody>
             <Box align="center" justify="center" pad={{ vertical: 'small' }}>

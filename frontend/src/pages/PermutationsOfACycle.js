@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Collapsible } from 'grommet';
 import { solvePermutationsCycle } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
@@ -8,6 +8,7 @@ import MatrixTable from '../components/PermutationsInput';
 import MatrixToolbar from '../components/PermutatinsToolbar';
 import PageTopScroller from '../components/PageTopScroller';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+import { CircleInformation } from 'grommet-icons';
 
 /*
 * Name: PermutationsOfACycle.js
@@ -20,9 +21,20 @@ const PermutationsOfACycle = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("PERMUTATIONS_CYCLE");
   
+  // Sample permutation data
+  const SAMPLE_MATRIX = [
+    ['1', '2', '3', '4'],
+    ['2', '3', '4', '1']
+  ];
+  
+  const fillWithSample = () => {
+    setMatrix(SAMPLE_MATRIX);
+  };
+
   const handleSolvePermutations = async () => {
 
     // Empty output and error messages
@@ -115,6 +127,39 @@ const PermutationsOfACycle = () => {
 
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
+            <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+              <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+            </Box>
+            <Collapsible open={showHelp}>
+              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                <Text weight="bold" margin={{ bottom: "xsmall" }}>
+                  Permutation Cycles:
+                </Text>
+                <Text>
+                  A permutation is a bijective function from a set to itself. To input a permutation:
+                </Text>
+                <Text margin={{ top: "xsmall" }}>
+                  1. First row: Enter the domain elements (e.g., 1 2 3 4)
+                </Text>
+                <Text>
+                  2. Second row: Enter where each element maps to (e.g., 2 3 4 1)
+                </Text>
+                <Text margin={{ top: "xsmall" }}>
+                  The example above represents the cycle (1 2 3 4) where 1→2, 2→3, 3→4, and 4→1.
+                </Text>
+                
+                <Box margin={{ top: 'medium' }} align="center">
+                  <Button 
+                    label="Fill with Sample" 
+                    onClick={fillWithSample} 
+                    primary 
+                    size="small"
+                    border={{ color: 'black', size: '2px' }}
+                    pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                  />
+                </Box>
+              </Box>
+            </Collapsible>
               <MatrixTable label="Input Matrix" matrix={matrix} setMatrix={setMatrix} />
               <MatrixToolbar matrix={matrix} setMatrix={setMatrix} combined addRemoveBoth />
             </CardBody>
@@ -123,7 +168,6 @@ const PermutationsOfACycle = () => {
             </CardFooter>
           </Card>
 
-          {/* Error Display */}
           {error && (
             <Text color="status-critical" margin={{"top":"small"}}>
               {error}

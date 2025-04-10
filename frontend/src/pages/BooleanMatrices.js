@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Select } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Select, Collapsible } from 'grommet';
 import { solveBooleanMatrices } from '../api';
 import MatrixOutput from '../components/MatrixOutput';
 import ReportFooter from '../components/ReportFooter';
@@ -9,6 +9,7 @@ import MatrixToolbar from '../components/MatrixToolbar';
 import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import PageTopScroller from '../components/PageTopScroller';
+import { CircleInformation } from 'grommet-icons';
 
 /*
 * Name: BooleanMatrices.js
@@ -24,8 +25,26 @@ const BooleanMatrices = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("BOOLEAN_MATRICES");
+
+  const SAMPLE_MATRIX1 = [
+    ['1', '0', '1'],
+    ['0', '1', '0'],
+    ['1', '1', '0']
+  ];
+  
+  const SAMPLE_MATRIX2 = [
+    ['0', '1', '0'],
+    ['1', '1', '1'],
+    ['0', '0', '1']
+  ];
+
+  const fillWithSample = () => {
+    setMatrix1(SAMPLE_MATRIX1);
+    setMatrix2(SAMPLE_MATRIX2);
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -154,6 +173,35 @@ const BooleanMatrices = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
+                <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+                  <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+                </Box>
+                <Collapsible open={showHelp}>
+                  <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                    <Text weight="bold" margin={{ bottom: "xsmall" }}>
+                      Boolean Matrix Operations:
+                    </Text>
+                    <Text>
+                      Boolean matrices contain only 0s and 1s and are used for representing relations, graphs, and logical operations.
+                    </Text>
+                    <Text margin={{ top: "xsmall" }}>
+                      This tool supports two types of operations:
+                    </Text>
+                    <Text>• MEET/JOIN: Element-wise operations where Meet (∧) is the minimum and Join (∨) is the maximum of corresponding elements</Text>
+                    <Text>• PRODUCT: Boolean matrix multiplication with "OR" of "AND" products</Text>
+                    
+                    <Box margin={{ top: 'medium' }} align="center">
+                      <Button 
+                        label="Fill with Sample" 
+                        onClick={fillWithSample} 
+                        primary 
+                        size="small"
+                        border={{ color: 'black', size: '2px' }}
+                        pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                      />
+                    </Box>
+                  </Box>
+                </Collapsible>
                 <MatrixTable label="Boolean Matrix 1" matrix={matrix1} setMatrix={setMatrix1} />
                 <MatrixToolbar matrix={matrix1} setMatrix={setMatrix1} />
                 <MatrixTable label="Boolean Matrix 2" matrix={matrix2} setMatrix={setMatrix2} />

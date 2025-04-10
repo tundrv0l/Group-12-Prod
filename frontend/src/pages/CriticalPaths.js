@@ -1,6 +1,7 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Collapsible } from 'grommet';
 import { solveCriticalPaths } from '../api';
+import { CircleInformation } from 'grommet-icons';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
@@ -19,9 +20,22 @@ const CriticalPaths = () => {
   const [isTimed, setIsTimed] = React.useState(true);
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
+  const [showHelp, setShowHelp] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
   const { trackResults } = useDiagnostics("CRITICAL_PATHS");
+
+  // Sample data for demonstration
+  const SAMPLE_TASKS = [
+    { name: 'A', prerequisites: new Set(), time: 3 },
+    { name: 'B', prerequisites: new Set(['A']), time: 4 },
+    { name: 'C', prerequisites: new Set(['A']), time: 2 },
+    { name: 'D', prerequisites: new Set(['B', 'C']), time: 5 }
+  ];
+
+  const fillWithSample = () => {
+    setTasks(SAMPLE_TASKS);
+  };
 
   const formatTasksForBackend = () => {
     // Create an object to hold the formatted data
@@ -41,6 +55,33 @@ const CriticalPaths = () => {
     return taskTable;
   };
   
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here!";
+    }
+  
+    try {
+      // Parse the output if it's a string
+      const parsedOutput = typeof output === 'string' ? JSON.parse(output) : output;
+      
+      return (
+        <Box>
+          {Object.entries(parsedOutput).map(([key, value]) => (
+            <Box key={key} direction="row" margin={{ bottom: "xsmall" }}>
+              <Text weight="bold">{key}: </Text>
+              <Box margin={{ left: "xsmall" }}>
+                <Text>{value}</Text>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      );
+    } catch (e) {
+      // Fallback for any parsing errors
+      return <Text>{String(output)}</Text>;
+    }
+  };
+
   const validateInput = () => {
 
     // Check for empty task names
@@ -176,6 +217,37 @@ const CriticalPaths = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
+            <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+                  <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+                </Box>
+                <Collapsible open={showHelp}>
+                  <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                    <Text weight="bold" margin={{ bottom: "xsmall" }}>
+                      Critical Path Analysis:
+                    </Text>
+                    <Text>
+                      A critical path is the sequence of tasks that determines the minimum time needed to complete a project.
+                    </Text>
+                    <Text margin={{ top: "xsmall" }}>
+                      To use this tool:
+                    </Text>
+                    <Text>1. Add tasks with descriptive names (A, B, C, etc.)</Text>
+                    <Text>2. For each task, select its prerequisites (tasks that must be completed before it can start)</Text>
+                    <Text>3. Enter the time required to complete each task</Text>
+                    <Text>4. Click Solve to find the critical path and minimum completion time</Text>
+                    
+                    <Box margin={{ top: 'medium' }} align="center">
+                      <Button 
+                        label="Fill with Sample" 
+                        onClick={fillWithSample} 
+                        primary 
+                        size="small"
+                        border={{ color: 'black', size: '2px' }}
+                        pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                      />
+                    </Box>
+                  </Box>
+                </Collapsible>
               <TaskTableInput 
                 tasks={tasks} 
                 setTasks={setTasks}
@@ -195,9 +267,11 @@ const CriticalPaths = () => {
                 Output:
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                <Text>
-                  {output ? output : "Output will be displayed here!"}
-                </Text>
+                {loading ? (
+                  <Spinner />
+                ) : (
+                  renderOutput()
+                )}
               </Box>
             </CardBody>
           </Card>

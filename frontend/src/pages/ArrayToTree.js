@@ -22,6 +22,17 @@ const ArrayToTree = () => {
   
   const { trackResults } = useDiagnostics("ARRAY_TO_TREE");
 
+  const SAMPLE_TREE = `A B C
+B D E
+C F 0
+D 0 0
+E 0 0
+F 0 0`;
+
+const fillWithSample = () => {
+  setInput(SAMPLE_TREE);
+};
+
   const handleSolve = async () => {
     setLoading(true);
     setError('');
@@ -292,15 +303,6 @@ const ArrayToTree = () => {
                 The conversion process works by parsing the parent-child relationships defined in your array representation, then reconstructing the hierarchical structure of the tree. Each node from the array is placed in its proper position within the tree, connecting parent nodes to their children according to the relationships defined in your input.
               </Text>
               <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                This transformation is particularly useful in:
-                <ul>
-                  <li>Understanding complex tree structures stored in databases or memory</li>
-                  <li>Visualizing algorithms that work with array-based tree representations</li>
-                  <li>Verifying that your array correctly represents the intended tree structure</li>
-                  <li>Converting between different tree representation formats</li>
-                </ul>
-              </Text>
-              <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
                 Recall that we use a notation called "left-child right-child" to represent the relationship between nodes in a binary tree. The representation is as follows:
               </Text>
               <Box background="light-1" pad="small" round="small" margin={{ vertical: "small" }}>
@@ -320,8 +322,6 @@ const ArrayToTree = () => {
               </Text>
             </Box>
           </Box>
-            
-            
           
           <Card width="large" pad="medium" background={{ color: "light-1" }}>
             <CardBody pad="small">
@@ -330,8 +330,7 @@ const ArrayToTree = () => {
               </Box>
               <Collapsible open={showHelp}>
                 <Box background="light-3" pad="small" round="small" margin={{ vertical: "small" }}>
-                  <Text weight="bold" size="medium" margin={{ bottom: "xsmall" }}>Input Format Guide</Text>
-                  <Text textAlign="start" weight="normal" size="small">
+                  <Text textAlign="start" weight="normal">
                     Enter each node in the format: "node left_child right_child"
                     <ul>
                       <li>Each line represents one node and its children</li>
@@ -349,6 +348,16 @@ const ArrayToTree = () => {
                     </pre>
                     This represents a tree where A is the root with children B and C, etc.
                   </Text>
+                  <Box margin={{ top: 'medium' }} align="center">
+                    <Button 
+                      label="Fill with Sample" 
+                      onClick={fillWithSample} 
+                      primary 
+                      size="small"
+                      border={{ color: 'black', size: '2px' }}
+                      pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                    />
+                  </Box>
                 </Box>
               </Collapsible>
               <TextArea

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
 import { solveTopologicalSorting } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
@@ -7,6 +7,7 @@ import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import TaskTableInput from '../components/TaskTableInput';
 import PageTopScroller from '../components/PageTopScroller';
+import { CircleInformation } from 'grommet-icons';
 
 /*
 * Name: TopologicalSorting.js
@@ -21,9 +22,21 @@ const TopologicalSorting = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("TOPOLOGICAL_SORTING");
 
+  const SAMPLE_TASKS = [
+    { name: 'A', prerequisites: new Set(), time: 2 },            // No prerequisites
+    { name: 'B', prerequisites: new Set(['A']), time: 3 },       // Depends on A
+    { name: 'C', prerequisites: new Set(['A']), time: 4 },       // Depends on A
+    { name: 'D', prerequisites: new Set(['B', 'C']), time: 1 },  // Depends on B and C
+    { name: 'E', prerequisites: new Set(['D']), time: 5 }        // Depends on D
+  ];
+
+  const fillWithSample = () => {
+    setTasks(SAMPLE_TASKS);
+  };
 
   const formatTasksForBackend = () => {
     // Create an object to hold the formatted data
@@ -45,6 +58,33 @@ const TopologicalSorting = () => {
     
     console.log("Formatted table:", taskTable);
     return taskTable;
+  };
+
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here!";
+    }
+  
+    try {
+      // Parse the output if it's a string
+      const parsedOutput = typeof output === 'string' ? JSON.parse(output) : output;
+      
+      return (
+        <Box>
+          {Object.entries(parsedOutput).map(([key, value]) => (
+            <Box key={key} direction="row" margin={{ bottom: "xsmall" }}>
+              <Text weight="bold">{key}: </Text>
+              <Box margin={{ left: "xsmall" }}>
+                <Text>{value}</Text>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      );
+    } catch (e) {
+      // Fallback for any parsing errors
+      return <Text>{String(output)}</Text>;
+    }
   };
 
   const validateInput = () => {
@@ -185,6 +225,37 @@ const TopologicalSorting = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
+            <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+                <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+              </Box>
+              <Collapsible open={showHelp}>
+                <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                  <Text weight="bold" margin={{ bottom: "xsmall" }}>
+                    Topological Sorting:
+                  </Text>
+                  <Text>
+                    A topological sort is a linear ordering of vertices in a directed acyclic graph (DAG) where for each directed edge (u,v), vertex u comes before vertex v in the ordering.
+                  </Text>
+                  <Text margin={{ top: "xsmall" }}>
+                    To use this tool:
+                  </Text>
+                  <Text>1. Add tasks with descriptive names (A, B, C, etc.)</Text>
+                  <Text>2. For each task, select its prerequisites (tasks that must be completed before it can start)</Text>
+                  <Text>3. Enter the time required to complete each task (optional)</Text>
+                  <Text>4. Click Solve to find the topological ordering of the tasks</Text>
+                  
+                  <Box margin={{ top: 'medium' }} align="center">
+                    <Button 
+                      label="Fill with Sample" 
+                      onClick={fillWithSample} 
+                      primary 
+                      size="small"
+                      border={{ color: 'black', size: '2px' }}
+                      pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                    />
+                  </Box>
+                </Box>
+              </Collapsible>
               <TaskTableInput 
                 tasks={tasks} 
                 setTasks={setTasks}
@@ -203,9 +274,11 @@ const TopologicalSorting = () => {
                 Output:
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                <Text>
-                  {output ? output : "Output will be displayed here!"}
-                </Text>
+                {loading ? (
+                  <Spinner />
+                ) : (
+                  renderOutput()
+                )}
               </Box>
             </CardBody>
           </Card>

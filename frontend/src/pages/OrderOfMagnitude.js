@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Collapsible } from 'grommet';
 import { solveOrderOfMagnitude } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
@@ -9,6 +9,7 @@ import Latex from 'react-latex-next';
 import 'katex/dist/katex.min.css';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import PageTopScroller from '../components/PageTopScroller';
+import { CircleInformation } from 'grommet-icons';
 
 /*
 * Name: OrderOfMagnitude.js
@@ -27,12 +28,26 @@ const OrderOfMagnitude = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
 
   // Reference to the PolynomialInput field for validation
   const polynomialInputRef = React.useRef(null);
 
   // Track diagnostics
   const { trackResults } = useDiagnostics("ORDER_OF_MAGNITUDE");
+
+  // Sample data for the "Fill with Sample" button
+  const SAMPLE_ORDER = "2";
+  const SAMPLE_COEFFICIENTS = ["2", "3", "1"];  // 2n² + 3n + 1
+  const SAMPLE_COEFFICIENTS2 = ["1", "0", "0"];  // n²
+
+  const fillWithSample = () => {
+    setOrder(SAMPLE_ORDER);
+    setCoefficients(SAMPLE_COEFFICIENTS);
+    setCoefficients2(SAMPLE_COEFFICIENTS2);
+    setUseLog(false);
+    setUseRoot(false);
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -162,6 +177,36 @@ const OrderOfMagnitude = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
+            <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+              <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+            </Box>
+            <Collapsible open={showHelp}>
+              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                <Text weight="bold" margin={{ bottom: "xsmall" }}>
+                  Order of Magnitude Analysis:
+                </Text>
+                <Text>
+                  Order of magnitude helps compare the asymptotic growth rates of functions as their inputs become very large.
+                </Text>
+                <Text margin={{ top: "xsmall" }}>
+                  To use this tool:
+                </Text>
+                <Text>1. Set the polynomial order (highest power of n)</Text>
+                <Text>2. Enter coefficients for each term in both polynomials</Text>
+                <Text>3. Click Analyze to compare their asymptotic behavior</Text>
+                
+                <Box margin={{ top: 'medium' }} align="center">
+                  <Button 
+                    label="Fill with Sample" 
+                    onClick={fillWithSample} 
+                    primary 
+                    size="small"
+                    border={{ color: 'black', size: '2px' }}
+                    pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                  />
+                </Box>
+              </Box>
+            </Collapsible>
             <PolynomialInput
               order={order}
               setOrder={setOrder}

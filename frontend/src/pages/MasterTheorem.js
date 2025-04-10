@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Collapsible } from 'grommet';
 import { solveMasterTheorem } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
@@ -9,6 +9,7 @@ import Latex from 'react-latex-next';
 import 'katex/dist/katex.min.css';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import PageTopScroller from '../components/PageTopScroller';
+import { CircleInformation } from 'grommet-icons';
 
 /*
 * Name: MasterTheorem.js
@@ -23,12 +24,24 @@ const MasterTheorem = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
   
   // Create a ref to access the validation method
   const inputRef = useRef();
 
   // Diagnostics tracking
   const { trackResults } = useDiagnostics("MASTER_THEOREM");
+
+  // Sample data for the "Fill with Sample" button
+  const SAMPLE_A = "2";
+  const SAMPLE_B = "2";
+  const SAMPLE_C = "1";
+  
+  const fillWithSample = () => {
+    setA(SAMPLE_A);
+    setB(SAMPLE_B);
+    setC(SAMPLE_C);
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -148,6 +161,43 @@ const MasterTheorem = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
+              <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+                  <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+                </Box>
+                <Collapsible open={showHelp}>
+                  <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                    <Text weight="bold" margin={{ bottom: "xsmall" }}>
+                      The Master Theorem:
+                    </Text>
+                    <Text>
+                      The Master Theorem is used for solving recurrence relations of the form: T(n) = aT(n/b) + f(n)
+                    </Text>
+                    <Text margin={{ top: "xsmall" }}>
+                      Where:
+                    </Text>
+                    <Text>• a ≥ 1: Number of subproblems</Text>
+                    <Text>• b {">"} 1: Factor by which problem size is reduced</Text>
+                    <Text>• f(n) = n^c: Cost of dividing and combining solutions</Text>
+
+                    <Text margin={{ top: "medium" }} weight="bold">The three cases for classification:</Text>
+                    <Text>• Case 1: If log<sub>b</sub>(a) {"<"} c, then T(n) = Θ(n<sup>c</sup>)</Text>
+                    
+                    <Text>• Case 2: If log<sub>b</sub>(a) = c, then T(n) = Θ(n<sup>c</sup> log n)</Text>
+                    
+                    <Text>• Case 3: If log<sub>b</sub>(a) {">"} c, then T(n) = Θ(n<sup>log<sub>b</sub>(a)</sup>)</Text>
+                    
+                    <Box margin={{ top: 'medium' }} align="center">
+                      <Button 
+                        label="Fill with Sample" 
+                        onClick={fillWithSample} 
+                        primary 
+                        size="small"
+                        border={{ color: 'black', size: '2px' }}
+                        pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                      />
+                    </Box>
+                  </Box>
+                </Collapsible>
               <MasterTheoremInput
                 ref={inputRef}
                 a={a}

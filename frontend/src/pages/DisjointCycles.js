@@ -1,11 +1,12 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
 import { solveDisjointCycles } from '../api';
 import ReportFooter from '../components/ReportFooter';
 import Background from '../components/Background';
 import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import PageTopScroller from '../components/PageTopScroller';
+import { CircleInformation } from 'grommet-icons';
 
 /*
 * Name: DisjointCycles.js
@@ -18,8 +19,16 @@ const DisjointCycles = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("DISJOINT_CYCLES");
+
+  // Sample disjoint cycles data
+  const SAMPLE_INPUT = "(1 2 3)(4 5)";
+  
+  const fillWithSample = () => {
+    setInput(SAMPLE_INPUT);
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -129,6 +138,36 @@ const DisjointCycles = () => {
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
+            <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+                <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+              </Box>
+              <Collapsible open={showHelp}>
+                <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                  <Text>
+                    To input permutations as disjoint cycles, use the following format:
+                  </Text>
+                  <Text>
+                    <strong>(a b c)(d e f)...</strong>
+                  </Text>
+                  <Text>
+                    For example: <strong>(1 2 3)(4 5)</strong>
+                  </Text>
+                  <Text>
+                    This represents two disjoint cycles: one that maps 1→2→3→1 and another that maps 4→5→4.
+                  </Text>
+                  
+                  <Box margin={{ top: 'medium' }} align="center">
+                    <Button 
+                      label="Fill with Sample" 
+                      onClick={fillWithSample} 
+                      primary 
+                      size="small"
+                      border={{ color: 'black', size: '2px' }}
+                      pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                    />
+                  </Box>
+                </Box>
+              </Collapsible>
               <TextInput 
                 placeholder="Example: Enter your permutations here (e.g., (1 2 3)(4 5))"
                 value={input}
