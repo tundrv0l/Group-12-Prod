@@ -103,3 +103,16 @@ def is_a_relation(set_string, relation_string):
             raise exceptions.CalculateError(f"Pair {pair} has elements outside of the provided set.")
 
     return set_list, relation
+
+def relation_to_string(set_list, relation):
+    relation_string = "{"
+
+    for (a,b) in relation:
+        relation_string += f"({set_list[a]}, {set_list[b]}), "
+
+    if relation:
+        relation_string = relation_string[:-2]
+    
+    relation_string += "}"
+
+    return relation_string

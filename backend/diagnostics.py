@@ -21,8 +21,6 @@ diagnostics_bp = Blueprint('diagnostics', __name__)
 LOGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../logs/diagnostics')
 os.makedirs(LOGS_DIR, exist_ok=True)
 
-print(LOGS_DIR)
-
 @diagnostics_bp.route('/diagnostics', methods=['POST'])
 def receive_diagnostics():
     '''
@@ -50,7 +48,7 @@ def receive_diagnostics():
         '''
         # Start Database Stuff
         # Author: Jacob Warren
-        '''
+        
         # the db filename
         database = manager.Database(os.path.join(LOGS_DIR, "diagnostics.db"))
 
@@ -102,7 +100,7 @@ def receive_diagnostics():
         
         # close cursor and connection for db
         database.close()
-        '''
+        
         # End Database Stuff
         '''
 

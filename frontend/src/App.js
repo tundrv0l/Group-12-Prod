@@ -17,9 +17,7 @@ import ClosureAxioms from './pages/ClosureAxioms';
 import Partitions from './pages/Partitions';
 import PartialOrderings from './pages/PartialOrderings';
 import HasseDiagram from './pages/HasseDiagram';
-import CriticalPaths from './pages/CriticalPaths';
 import PERTDiagrams from './pages/PERTDiagrams';
-import TopologicalSorting from './pages/TopologicalSorting';
 import PermutationsOfACycle from './pages/PermutationsOfACycle';
 import CompositionOfPermutations from './pages/CompositionsOfPermutations';
 import DisjointCycles from './pages/DisjointCycles';
@@ -56,9 +54,7 @@ const App = () => (
         <Route path="/partitions" element={<Partitions />} />
         <Route path="/partial-orderings" element={<PartialOrderings />} />
         <Route path="/hasse-diagram" element={<HasseDiagram />} />
-        <Route path="/critical-path" element={<CriticalPaths />} />
         <Route path="/pert-diagrams" element={<PERTDiagrams />} />
-        <Route path="/topological-sorting" element={<TopologicalSorting />} />
         <Route path="/permutations-cycle" element={<PermutationsOfACycle />} />
         <Route path="/compositions-of-permutations" element={<CompositionOfPermutations />} />
         <Route path="/compositions" element={<CompositionOfPermutations />} />

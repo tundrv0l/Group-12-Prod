@@ -25,7 +25,7 @@ from backend.solvers import matrix_solver
 from backend.solvers import matrix_multiply_solver
 from backend.solvers import cycle_solver
 from backend.solvers import disjoint_solver
-from backend.solvers import compisitions_solver
+from backend.solvers import compositions_solver
 from backend.solvers import table_solver
 from backend.solvers import topological_solver
 from backend.solvers import critical_solver
@@ -137,7 +137,7 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'permutations-cycle':
         return cycle_solver.solve(data['input'])
     elif solver_type == 'compositions':
-        return compisitions_solver.solve(data['setOne']['setOne'], data['setOne']['setTwo'])
+        return compositions_solver.solve(data['setOne']['setOne'], data['setOne']['setTwo'])
     elif solver_type == 'disjoint-cycles':
         return disjoint_solver.solve(data['input'])
     elif solver_type == 'order-of-magnitude':
@@ -148,7 +148,7 @@ def solve_algorithim(solver_type, data):
         use_log = data.get("useLog", False)
         use_root = data.get("useRoot", False)
 
-        return order_solver.solve(order, scalars_f, scalars_g)
+        return order_solver.solve(order, scalars_f, scalars_g, use_root)
     elif solver_type == 'master-theorem':
         return master_solver.solve(data["a"], data["b"], data["c"])
     elif solver_type == 'boolean-matrices':
