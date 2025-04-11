@@ -44,21 +44,27 @@ const RelationProperties = () => {
     try {
       let properties_result = await solvePropertiesOfRelations(set, relation);
       let closure_result = await solveClosureAxioms(set, relation);
-      let special_result;
-      let hasse_result;
 
       properties_result = JSON.parse(properties_result);
       closure_result = JSON.parse(closure_result);
 
-      setIsPartial(properties_result["Reflexive"] && properties_result["Antisymmetric"] && properties_result["Transitive"]);
+       // Establish partial ordering in a const
+      const isPartial = properties_result["Reflexive"] && 
+                             properties_result["Antisymmetric"] && 
+                             properties_result["Transitive"];
+      
+      // Set the state
+      setIsPartial(isPartial);
 
       let result = Object.assign({}, properties_result, closure_result);
       if (isPartial) {
-        special_result = await solvePartialOrderings(set, relation);
-        hasse_result = await solveHasseDiagram(set, relation);
+        let special_result = await solvePartialOrderings(set, relation);
+        let hasse_result = await solveHasseDiagram(set, relation);
         special_result = JSON.parse(special_result);
         hasse_result = JSON.parse(hasse_result);
         result = Object.assign({}, result, special_result, hasse_result);
+
+        result.isPartial = true;
       }
 
       setOutput(result);
@@ -206,7 +212,7 @@ const Input = ({set, relation, setSet, setRelation}) => {
     );
 };
 
-const Output = ({ output, isPartial }) => {
+const Output = ({ output }) => {
     if (!output) {
       return "Output will be displayed here!";
     }
@@ -256,6 +262,9 @@ const Output = ({ output, isPartial }) => {
     }
 
     properties += "relation."
+
+    // Control this render via isPartial
+    const isPartial = output.isPartial;
 
     let least;
     let greatest;
