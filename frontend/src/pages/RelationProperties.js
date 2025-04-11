@@ -1,12 +1,8 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
-import { CircleInformation } from 'grommet-icons';
+import { Box, Text, TextInput } from 'grommet';
 import { solvePropertiesOfRelations } from '../api';
-import ReportFooter from '../components/ReportFooter';
-import Background from '../components/Background';
-import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-import PageTopScroller from '../components/PageTopScroller';
+import SolverPage from '../components/SolverPage';
 
 /*
 * Name: RelationProperties.js
@@ -20,7 +16,6 @@ const RelationProperties = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("RELATION_PROPERTIES");
 
@@ -119,8 +114,84 @@ const RelationProperties = () => {
     return relationElements.every(element => setElements.includes(element));
   };
 
-  // Pretty print the output
-  const renderOutput = () => {
+  return (
+    <SolverPage
+      title="Properties of Relations"
+      topic="Relations"
+      description="This tool helps you analyze the properties of relations."
+      DescriptionComponent={Description}
+      InfoText={Info}
+      InputComponent={Input}
+      input_props={{set, relation, setSet, setRelation}}
+      error={error}
+      handle_solve={handleSolve}
+      loading={loading}
+      OutputComponent={Output}
+      output_props={{output}}
+    />
+  );
+};
+
+const Description = () => {
+    return (
+      <>
+        <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            A relation on a set is a collection of ordered pairs of elements from the set. Relations can have various properties such as reflexivity, symmetry, transitivity, and antisymmetry. For example, a relation R on a set A is:
+        </Text>
+        <Box margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            <Text>- Reflexive if every element is related to itself, i.e., (a, a) ∈ R for all a ∈ A.</Text>
+            <Text>- Irreflexive if no element is related to itself, i.e., (a, a) ∉ R for all a ∈ A.</Text>
+            <Text>- Symmetric if for every (a, b) ∈ R, (b, a) ∈ R.</Text>
+            <Text>- Asymmetric if for every (a, b) ∈ R, (b, a) ∉ R.</Text>
+            <Text>- Antisymmetric if for every (a, b) ∈ R and (b, a) ∈ R, a = b.</Text>
+            <Text>- Transitive if for every (a, b) ∈ R and (b, c) ∈ R, (a, c) ∈ R.</Text>
+        </Box>
+        <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+          Enter your relation below to analyze its properties and determine if it is reflexive, irreflexive, symmetric, asymmetric, antisymmetric, or transitive!
+        </Text>
+      </>
+    );
+};
+
+const Info = () => {
+    return (
+      <>
+        <Text>
+          To input a set, use the following format:
+        </Text>
+        <Text>
+          <strong>{'{a,b,c}'}</strong>
+        </Text>
+        <Text>
+          To input a relation, use the following format:
+        </Text>
+        <Text>
+          <strong>{'{(a,b),(b,c),(c,a)}'}</strong>
+        </Text>
+      </>
+    );
+};
+
+const Input = ({set, relation, setSet, setRelation}) => {
+    return (
+      <>
+        <Box margin={{top : "small" }}>
+          <TextInput 
+            placeholder="Example: Enter your set here (e.g., {a, b, c, 23})"
+            onChange={(event) => setSet(event.target.value)}
+          />
+        </Box>
+        <Box margin={{top : "small" }}>
+          <TextInput 
+            placeholder="Example: Enter your relation here (e.g., {(a, b), (23, c)})"
+            onChange={(event) => setRelation(event.target.value)}
+          />
+        </Box>
+      </>
+    );
+};
+
+const Output = ({ output }) => {
     if (!output) {
       return "Output will be displayed here!";
     }
@@ -133,104 +204,6 @@ const RelationProperties = () => {
         ))}
       </Box>
     );
-  };
-
-  return (
-    <PageTopScroller>
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-      <PageContent align="center" skeleton={false}>
-        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-          <HomeButton />
-        </Box>
-        <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-          <Text size="xxlarge" weight="bold">
-            Properties of Relations
-          </Text>
-        </Box>
-        <Box align="center" justify="center">
-          <Text size="large" margin="none" weight={500}>
-            Topic: Relations
-          </Text>
-        </Box>
-        <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{"bottom":"small"}} textAlign="center">
-                This tool helps you analyze the properties of relations.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                A relation on a set is a collection of ordered pairs of elements from the set. Relations can have various properties such as reflexivity, symmetry, transitivity, and antisymmetry. For example, a relation R on a set A is:
-            </Text>
-            <Box margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                <Text>- Reflexive if every element is related to itself, i.e., (a, a) ∈ R for all a ∈ A.</Text>
-                <Text>- Irreflexive if no element is related to itself, i.e., (a, a) ∉ R for all a ∈ A.</Text>
-                <Text>- Symmetric if for every (a, b) ∈ R, (b, a) ∈ R.</Text>
-                <Text>- Asymmetric if for every (a, b) ∈ R, (b, a) ∉ R.</Text>
-                <Text>- Antisymmetric if for every (a, b) ∈ R and (b, a) ∈ R, a = b.</Text>
-                <Text>- Transitive if for every (a, b) ∈ R and (b, c) ∈ R, (a, c) ∈ R.</Text>
-            </Box>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-            Enter your relation below to analyze its properties and determine if it is reflexive, irreflexive, symmetric, asymmetric, antisymmetric, or transitive!
-            </Text>
-        </Box>
-        <Card width="large" pad="medium" background={{"color":"light-1"}}>
-          <CardBody pad="small">
-            <Box margin={{bottom : "small" }}><Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-              <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-            </Box>
-            <Collapsible open={showHelp}>
-              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-                <Text>
-                  To input a set, use the following format:
-                </Text>
-                <Text>
-                  <strong>{'{a,b,c}'}</strong>
-                </Text>
-                <Text>
-                  To input a relation, use the following format:
-                </Text>
-                <Text>
-                  <strong>{'{(a,b),(b,c),(c,a)}'}</strong>
-                </Text>
-              </Box>
-            </Collapsible>
-              <TextInput 
-                placeholder="Example: Enter your set here (e.g., {a, b, c, 23})"
-                value={set}
-                onChange={(event) => setSet(event.target.value)}
-              />
-            </Box>
-            <Box margin={{top : "small" }}>
-              <TextInput 
-                placeholder="Example: Enter your relation here (e.g., {(a, b), (23, c)})"
-                value={relation}
-                onChange={(event) => setRelation(event.target.value)}
-              />
-            </Box>
-            {error && <Text color="status-critical">{error}</Text>}
-          </CardBody>
-          <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
-          </CardFooter>
-        </Card>
-        <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
-          <CardBody pad="small">
-            <Text weight="bold">
-              Output:
-            </Text>
-            <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-              <Text>
-                {renderOutput()}
-              </Text>
-            </Box>
-          </CardBody>
-        </Card>
-        <ReportFooter />
-      </PageContent>
-      </Box>
-    </Page>
-    </PageTopScroller>
-  );
 };
 
 export default RelationProperties;

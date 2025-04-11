@@ -1,8 +1,10 @@
-import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Collapsible } from 'grommet';
+import { CircleInformation } from 'grommet-icons';
 import ReportFooter from './ReportFooter';
 import Background from './Background';
 import HomeButton from './HomeButton';
 import PageTopScroller from './PageTopScroller';
+import InfoBox from './InfoBox';
 
 /*
 * Name: SolverPage.js
@@ -10,7 +12,7 @@ import PageTopScroller from './PageTopScroller';
 * Description: Skeleton for solver pages.
 */
 
-const SolverPage = ({ title, topic, description, paragraphs, InputComponent, input_props, error, handle_solve, loading, render_output }) => {
+const SolverPage = ({ title, topic, description, DescriptionComponent, InfoText, InputComponent, input_props, error, handle_solve, loading, OutputComponent, output_props }) => {
   return (
     <PageTopScroller>
     <Page>
@@ -34,19 +36,11 @@ const SolverPage = ({ title, topic, description, paragraphs, InputComponent, inp
             <Text margin={{"bottom":"small"}} textAlign="center">
               {description}
             </Text>
-            {paragraphs.map((paragraph, idx) => (
-              <Text
-                key = {idx}
-                margin = {{ bottom: idx === paragraphs.length - 1 ? "medium" : "small" }}
-                textAlgin="start"
-                weight="normal"
-              >
-                {paragraph}
-              </Text>
-            ))}
+            <DescriptionComponent />
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
+              <InfoBox InfoText={InfoText} />
               <InputComponent {...input_props} />
               {error && <Text color="status-critical" margin={{ top: 'small' }}>{error}</Text>}
             </CardBody>
@@ -60,9 +54,7 @@ const SolverPage = ({ title, topic, description, paragraphs, InputComponent, inp
                 Output:
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                <Text>
-                  {render_output()}
-                </Text>
+                <OutputComponent {...output_props} />
               </Box>
             </CardBody>
           </Card>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from 'grommet';
+import { Box, Text } from 'grommet';
 import { solveCriticalPaths, solvePERTDiagrams, solveTopologicalSorting } from '../api';
 import TaskTableInput from '../components/TaskTableInput';
 import SolverPage from '../components/SolverPage';
@@ -154,8 +154,52 @@ const PERTDiagrams = () => {
       setLoading(false);
     }
   };
-  
-  const renderOutput = () => {
+
+  return (
+    <SolverPage
+      title="PERT Diagrams"
+      topic="Topological Sorting"
+      description="This tool helps you analyze PERT Diagrams in discrete mathematics."
+      DescriptionComponent={Description}
+      InfoText={Info}
+      InputComponent={TaskTableInput}
+      input_props={{tasks, setTasks, isTimed, setIsTimed}}
+      error={error}
+      handle_solve={handleSolve}
+      loading={loading}
+      OutputComponent={Output}
+      output_props={{output, isTimed}}
+    />
+  );
+};
+
+const Description = () => {
+    return (
+      <>
+        <Text margin={{ bottom: "small" }} textAlgin="start" weight="normal">
+          A PERT (Program Evaluation Review Technique) diagram is a graphical representation used to model the tasks and dependencies in a project. This tool allows you to input a set of tasks and their dependencies to generate a PERT diagram.
+        </Text>
+        <Text margin={{ bottom: "small" }} textAlgin="start" weight="normal">
+          By analyzing PERT diagrams, you can visualize the sequence of tasks, identify critical paths, and optimize task scheduling. This tool allows you to input a set of tasks and their dependencies to generate the PERT diagram and analyze the critical paths.
+        </Text>
+        <Text margin={{ bottom: "medium" }} textAlgin="start" weight="normal">
+          Enter your tasks and dependencies below to generate and analyze the PERT diagram and critical paths!
+        </Text>
+      </>
+    ); 
+}
+
+const Info = () => {
+    return (
+      <>
+        <Text margin={{ bottom: "small" }} textAlgin="start" weight="normal">
+          Info
+        </Text>
+      </>
+    ); 
+}
+
+const Output = ({ output, isTimed }) => {
     if (!output) {
       return "Output will be displayed here!";
     }
@@ -187,26 +231,6 @@ const PERTDiagrams = () => {
           </Box>
       </>
     );
-  };
-
-  return (
-    <SolverPage
-      title="PERT Diagrams"
-      topic="Topological Sorting"
-      description="This tool helps you analyze PERT Diagrams in discrete mathematics."
-      paragraphs={[
-        "A PERT (Program Evaluation Review Technique) diagram is a graphical representation used to model the tasks and dependencies in a project. This tool allows you to input a set of tasks and their dependencies to generate a PERT diagram.",
-        "By analyzing PERT diagrams, you can visualize the sequence of tasks, identify critical paths, and optimize task scheduling. This tool allows you to input a set of tasks and their dependencies to generate the PERT diagram and analyze the critical paths.",
-        "Enter your tasks and dependencies below to generate and analyze the PERT diagram and critical paths!"
-      ]}
-      InputComponent={TaskTableInput}
-      input_props={{tasks, setTasks, isTimed, setIsTimed}}
-      error={error}
-      handle_solve={handleSolve}
-      loading={loading}
-      render_output={renderOutput}
-    />
-  );
 };
 
 export default PERTDiagrams;
