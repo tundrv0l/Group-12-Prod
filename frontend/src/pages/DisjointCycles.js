@@ -1,11 +1,8 @@
-import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
+import React, { useState } from 'react';
+import { Box, Text, TextInput, Button, Collapsible } from 'grommet';
 import { solveDisjointCycles } from '../api';
-import ReportFooter from '../components/ReportFooter';
-import Background from '../components/Background';
-import HomeButton from '../components/HomeButton';
+import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-import PageTopScroller from '../components/PageTopScroller';
 import { CircleInformation } from 'grommet-icons';
 
 /*
@@ -19,7 +16,6 @@ const DisjointCycles = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("DISJOINT_CYCLES");
 
@@ -30,6 +26,73 @@ const DisjointCycles = () => {
     setInput(SAMPLE_INPUT);
   };
 
+   // Create a custom input component that includes the help collapsible
+   const DisjointCyclesInput = ({ input, setInput, fillWithSample }) => {
+    const [showHelp, setShowHelp] = useState(false);
+    
+    return (
+      <Box>
+        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+        </Box>
+        
+        <Collapsible open={showHelp}>
+          <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+            <Text weight="bold" margin={{ bottom: "xsmall" }}>
+              Disjoint Cycles:
+            </Text>
+            <Text>
+              To input permutations as disjoint cycles, use the following format:
+            </Text>
+            <Text>
+              <strong>(a b c)(d e f)...</strong>
+            </Text>
+            <Text>
+              For example: <strong>(1 2 3)(4 5)</strong>
+            </Text>
+            <Text>
+              This represents two disjoint cycles: one that maps 1→2→3→1 and another that maps 4→5→4.
+            </Text>
+
+            <Box margin={{ top: 'medium' }} align="center">
+              <Button 
+                label="Fill with Sample" 
+                onClick={fillWithSample} 
+                primary 
+                size="small"
+                border={{ color: 'black', size: '2px' }}
+                pad={{ vertical: 'xsmall', horizontal: 'small' }}
+              />
+            </Box>
+          </Box>
+        </Collapsible>
+        
+        <TextInput 
+          placeholder="Example: Enter your permutations here (e.g., (1 2 3)(4 5))"
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+        />
+      </Box>
+    );
+  };
+
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here!";
+    }
+    
+    // If output is already a formatted string, return it directly
+    if (typeof output === 'string') {
+      return output;
+    }
+    
+    // Otherwise parse and format the object
+    const results = output;
+    return Object.entries(results)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join(', ');
+  };
+            
   const handleSolve = async () => {
     // Empty output and error messages
     setLoading(true);
@@ -101,101 +164,22 @@ const DisjointCycles = () => {
   };
 
   return (
-    <PageTopScroller>
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-        <PageContent align="center" skeleton={false}>
-          <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-            <HomeButton />
-          </Box>
-          <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-            <Text size="xxlarge" weight="bold">
-              Permutations Expressed
-            </Text>
-            <Text size="xxlarge" weight="bold">
-              As Disjoint Cycles
-            </Text>
-          </Box>
-          <Box align="center" justify="center">
-            <Text size="large" margin="none" weight={500}>
-              Topic: Functions
-            </Text>
-          </Box>
-          <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{"bottom":"small"}} textAlign="center">
-              This tool helps you analyze permutations as disjoint cycles in discrete mathematics.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              A permutation can be decomposed into a product of disjoint cycles. This tool allows you to input a permutation and generate its disjoint cycle representation.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              By analyzing permutations as disjoint cycles, you can understand the structure of permutations and how elements are mapped within cycles. This is useful in various applications such as group theory, cryptography, and combinatorial optimization. This tool allows you to input a permutation and explore its disjoint cycle decomposition.
-            </Text>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-              Enter your permutation below to generate and analyze its disjoint cycles!
-            </Text>
-          </Box>
-          <Card width="large" pad="medium" background={{"color":"light-1"}}>
-            <CardBody pad="small">
-            <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-                <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-              </Box>
-              <Collapsible open={showHelp}>
-                <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-                  <Text>
-                    To input permutations as disjoint cycles, use the following format:
-                  </Text>
-                  <Text>
-                    <strong>(a b c)(d e f)...</strong>
-                  </Text>
-                  <Text>
-                    For example: <strong>(1 2 3)(4 5)</strong>
-                  </Text>
-                  <Text>
-                    This represents two disjoint cycles: one that maps 1→2→3→1 and another that maps 4→5→4.
-                  </Text>
-                  
-                  <Box margin={{ top: 'medium' }} align="center">
-                    <Button 
-                      label="Fill with Sample" 
-                      onClick={fillWithSample} 
-                      primary 
-                      size="small"
-                      border={{ color: 'black', size: '2px' }}
-                      pad={{ vertical: 'xsmall', horizontal: 'small' }}
-                    />
-                  </Box>
-                </Box>
-              </Collapsible>
-              <TextInput 
-                placeholder="Example: Enter your permutations here (e.g., (1 2 3)(4 5))"
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-              />
-              {error && <Text color="status-critical">{error}</Text>}
-            </CardBody>
-            <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-              <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
-            </CardFooter>
-          </Card>
-          <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
-            <CardBody pad="small">
-              <Text weight="bold">
-                Output:
-              </Text>
-              <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                <Text style={{ whiteSpace: 'pre-wrap' }}>
-                  {output ? output : "Output will be displayed here!"}
-                </Text>
-              </Box>
-            </CardBody>
-          </Card>
-          <ReportFooter />
-        </PageContent>
-      </Box>
-    </Page>
-    </PageTopScroller>
+    <SolverPage
+    title="Disjoint Cycles"
+    topic="Functions"
+    description="This tool helps you analyze permutations as disjoint cycles in discrete mathematics."
+    paragraphs={[
+      "A permutation can be decomposed into a product of disjoint cycles. This tool allows you to input a permutation and generate its disjoint cycle representation.",
+      "By analyzing permutations as disjoint cycles, you can understand the structure of permutations and how elements are mapped within cycles. This is useful in various applications such as group theory, cryptography, and combinatorial optimization.",
+      "Enter your permutation below to generate and analyze its disjoint cycles!"
+    ]}
+    InputComponent={DisjointCyclesInput}
+    input_props={{ input, setInput, fillWithSample }}
+    error={error}
+    handle_solve={handleSolve}
+    loading={loading}
+    render_output={renderOutput}
+    />
   );
 };
 

@@ -17,7 +17,6 @@ const PERTDiagrams = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [showHelp, setShowHelp] = React.useState(false);
   
   // Add diagnostics
   const { trackResults } = useDiagnostics("PERT_DIAGRAMS");
@@ -213,7 +212,7 @@ const PERTDiagrams = () => {
         "Enter your tasks and dependencies below to generate and analyze the PERT diagram and critical paths!"
       ]}
       InputComponent={TaskTableInput}
-      input_props={{tasks, setTasks, isTimed, setIsTimed}}
+      input_props={{tasks, setTasks, isTimed, setIsTimed, fillWithSample}}
       error={error}
       handle_solve={handleSolve}
       loading={loading}

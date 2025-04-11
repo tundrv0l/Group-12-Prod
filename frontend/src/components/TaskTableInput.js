@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Text, TextInput, Button, CheckBox, Table, TableRow, TableCell, TableHeader, TableBody } from 'grommet';
-import { Add, Trash } from 'grommet-icons';
+import { Box, Text, TextInput, Button, CheckBox, Table, TableRow, TableCell, TableHeader, TableBody, Collapsible } from 'grommet';
+import { Add, Trash, CircleInformation } from 'grommet-icons';
 
 /*
 * Name: TaskTableInput.js
@@ -8,7 +8,8 @@ import { Add, Trash } from 'grommet-icons';
 * Description: Input component for task tables used in PERT Diagrams.
 */
 
-const TaskTableInput = ({ tasks, setTasks, isTimed, setIsTimed, showTimedToggle = true}) => {
+const TaskTableInput = ({ tasks, setTasks, isTimed, setIsTimed, showTimedToggle = true, fillWithSample}) => {
+  const [showHelp, setShowHelp] = useState(false);
 
   // Add a new empty task
   const addTask = () => {
@@ -82,7 +83,41 @@ const TaskTableInput = ({ tasks, setTasks, isTimed, setIsTimed, showTimedToggle 
   };
 
   return (
-    <Box gap="medium">
+    <Box gap="small">
+      <Box direction="row" align="start" justify="start" margin={{ bottom: 'xxsmall' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
+        <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+      </Box>
+      
+      <Collapsible open={showHelp}>
+        <Box pad="small" background="light-2" round="small" margin={{ bottom: "xsmall" }} width="large">
+          <Text weight="bold" margin={{ bottom: "xsmall" }}>
+            Task Table Input:
+          </Text>
+          <Text>
+            A task table represents activities with their dependencies and durations.
+          </Text>
+          <Text margin={{ top: "xsmall" }}>
+            To use this tool:
+          </Text>
+          <Text>1. Add tasks with descriptive names (A, B, C, etc.)</Text>
+          <Text>2. For each task, select its prerequisites (tasks that must be completed before it can start)</Text>
+          <Text>3. Enter the time required to complete each task</Text>
+          <Text>4. Click Solve to generate the diagram and analyze paths</Text>
+          
+          {fillWithSample && (
+            <Box margin={{ top: 'medium' }} align="center">
+              <Button 
+                label="Fill with Sample" 
+                onClick={fillWithSample} 
+                primary 
+                size="small"
+                border={{ color: 'black', size: '2px' }}
+                pad={{ vertical: 'xsmall', horizontal: 'small' }}
+              />
+            </Box>
+          )}
+        </Box>
+      </Collapsible>
       <Box direction="row" align="center" gap="small">
         {showTimedToggle && (
         <CheckBox
