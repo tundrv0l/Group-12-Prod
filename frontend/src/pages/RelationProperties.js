@@ -16,7 +16,6 @@ const RelationProperties = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [isPartial, setIsPartial] = React.useState(false);
 
   const { trackResults } = useDiagnostics("RELATION_PROPERTIES");
 
@@ -48,27 +47,21 @@ const RelationProperties = () => {
       properties_result = JSON.parse(properties_result);
       closure_result = JSON.parse(closure_result);
 
-       // Establish partial ordering in a const
-      const isPartial = properties_result["Reflexive"] && 
-                             properties_result["Antisymmetric"] && 
-                             properties_result["Transitive"];
-      
-      // Set the state
-      setIsPartial(isPartial);
-
       let result = Object.assign({}, properties_result, closure_result);
-      if (isPartial) {
+      if (properties_result["Reflexive"] && properties_result["Antisymmetric"] && properties_result["Transitive"]) {
         let special_result = await solvePartialOrderings(set, relation);
         let hasse_result = await solveHasseDiagram(set, relation);
         special_result = JSON.parse(special_result);
         hasse_result = JSON.parse(hasse_result);
         result = Object.assign({}, result, special_result, hasse_result);
 
-        result.isPartial = true;
+        result["Partial"] = true;
+      } else {
+        result["Partial"] = false;
       }
 
       setOutput(result);
-  
+
       // Check if there is an error key in the result
       const errorKey = Object.keys(result).find(key => key.toLowerCase().includes('error'));
       
@@ -148,7 +141,7 @@ const RelationProperties = () => {
       handle_solve={handleSolve}
       loading={loading}
       OutputComponent={Output}
-      output_props={{output, isPartial}}
+      output_props={{output}}
     />
   );
 };
@@ -217,10 +210,11 @@ const Output = ({ output }) => {
       return "Output will be displayed here!";
     }
 
-    let properties = "This is a ";
+    let properties = "R is a ";
     let something = false;
     let reflexive_closure;
-    if (output["Reflexive"]) {
+    const is_reflexive = output["Reflexive"];
+    if (is_reflexive) {
         properties += "reflexive, ";
         something = true;
     } else if (output["Irreflexive"]) {
@@ -230,9 +224,10 @@ const Output = ({ output }) => {
     } else {
         reflexive_closure = output["Reflexive Closure"];
     }
-    
+
     let symmetric_closure;
-    if (output["Symmetric"]) {
+    const is_symmetric = output["Symmetric"];
+    if (is_symmetric) {
         properties += "symmetric, ";
         something = true;
     } else if (output["Antisymmetric"]) {
@@ -249,7 +244,8 @@ const Output = ({ output }) => {
     }
 
     let transitive_closure;
-    if (output["Transitive"]) {
+    const is_transitive = output["Transitive"];
+    if (is_transitive) {
         properties += "transitive, ";
         something = true;
     } else {
@@ -261,17 +257,15 @@ const Output = ({ output }) => {
         properties += " "
     }
 
-    properties += "relation."
-
-    // Control this render via isPartial
-    const isPartial = output.isPartial;
+    properties += "relation over A."
 
     let least;
     let greatest;
     let minimals;
     let maximals;
     let diagram;
-    if (isPartial) {
+    const is_partial = output["Partial"];
+    if (is_partial) {
         least = output["Least Element"];
         greatest = output["Greatest Element"];
         minimals = output["Minimal Elements"];
@@ -284,22 +278,22 @@ const Output = ({ output }) => {
           <div>
             {properties}
           </div>
-          {!output["Reflexive"] && (
+          {!is_reflexive && (
             <div>
               Reflexive Closure: {reflexive_closure}
             </div>
           )}
-          {!output["Symmetric"] && (
+          {!is_symmetric && (
             <div>
               Symmetric Closure: {symmetric_closure}
             </div>
           )}
-          {!output["Transitive"] && (
+          {!is_transitive && (
             <div>
               Transitive Closure: {transitive_closure}
             </div>
           )}
-          {isPartial && (
+          {is_partial && (
               <>
                   <div>
                     Least Element: {least}
