@@ -79,7 +79,7 @@ def generate_diagram(table):
     pos = nx.multipartite_layout(G, subset_key=layers, align="vertical")
     plt.figure()
     nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=15, font_color="black", font_weight="bold")
-    plt.title("Hasse Diagram")
+    plt.title("PERT Diagram")
 
     # convert to image
     img_buf = BytesIO()

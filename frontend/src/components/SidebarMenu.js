@@ -130,10 +130,7 @@ const SidebarMenu = () => (
             <AccordionPanelContent 
               content={[
                 { label: "Property Of Relations", path: "/properties-of-relations" },
-                { label: "Closure Axioms", path: "/closure-axioms" },
-                { label: "Partitions", path: "/partitions" },
-                { label: "Partial Orderings", path: "/partial-orderings" },
-                { label: "Hasse Diagram", path: "/hasse-diagram" }
+                { label: "Partitions", path: "/partitions" }
               ]} 
               size={size}
             />
@@ -144,9 +141,7 @@ const SidebarMenu = () => (
           <CustomAccordionPanel label="5.2: Topological Sorting">
             <AccordionPanelContent 
               content={[
-                { label: "Critical Path", path: "/critical-path" },
-                { label: "PERT Diagrams", path: "/pert-diagrams" },
-                { label: "Topological Sorting", path: "/topological-sorting" }
+                { label: "PERT Diagrams", path: "/pert-diagrams" }
               ]} 
               size={size}
             />

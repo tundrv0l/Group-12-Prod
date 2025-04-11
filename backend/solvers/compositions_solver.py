@@ -1,4 +1,4 @@
-# compisitions_solver.py
+# compositions_solver.py
 # Author: Mathias Buchanan
 # Solves: 4.4 permutation problems
 
@@ -61,5 +61,5 @@ def solve(setOneSize, setTwoSize):
     return json.dumps(result)
 
 # Example Usage
-output = solve(55, 50)
-print(output)
+# output = solve(55, 50)
+# print(output)
