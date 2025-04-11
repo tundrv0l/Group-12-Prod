@@ -38,17 +38,14 @@ def solve(set_string, relation_string):
     # Return the result as json
     result = {
         "Reflexive": properties[0],
-        "Add for Reflexive": violation_strings[0],
         "Irreflexive": properties[1],
         "Remove for Irrelexive": violation_strings[1],
         "Symmetric": properties[2],
-        "Add for Symmetric": violation_strings[2],
         "Asymmetric": properties[3],
-        "Remove for Asymmetric (one per pair)": violation_strings[3],
+        "Remove for Asymmetric": violation_strings[3],
         "Antisymmetric": properties[4],
-        "Remove for Antisymmetric (one per pair)": violation_strings[4],
-        "Transitive": properties[5],
-        "Add for Transitive (1st iteration)": violation_strings[5]
+        "Remove for Antisymmetric": violation_strings[4],
+        "Transitive": properties[5]
     }
 
     return json.dumps(result)

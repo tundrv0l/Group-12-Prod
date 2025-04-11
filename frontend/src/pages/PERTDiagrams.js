@@ -133,7 +133,7 @@ const PERTDiagrams = () => {
       topological_result = JSON.parse(topological_result);
 
       let result = Object.assign({}, pert_result, topological_result);
-      if (isTimed) { result = Object.assign({}, result, critical_result) }
+      if (isTimed) { result = Object.assign({}, result, critical_result); }
 
       setOutput(result);
       
@@ -226,7 +226,6 @@ const Output = ({ output, isTimed }) => {
             Total Relation: {total_relation}
           </div>
           <Box>
-            {/* Convert base64 image string to image element */}
             <img src={`data:image/png;base64,${diagram}`} alt="PERT Diagram" />
           </Box>
       </>

@@ -13,10 +13,7 @@ import SetComplement from './pages/SetComplement';
 import BinaryUnaryOperators from './pages/BinaryUnaryOperators';
 import CartesianProducts from './pages/CartesianProducts';
 import RelationProperties from './pages/RelationProperties';
-import ClosureAxioms from './pages/ClosureAxioms';
 import Partitions from './pages/Partitions';
-import PartialOrderings from './pages/PartialOrderings';
-import HasseDiagram from './pages/HasseDiagram';
 import PERTDiagrams from './pages/PERTDiagrams';
 import PermutationsOfACycle from './pages/PermutationsOfACycle';
 import CompositionOfPermutations from './pages/CompositionsOfPermutations';
@@ -50,10 +47,7 @@ const App = () => (
         <Route path="/binary-unary-operators" element={<BinaryUnaryOperators />} />
         <Route path="/cartesian-products" element={<CartesianProducts />} />
         <Route path="/properties-of-relations" element={<RelationProperties />} />
-        <Route path="/closure-axioms" element={<ClosureAxioms />} />
         <Route path="/partitions" element={<Partitions />} />
-        <Route path="/partial-orderings" element={<PartialOrderings />} />
-        <Route path="/hasse-diagram" element={<HasseDiagram />} />
         <Route path="/pert-diagrams" element={<PERTDiagrams />} />
         <Route path="/permutations-cycle" element={<PermutationsOfACycle />} />
         <Route path="/compositions-of-permutations" element={<CompositionOfPermutations />} />

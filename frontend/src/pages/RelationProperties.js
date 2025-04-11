@@ -1,12 +1,12 @@
 import React from 'react';
 import { Box, Text, TextInput } from 'grommet';
-import { solvePropertiesOfRelations } from '../api';
+import { solvePropertiesOfRelations, solveClosureAxioms, solveHasseDiagram, solvePartialOrderings } from '../api';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import SolverPage from '../components/SolverPage';
 
 /*
 * Name: RelationProperties.js
-* Author: Parker Clark
+* Author: Parker Clark, Jacob Warren
 * Description: Solver page for properties of relations.
 */
 
@@ -16,6 +16,7 @@ const RelationProperties = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [isPartial, setIsPartial] = React.useState(false);
 
   const { trackResults } = useDiagnostics("RELATION_PROPERTIES");
 
@@ -41,12 +42,26 @@ const RelationProperties = () => {
     const startTime = performance.now();
     
     try {
-      let result = await solvePropertiesOfRelations(set, relation);
-  
-      // Parse result if it is a string
-      if (typeof result === 'string') {
-        result = JSON.parse(result);
+      let properties_result = await solvePropertiesOfRelations(set, relation);
+      let closure_result = await solveClosureAxioms(set, relation);
+      let special_result;
+      let hasse_result;
+
+      properties_result = JSON.parse(properties_result);
+      closure_result = JSON.parse(closure_result);
+
+      setIsPartial(properties_result["Reflexive"] && properties_result["Antisymmetric"] && properties_result["Transitive"]);
+
+      let result = Object.assign({}, properties_result, closure_result);
+      if (isPartial) {
+        special_result = await solvePartialOrderings(set, relation);
+        hasse_result = await solveHasseDiagram(set, relation);
+        special_result = JSON.parse(special_result);
+        hasse_result = JSON.parse(hasse_result);
+        result = Object.assign({}, result, special_result, hasse_result);
       }
+
+      setOutput(result);
   
       // Check if there is an error key in the result
       const errorKey = Object.keys(result).find(key => key.toLowerCase().includes('error'));
@@ -127,7 +142,7 @@ const RelationProperties = () => {
       handle_solve={handleSolve}
       loading={loading}
       OutputComponent={Output}
-      output_props={{output}}
+      output_props={{output, isPartial}}
     />
   );
 };
@@ -166,7 +181,7 @@ const Info = () => {
           To input a relation, use the following format:
         </Text>
         <Text>
-          <strong>{'{(a,b),(b,c),(c,a)}'}</strong>
+          <strong>{'{(a,a),(b,b),(c,c),(a,b),(b,c),(a,c)}'}</strong>
         </Text>
       </>
     );
@@ -191,18 +206,110 @@ const Input = ({set, relation, setSet, setRelation}) => {
     );
 };
 
-const Output = ({ output }) => {
+const Output = ({ output, isPartial }) => {
     if (!output) {
       return "Output will be displayed here!";
     }
 
-    // Parse out json object and return out elements one by one
+    let properties = "This is a ";
+    let something = false;
+    let reflexive_closure;
+    if (output["Reflexive"]) {
+        properties += "reflexive, ";
+        something = true;
+    } else if (output["Irreflexive"]) {
+        reflexive_closure = output["Reflexive Closure"];
+        properties += "irreflexive, ";
+        something = true;
+    } else {
+        reflexive_closure = output["Reflexive Closure"];
+    }
+    
+    let symmetric_closure;
+    if (output["Symmetric"]) {
+        properties += "symmetric, ";
+        something = true;
+    } else if (output["Antisymmetric"]) {
+        symmetric_closure = output["Symmetric Closure"]
+        something = true;
+        // asymmetric implies antisymmetric
+        if (output["Asymmetric"]) {
+            properties += "asymmetric, ";
+        } else {
+            properties += "antisymmetric, ";
+        }
+    } else {
+        symmetric_closure = output["Symmetric Closure"];
+    }
+
+    let transitive_closure;
+    if (output["Transitive"]) {
+        properties += "transitive, ";
+        something = true;
+    } else {
+        transitive_closure = output["Transitive Closure"];
+    }
+
+    if (something) {
+        properties = properties.slice(0, -2);
+        properties += " "
+    }
+
+    properties += "relation."
+
+    let least;
+    let greatest;
+    let minimals;
+    let maximals;
+    let diagram;
+    if (isPartial) {
+        least = output["Least Element"];
+        greatest = output["Greatest Element"];
+        minimals = output["Minimal Elements"];
+        maximals = output["Maximal Elements"];
+        diagram = output["Hasse Diagram"];
+    }
+
     return (
-      <Box>
-        {Object.entries(output).map(([key, value]) => (
-          <Text key={key}>{`${key}: ${value}`}</Text>
-        ))}
-      </Box>
+      <>
+          <div>
+            {properties}
+          </div>
+          {!output["Reflexive"] && (
+            <div>
+              Reflexive Closure: {reflexive_closure}
+            </div>
+          )}
+          {!output["Symmetric"] && (
+            <div>
+              Symmetric Closure: {symmetric_closure}
+            </div>
+          )}
+          {!output["Transitive"] && (
+            <div>
+              Transitive Closure: {transitive_closure}
+            </div>
+          )}
+          {isPartial && (
+              <>
+                  <div>
+                    Least Element: {least}
+                  </div>
+                  <div>
+                    Greatest Element: {greatest}
+                  </div>
+                  <div>
+                    Minimal Elements: {minimals}
+                  </div>
+                  <div>
+                    Maximal Elements: {maximals}
+                  </div>
+                  <Box>
+                    <img src={`data:image/png;base64,${diagram}`} alt="Hasse Diagram" />
+                  </Box>
+              </>
+          )}
+      </>
     );
 };
 
