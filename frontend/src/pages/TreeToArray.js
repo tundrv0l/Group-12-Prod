@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { Box, Text, TextInput, Button, Select, Tab, Tabs, Collapsible } from 'grommet';
+import React from 'react';
+import { Box, Text, TextInput, Button, Select, Tab, Tabs } from 'grommet';
 import { solveTreeToArray } from '../api';
-import { CircleInformation } from 'grommet-icons';
 import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import TreeToArrayOutput from '../components/TreeToArrayOutput';
@@ -30,65 +29,61 @@ const TreeToArray = () => {
     setInput(treeType === 'regular' ? SAMPLE_REGULAR_TREE : SAMPLE_MATH_EXPRESSION);
   };
   
-  const TreeInputWithHelp = () => {
-    const [showHelp, setShowHelp] = useState(false);
-    
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Tree Input Format:
+        </Text>
+        {treeType === 'regular' ? (
+          <>
+            <Text>
+              Enter nodes in level-order traversal (breadth-first).
+            </Text>
+            <Text>
+              Each node should be a single character. Use 'None' for empty nodes.
+            </Text>
+            <Text>
+              Example: <strong>A B C D E None F</strong>
+            </Text>
+            <Text margin={{ top: "xsmall" }}>
+              This creates a tree with A as root, B and C as children of A, D and E as children of B, and F as the right child of C.
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text>
+              Enter a mathematical expression using operators and values.
+            </Text>
+            <Text>
+              Supported operators: +, -, *, /, ^ (exponentiation)
+            </Text>
+            <Text>
+              Example: <strong>3*(x+4)</strong>
+            </Text>
+            <Text margin={{ top: "xsmall" }}>
+              This generates an expression tree representing the mathematical formula.
+            </Text>
+          </>
+        )}
+
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
     return (
       <Box>
-        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-        </Box>
-        
-        <Collapsible open={showHelp}>
-          <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-            <Text weight="bold" margin={{ bottom: "xsmall" }}>
-              Tree Input Format:
-            </Text>
-            {treeType === 'regular' ? (
-              <>
-                <Text>
-                  Enter nodes in level-order traversal (breadth-first).
-                </Text>
-                <Text>
-                  Each node should be a single character. Use 'None' for empty nodes.
-                </Text>
-                <Text>
-                  Example: <strong>A B C D E None F</strong>
-                </Text>
-                <Text margin={{ top: "xsmall" }}>
-                  This creates a tree with A as root, B and C as children of A, D and E as children of B, and F as the right child of C.
-                </Text>
-              </>
-            ) : (
-              <>
-              <Text>
-                  Enter a mathematical expression using operators and values.
-                </Text>
-                <Text>
-                  Supported operators: +, -, *, /, ^ (exponentiation)
-                </Text>
-                <Text>
-                  Example: <strong>3*(x+4)</strong>
-                </Text>
-                <Text margin={{ top: "xsmall" }}>
-                  This generates an expression tree representing the mathematical formula.
-                </Text>
-              </>
-            )}
-            
-            <Box margin={{ top: 'medium' }} align="center">
-              <Button 
-                label="Fill with Sample" 
-                onClick={fillWithSample} 
-                primary 
-                size="small"
-                border={{ color: 'black', size: '2px' }}
-                pad={{ vertical: 'xsmall', horizontal: 'small' }}
-              />
-            </Box>
-          </Box>
-        </Collapsible>
-
         <Box margin={{ bottom: 'small' }}>
           <Text margin={{ bottom: 'xsmall' }}>Select Tree Type:</Text>
           <Select
@@ -379,8 +374,9 @@ const TreeToArray = () => {
         "Array representations have practical advantages in certain algorithms and memory-constrained environments. They can simplify tree operations, provide constant-time access to nodes, and reduce the overhead of storing explicit pointer data structures.",
         "Enter your binary tree below to generate both the visual tree and its equivalent array representations!"
       ]}
-      InputComponent={TreeInputWithHelp}
-      input_props={null}  // We're accessing state directly in the component
+      InfoText={Info}
+      InputComponent={Input}
+      input_props={null}
       error={error}
       handle_solve={handleSolve}
       loading={loading}

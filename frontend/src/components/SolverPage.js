@@ -1,5 +1,4 @@
-import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner, Collapsible } from 'grommet';
-import { CircleInformation } from 'grommet-icons';
+import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
 import ReportFooter from './ReportFooter';
 import Background from './Background';
 import HomeButton from './HomeButton';
@@ -12,7 +11,7 @@ import InfoBox from './InfoBox';
 * Description: Skeleton for solver pages.
 */
 
-const SolverPage = ({ title, topic, description, DescriptionComponent, InfoText, InputComponent, input_props, error, handle_solve, loading, OutputComponent, output_props }) => {
+const SolverPage = ({ title, topic, description, paragraphs, DescriptionComponent, InfoText, InputComponent, input_props, error, handle_solve, loading, OutputComponent, render_output, output_props, ExtraComponent }) => {
   return (
     <PageTopScroller>
     <Page>
@@ -36,7 +35,24 @@ const SolverPage = ({ title, topic, description, DescriptionComponent, InfoText,
             <Text margin={{"bottom":"small"}} textAlign="center">
               {description}
             </Text>
-            <DescriptionComponent />
+            {/*Depending on input, render either raw text or a description component*/}
+            {paragraphs ? (
+                paragraphs.map((paragraph, idx) => (
+                  <Text
+                    key={idx}
+                    margin={{ bottom: 'small' }}
+                    textAlign="start"
+                    weight="normal"
+                  >
+                    {paragraph}
+                  </Text>
+                ))
+              ) : DescriptionComponent ? (
+                <DescriptionComponent />
+              ) : null}
+
+            {/* Add the ExtraComponent here if provided */}
+            {ExtraComponent && <ExtraComponent />}
           </Box>
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
@@ -54,7 +70,14 @@ const SolverPage = ({ title, topic, description, DescriptionComponent, InfoText,
                 Output:
               </Text>
               <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                <OutputComponent {...output_props} />
+                 {/* Render either render_output function or OutputComponent */}
+                 {render_output ? (
+                    render_output()
+                  ) : OutputComponent ? (
+                    <OutputComponent {...(output_props || {})} />
+                  ) : (
+                    "Output will appear here"
+                  )}
               </Box>
             </CardBody>
           </Card>

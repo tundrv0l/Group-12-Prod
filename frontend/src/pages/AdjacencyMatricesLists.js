@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { Box, Text, Button, Select, Collapsible, Tab, Tabs } from 'grommet';
+import React from 'react';
+import { Box, Text, Button, Select, Tab, Tabs } from 'grommet';
 import { solveAdjacencyMatricesLists } from '../api';
-import { CircleInformation } from 'grommet-icons';
 import SolverPage from '../components/SolverPage';
 import AdjacencyMatrix from '../components/AdjacencyMatrix';
 import AdjacencyList from '../components/AdjacencyList';
@@ -29,50 +28,49 @@ const AdjacencyMatricesLists = () => {
     setInput(SAMPLE_GRAPH);
   };
 
-  // Create a custom input component with help panel
-  const GraphInputWithHelp = () => {
-    const [showHelp, setShowHelp] = useState(false);
-    
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Graph Input Format:
+        </Text>
+        <Text>
+          To input a graph, use the following format:
+        </Text>
+        <Text>
+          <strong>{'{(x1, y1), (x2, y2), ...}'}</strong>
+        </Text>
+        <Text>
+          For example: <strong>{'{(0, 1), (1, 2), (2, 0)}'}</strong>
+        </Text>
+        <Text>
+          Each tuple represents a connection between two vertices. So (0, 1) represents an edge between vertex 0 and vertex 1.
+        </Text>
+        
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
     return (
       <Box>
-        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-        </Box>
-        
-        <Collapsible open={showHelp}>
-          <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-            <Text>
-              To input a graph, use the following format:
-            </Text>
-            <Text>
-              <strong>{'{(x1, y1), (x2, y2), ...}'}</strong>
-            </Text>
-            <Text>
-              For example: <strong>{'{(0, 1), (1, 2), (2, 0)}'}</strong>
-            </Text>
-            <Text>
-              Each tuple represents a connection between two vertices. So (0, 1) represents an edge between vertex 0 and vertex 1.
-            </Text>
-            
-            <Box margin={{ top: 'medium' }} align="center">
-              <Button 
-                label="Fill with Sample" 
-                onClick={fillWithSample} 
-                primary 
-                size="small"
-                border={{ color: 'black', size: '2px' }}
-                pad={{ vertical: 'xsmall', horizontal: 'small' }}
-              />
-            </Box>
-          </Box>
-        </Collapsible>
-
         <GraphInput 
           value={input}
           onChange={setInput}
         />
         
         <Box align="center" justify="center" pad={{ vertical: 'small' }}>
+          <Text margin={{ bottom: 'xsmall' }}>Graph Type:</Text>
           <Select
             options={['UNDIRECTED', 'DIRECTED']}
             value={type}
@@ -209,7 +207,8 @@ const AdjacencyMatricesLists = () => {
         "By analyzing graphs using adjacency matrices and lists, you can understand the relationships and connections between different entities. This is useful in various applications such as network analysis, algorithm design, and optimization problems. This tool allows you to input a graph and explore its properties and representations.",
         "Enter your graph below to generate and analyze its properties using this tool!"
       ]}
-      InputComponent={GraphInputWithHelp}
+      InfoText={Info}
+      InputComponent={Input}
       input_props={null}
       error={error}
       handle_solve={handleSolve}

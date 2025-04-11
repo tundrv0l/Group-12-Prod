@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Text, TextInput, Button, Select, Collapsible, Tab, Tabs, TextArea, Image, Spinner } from 'grommet';
+import { Box, Text, TextInput, Button, Select, Tab, Tabs, TextArea, Image, Spinner } from 'grommet';
 import { solveTreeNotation } from '../api';
-import { CircleInformation } from 'grommet-icons';
 import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 
@@ -25,7 +24,6 @@ const TreeNotation = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
   
   const { trackResults } = useDiagnostics("TREE_NOTATION");
 
@@ -63,101 +61,96 @@ const TreeNotation = () => {
     }
   };
 
-  // Lord forgive me for what I must do
-  const TreeNotationInputWithHelp = () => {
-    const [showHelp, setShowHelp] = useState(false);
-    
+  const Info = () => {
     return (
-      <Box>
-        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-        </Box>
-        
-        <Collapsible open={showHelp}>
-          <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-            <Text weight="bold" margin={{ bottom: "xsmall" }}>
-              Tree Notation Help:
-            </Text>
-            {operationType === 'build_tree' ? (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Tree Notation Help:
+        </Text>
+        {operationType === 'build_tree' ? (
+          <>
+            {inputFormat === 'level' && (
               <>
-                {inputFormat === 'level' && (
-                  <>
-                    <Text>
-                      Enter nodes in level-order traversal (breadth-first). Separate nodes with spaces.
-                      Use 'None' for empty nodes.
-                    </Text>
-                    <Text margin={{ top: "xsmall" }}>
-                      Example: <strong>A B C D E None F</strong>
-                    </Text>
-                  </>
-                )}
-                {inputFormat === 'table' && (
-                  <>
-                    <Text>
-                      Enter one node per line in the format: "node leftChild rightChild".
-                      Use '0' to indicate no child.
-                    </Text>
-                    <Text margin={{ top: "xsmall" }}>
-                      Example:<br/>
-                      <pre style={{ background: '#f8f8f8', padding: '8px', borderRadius: '4px' }}>
-                        A B C<br/>
-                        B D E<br/>
-                        C F 0<br/>
-                        D 0 0<br/>
-                        E 0 0<br/>
-                        F 0 0
-                      </pre>
-                    </Text>
-                  </>
-                )}
-                {inputFormat === 'math' && (
-                  <>
-                    <Text>
-                      Enter a mathematical expression with operators (+, -, *, /, ^) and parentheses.
-                    </Text>
-                    <Text margin={{ top: "xsmall" }}>
-                      Example: <strong>3*(x+4)</strong> or <strong>a+b*c</strong>
-                    </Text>
-                  </>
-                )}
-              </>
-            ) : (
-              <>
-              <Text>
-                  Enter traversal values separated by spaces. Each node must appear in both traversals.
-                </Text>
-                <Box 
-                  margin={{ vertical: 'small' }} 
-                  pad="xsmall" 
-                  background="light-3" 
-                  round="xsmall"
-                >
-                  <Text size="small" weight="bold" margin={{ bottom: 'xsmall' }}>Example Tree:</Text>
-                  <Text size="small">Tree in parentheses format: A(B(D,E),C(,F))</Text>
-                  <Text size="small" margin={{ top: 'xsmall' }}>Where each node is written as Node(LeftChild,RightChild)</Text>
-                </Box>
                 <Text>
-                  <Text weight="bold">Example traversals:</Text><br/>
-                  Preorder: A B D E C F<br/>
-                  Inorder: D B E A C F<br/>
-                  Postorder: D E B F C A
+                  Enter nodes in level-order traversal (breadth-first). Separate nodes with spaces.
+                  Use 'None' for empty nodes.
+                </Text>
+                <Text margin={{ top: "xsmall" }}>
+                  Example: <strong>A B C D E None F</strong>
                 </Text>
               </>
             )}
-
-            <Box margin={{ top: 'medium' }} align="center">
-              <Button 
-                label="Fill with Sample" 
-                onClick={fillWithSample} 
-                primary 
-                size="small"
-                border={{ color: 'black', size: '2px' }}
-                pad={{ vertical: 'xsmall', horizontal: 'small' }}
-              />
+            {inputFormat === 'table' && (
+              <>
+                <Text>
+                  Enter one node per line in the format: "node leftChild rightChild".
+                  Use '0' to indicate no child.
+                </Text>
+                <Text margin={{ top: "xsmall" }}>
+                  Example:<br/>
+                  <pre style={{ background: '#f8f8f8', padding: '8px', borderRadius: '4px' }}>
+                    A B C<br/>
+                    B D E<br/>
+                    C F 0<br/>
+                    D 0 0<br/>
+                    E 0 0<br/>
+                    F 0 0
+                  </pre>
+                </Text>
+              </>
+            )}
+            {inputFormat === 'math' && (
+              <>
+                <Text>
+                  Enter a mathematical expression with operators (+, -, *, /, ^) and parentheses.
+                </Text>
+                <Text margin={{ top: "xsmall" }}>
+                  Example: <strong>3*(x+4)</strong> or <strong>a+b*c</strong>
+                </Text>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <Text>
+              Enter traversal values separated by spaces. Each node must appear in both traversals.
+            </Text>
+            <Box 
+              margin={{ vertical: 'small' }} 
+              pad="xsmall" 
+              background="light-3" 
+              round="xsmall"
+            >
+              <Text size="small" weight="bold" margin={{ bottom: 'xsmall' }}>Example Tree:</Text>
+              <Text size="small">Tree in parentheses format: A(B(D,E),C(,F))</Text>
+              <Text size="small" margin={{ top: 'xsmall' }}>Where each node is written as Node(LeftChild,RightChild)</Text>
             </Box>
-          </Box>
-        </Collapsible>
-        
+            <Text>
+              <Text weight="bold">Example traversals:</Text><br/>
+              Preorder: A B D E C F<br/>
+              Inorder: D B E A C F<br/>
+              Postorder: D E B F C A
+            </Text>
+          </>
+        )}
+
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
+    return (
+      <Box>
         <Box margin={{ bottom: 'medium' }}>
           <Text margin={{ bottom: 'xsmall' }}>Select Operation:</Text>
           <Select
@@ -197,7 +190,7 @@ const TreeNotation = () => {
                 }}
               />
             </Box>
-            
+
             <Box>
               <Text margin={{ bottom: 'xsmall' }}>
                 Enter {inputFormat === 'level' ? 'Level-Order Input' : 
@@ -635,8 +628,9 @@ const TreeNotation = () => {
         "Tree traversal algorithms like preorder, inorder, postorder, and level-order provide different ways to visit all nodes in a tree. Certain traversal pairs (like preorder+inorder or postorder+inorder) contain enough information to uniquely reconstruct a binary tree.",
         "This tool allows you to either build a tree from different input formats or reconstruct a tree from traversal pairs. Enter your input below to visualize trees and analyze their traversals!"
       ]}
-      InputComponent={TreeNotationInputWithHelp}
-      input_props={null} 
+      InfoText={Info}
+      InputComponent={Input}
+      input_props={null}
       error={error}
       handle_solve={handleSolve}
       loading={loading}

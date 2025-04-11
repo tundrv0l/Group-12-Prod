@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Text, TextArea, Button, Spinner, Image, Table, TableHeader, TableBody, TableRow, TableCell, Collapsible, Tab, Tabs } from 'grommet';
+import { Box, Text, TextArea, Button, Spinner, Image, Table, TableHeader, TableBody, TableRow, TableCell, Tab, Tabs } from 'grommet';
 import { solveArrayToTree } from '../api';
-import { CircleInformation } from 'grommet-icons';
 import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 /*
@@ -28,57 +27,56 @@ F 0 0`;
     setInput(SAMPLE_TREE);
   };
 
-  // Create a custom input component that includes the help collapsible
-  const ArrayTreeInputWithHelp = () => {
-    const [showHelp, setShowHelp] = useState(false);
-    
+  const Info = () => {
     return (
-      <Box>
-        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-        </Box>
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Array to Tree Conversion:
+        </Text>
+        <Text textAlign="start" weight="normal">
+          Enter each node in the format: "node left_child right_child"
+        </Text>
+        <ul style={{ margin: '0px 0px 8px 20px', padding: 0 }}>
+          <li><Text>Each line represents one node and its children</Text></li>
+          <li><Text>Use '0' to indicate no child (NULL)</Text></li>
+          <li><Text>The first node is considered the root</Text></li>
+        </ul>
+        <Text>Example:</Text>
+        <pre style={{ background: '#f8f8f8', padding: '8px', borderRadius: '4px', margin: '8px 0' }}>
+          A B C<br />
+          B D E<br />
+          C F 0<br />
+          D 0 0<br />
+          E 0 0<br />
+          F 0 0
+        </pre>
+        <Text margin={{ bottom: "xsmall" }}>
+          This represents a tree where A is the root with children B and C, etc.
+        </Text>
         
-        <Collapsible open={showHelp}>
-          <Box background="light-3" pad="small" round="small" margin={{ vertical: "small" }}>
-            <Text textAlign="start" weight="normal">
-              Enter each node in the format: "node left_child right_child"
-              <ul>
-                <li>Each line represents one node and its children</li>
-                <li>Use '0' to indicate no child (NULL)</li>
-                <li>The first node is considered the root</li>
-              </ul>
-              Example:
-              <pre style={{ background: '#f8f8f8', padding: '8px', borderRadius: '4px' }}>
-                A B C<br />
-                B D E<br />
-                C F 0<br />
-                D 0 0<br />
-                E 0 0<br />
-                F 0 0
-              </pre>
-              This represents a tree where A is the root with children B and C, etc.
-            </Text>
-            <Box margin={{ top: 'medium' }} align="center">
-              <Button 
-                label="Fill with Sample" 
-                onClick={fillWithSample} 
-                primary 
-                size="small"
-                border={{ color: 'black', size: '2px' }}
-                pad={{ vertical: 'xsmall', horizontal: 'small' }}
-              />
-            </Box>
-          </Box>
-        </Collapsible>
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
 
-        <TextArea
-          placeholder="Enter your tree table representation (e.g., 'A B C' on first line, etc.)"
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          rows={8}
-          resize={false}
-        />
-      </Box>
+  const Input = () => {
+    return (
+      <TextArea
+        placeholder="Enter your tree table representation (e.g., 'A B C' on first line, etc.)"
+        value={input}
+        onChange={(event) => setInput(event.target.value)}
+        rows={8}
+        resize={false}
+      />
     );
   };
 
@@ -330,7 +328,8 @@ F 0 0`;
         "The conversion process works by parsing the parent-child relationships defined in your array representation, then reconstructing the hierarchical structure of the tree. Each node from the array is placed in its proper position within the tree, connecting parent nodes to their children according to the relationships defined in your input.",
         "This tool uses the 'left-child right-child' notation where each node is represented as a row with three values: the node value, its left child (or 0 for none), and its right child (or 0 for none). Enter your array-based tree representation below to generate the corresponding visual tree structure!"
       ]}
-      InputComponent={ArrayTreeInputWithHelp}
+      InfoText={Info}
+      InputComponent={Input}
       input_props={null}
       error={error}
       handle_solve={handleSolve}

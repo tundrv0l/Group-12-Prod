@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { Box, Text, Button, Collapsible } from 'grommet';
+import React from 'react';
+import { Box, Text, Button } from 'grommet';
 import { solvePermutationsCycle } from '../api';
 import SolverPage from '../components/SolverPage';
 import MatrixTable from '../components/PermutationsInput';
 import MatrixToolbar from '../components/PermutatinsToolbar';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-import { CircleInformation } from 'grommet-icons';
 
 /*
 * Name: PermutationsOfACycle.js
@@ -32,47 +31,42 @@ const PermutationsOfACycle = () => {
     setMatrix(SAMPLE_MATRIX);
   };
 
-  // Create a custom input component that includes the help collapsible
-  const MatrixInputWithHelp = ({ matrix, setMatrix, fillWithSample }) => {
-    const [showHelp, setShowHelp] = useState(false);
-    
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Permutation Cycles:
+        </Text>
+        <Text>
+          A permutation is a bijective function from a set to itself. To input a permutation:
+        </Text>
+        <Text margin={{ top: "xsmall" }}>
+          1. First row: Enter the domain elements (e.g., 1 2 3 4)
+        </Text>
+        <Text>
+          2. Second row: Enter where each element maps to (e.g., 2 3 4 1)
+        </Text>
+        <Text margin={{ top: "xsmall" }}>
+          The example above represents the cycle (1 2 3 4) where 1→2, 2→3, 3→4, and 4→1.
+        </Text>
+        
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
     return (
       <Box>
-        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-        </Box>
-        
-        <Collapsible open={showHelp}>
-          <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-            <Text weight="bold" margin={{ bottom: "xsmall" }}>
-              Permutation Cycles:
-            </Text>
-            <Text>
-              A permutation is a bijective function from a set to itself. To input a permutation:
-            </Text>
-            <Text margin={{ top: "xsmall" }}>
-              1. First row: Enter the domain elements (e.g., 1 2 3 4)
-            </Text>
-            <Text>
-              2. Second row: Enter where each element maps to (e.g., 2 3 4 1)
-            </Text>
-            <Text margin={{ top: "xsmall" }}>
-              The example above represents the cycle (1 2 3 4) where 1→2, 2→3, 3→4, and 4→1.
-            </Text>
-            
-            <Box margin={{ top: 'medium' }} align="center">
-              <Button 
-                label="Fill with Sample" 
-                onClick={fillWithSample} 
-                primary 
-                size="small"
-                border={{ color: 'black', size: '2px' }}
-                pad={{ vertical: 'xsmall', horizontal: 'small' }}
-              />
-              </Box>
-          </Box>
-        </Collapsible>
-        
         <MatrixTable label="Input Matrix" matrix={matrix} setMatrix={setMatrix} />
         <MatrixToolbar matrix={matrix} setMatrix={setMatrix} combined addRemoveBoth />
       </Box>
@@ -153,8 +147,9 @@ const PermutationsOfACycle = () => {
         "By analyzing permutations of a cycle, you can understand the different ways elements can be ordered within a cycle, which is useful in various applications such as cryptography, coding theory, and combinatorial optimization.",
         "Enter your cycle below to generate and analyze its permutations!"
       ]}
-      InputComponent={MatrixInputWithHelp}
-      input_props={{ matrix, setMatrix, fillWithSample }}
+      InfoText={Info}
+      InputComponent={Input}
+      input_props={ null }
       error={error}
       handle_solve={handleSolvePermutations}
       loading={loading}

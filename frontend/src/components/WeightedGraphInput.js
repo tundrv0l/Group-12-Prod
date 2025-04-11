@@ -49,25 +49,24 @@ const WeightedGraphInput = ({ value, onChange }) => {
   }, [edges, onChange]);
 
   // Validate a single edge input
-  // Validate a single edge input
-    const validateEdgeInput = (edge) => {
-        const alphanumericRegex = /^[a-zA-Z0-9]+$/;
-        const numberRegex = /^\d+$/;
-        
-        if (!edge.source || !alphanumericRegex.test(edge.source)) {
-        return "Source vertex must be alphanumeric (letters or numbers)";
-        }
-        
-        if (!edge.target || !alphanumericRegex.test(edge.target)) {
-        return "Target vertex must be alphanumeric (letters or numbers)";
-        }
-        
-        if (!edge.weight || !numberRegex.test(edge.weight)) {
-        return "Weight must be a number";
-        }
-        
-        return "";
-    };
+  const validateEdgeInput = (edge) => {
+      const alphanumericRegex = /^[a-zA-Z0-9]+$/;
+      const numberRegex = /^\d+$/;
+      
+      if (!edge.source || !alphanumericRegex.test(edge.source)) {
+      return "Source vertex must be alphanumeric (letters or numbers)";
+      }
+      
+      if (!edge.target || !alphanumericRegex.test(edge.target)) {
+      return "Target vertex must be alphanumeric (letters or numbers)";
+      }
+      
+      if (!edge.weight || !numberRegex.test(edge.weight)) {
+      return "Weight must be a number";
+      }
+      
+      return "";
+  };
 
   // Add a new edge
   const addEdge = () => {

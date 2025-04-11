@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import { Box, Text, TextInput, Button, Collapsible } from 'grommet';
+import React from 'react';
+import { Box, Text, TextInput, Button} from 'grommet';
 import { solveDisjointCycles } from '../api';
 import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-import { CircleInformation } from 'grommet-icons';
 
 /*
 * Name: DisjointCycles.js
@@ -26,53 +25,47 @@ const DisjointCycles = () => {
     setInput(SAMPLE_INPUT);
   };
 
-   // Create a custom input component that includes the help collapsible
-   const DisjointCyclesInput = ({ input, setInput, fillWithSample }) => {
-    const [showHelp, setShowHelp] = useState(false);
-    
+  const Info = () => {
     return (
-      <Box>
-        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-        </Box>
-        
-        <Collapsible open={showHelp}>
-          <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-            <Text weight="bold" margin={{ bottom: "xsmall" }}>
-              Disjoint Cycles:
-            </Text>
-            <Text>
-              To input permutations as disjoint cycles, use the following format:
-            </Text>
-            <Text>
-              <strong>(a b c)(d e f)...</strong>
-            </Text>
-            <Text>
-              For example: <strong>(1 2 3)(4 5)</strong>
-            </Text>
-            <Text>
-              This represents two disjoint cycles: one that maps 1→2→3→1 and another that maps 4→5→4.
-            </Text>
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Disjoint Cycles:
+        </Text>
+        <Text>
+          To input permutations as disjoint cycles, use the following format:
+        </Text>
+        <Text>
+          <strong>(a b c)(d e f)...</strong>
+        </Text>
+        <Text>
+          For example: <strong>(1 2 3)(4 5)</strong>
+        </Text>
+        <Text>
+          This represents two disjoint cycles: one that maps 1→2→3→1 and another that maps 4→5→4.
+        </Text>
 
-            <Box margin={{ top: 'medium' }} align="center">
-              <Button 
-                label="Fill with Sample" 
-                onClick={fillWithSample} 
-                primary 
-                size="small"
-                border={{ color: 'black', size: '2px' }}
-                pad={{ vertical: 'xsmall', horizontal: 'small' }}
-              />
-            </Box>
-          </Box>
-        </Collapsible>
-        
-        <TextInput 
-          placeholder="Example: Enter your permutations here (e.g., (1 2 3)(4 5))"
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-        />
-      </Box>
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  // Input component
+  const Input = () => {
+    return (
+      <TextInput 
+        placeholder="Example: Enter your permutations here (e.g., (1 2 3)(4 5))"
+        value={input}
+        onChange={(event) => setInput(event.target.value)}
+      />
     );
   };
 
@@ -154,7 +147,7 @@ const DisjointCycles = () => {
     const regex = /\(\s*([a-zA-Z0-9]+(?:\s*,\s*|\s+)[a-zA-Z0-9]+(?:(?:\s*,\s*|\s+)[a-zA-Z0-9]+)*)\s*\)/g;
   
     // Remove composition symbols before matching
-    const cleanedInput = input.replace(/\s*\∘\s*/g, ' '); // Unicode composition symbol only
+    const cleanedInput = input.replace(/\s*∘\s*/g, ' '); // Unicode composition symbol only
   
     // Find all matches
     const matches = cleanedInput.match(regex);
@@ -173,8 +166,9 @@ const DisjointCycles = () => {
       "By analyzing permutations as disjoint cycles, you can understand the structure of permutations and how elements are mapped within cycles. This is useful in various applications such as group theory, cryptography, and combinatorial optimization.",
       "Enter your permutation below to generate and analyze its disjoint cycles!"
     ]}
-    InputComponent={DisjointCyclesInput}
-    input_props={{ input, setInput, fillWithSample }}
+    InfoText={Info}
+    InputComponent={Input}
+    input_props={null}
     error={error}
     handle_solve={handleSolve}
     loading={loading}

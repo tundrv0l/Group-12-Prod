@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { Box, Text, Button, Select, Collapsible, Tab, Tabs } from 'grommet';
+import React from 'react';
+import { Box, Text, Button, Select, Tab, Tabs } from 'grommet';
 import { solveWeightedGraphs } from '../api';
-import { CircleInformation } from 'grommet-icons';
 import SolverPage from '../components/SolverPage';
 import AdjacencyMatrix from '../components/AdjacencyMatrix';
 import AdjacencyList from '../components/AdjacencyList';
@@ -29,6 +28,59 @@ const WeightedGraphRepresentations = () => {
   
   const fillWithSample = () => {
     setInput(SAMPLE_GRAPH);
+  };
+
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Weighted Graph Input:
+        </Text>
+        <Text>
+          To input a weighted graph, use the following format:
+        </Text>
+        <Text>
+          <strong>{'{(x1, y1; w1), (x2, y2; w2), ...}'}</strong>
+        </Text>
+        <Text>
+          For example: <strong>{'{(0, 1; 4), (1, 2; 2), (2, 0; 3)}'}</strong>
+        </Text>
+        <Text>
+          Each tuple represents a connection between two vertices with a weight. So (0, 1; 4) represents an edge between vertex 0 and vertex 1 with a weight of 4.
+        </Text>
+        
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
+    return (
+      <Box>
+        <WeightedGraphInput 
+          value={input}
+          onChange={setInput}
+        />
+        
+        <Box align="center" justify="center" pad={{ vertical: 'small' }}>
+          <Text margin={{ bottom: 'xsmall' }}>Graph Type:</Text>
+          <Select
+            options={['UNDIRECTED', 'DIRECTED']}
+            value={type}
+            onChange={({ option }) => setType(option)}
+          />
+        </Box>
+      </Box>
+    );
   };
 
   const handleSolve = async () => {
@@ -76,110 +128,54 @@ const WeightedGraphRepresentations = () => {
     }
   }
 
-  // Create a custom input component with help panel
-  const WeightedGraphInputWithHelp = () => {
-    const [showHelp, setShowHelp] = useState(false);
-    
-    return (
-      <Box>
-        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-        </Box>
-        
-        <Collapsible open={showHelp}>
-          <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-            <Text>
-              To input a weighted graph, use the following format:
-            </Text>
-            <Text>
-              <strong>{'{(x1, y1; w1), (x2, y2; w2), ...}'}</strong>
-            </Text>
-            <Text>
-              For example: <strong>{'{(0, 1; 4), (1, 2; 2), (2, 0; 3)}'}</strong>
-            </Text>
-            <Text>
-              Each tuple represents a connection between two vertices with a weight. So (0, 1; 4) represents an edge between vertex 0 and vertex 1 with a weight of 4.
-            </Text>
-            
-            <Box margin={{ top: 'medium' }} align="center">
-              <Button 
-                label="Fill with Sample" 
-                onClick={fillWithSample} 
-                primary 
-                size="small"
-                border={{ color: 'black', size: '2px' }}
-                pad={{ vertical: 'xsmall', horizontal: 'small' }}
-              />
-            </Box>
-          </Box>
-        </Collapsible>
-        
-        <WeightedGraphInput 
-          value={input}
-          onChange={setInput}
-        />
-        
-        <Box align="center" justify="center" pad={{ vertical: 'small' }}>
-          <Text margin={{ bottom: 'xsmall' }}>Graph Type:</Text>
-          <Select
-            options={['UNDIRECTED', 'DIRECTED']}
-            value={type}
-            onChange={({ option }) => setType(option)}
-          />
-        </Box>
-      </Box>
-    );
-  };
-
   const validateInput = (input) => {
-    // Updated regex to allow alphanumeric characters (letters and numbers) for vertex names
+    // Regex to allow alphanumeric characters (letters and numbers) for vertex names
     const graphRegex = /^\{\s*(\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*;\s*\d+\s*\)\s*,\s*)*(\(\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*;\s*\d+\s*\))\s*\}$/;
     return graphRegex.test(input);
   }
 
   // Render output for graph image, adjacency matrix, and adjacency list
-  // Render output for graph image, adjacency matrix, and adjacency list
-const renderOutput = () => {
-  if (!output.Graph && !output.Matrix && !output.List) {
-    return "Output will be displayed here!";
-  }
+  const renderOutput = () => {
+    if (!output.Graph && !output.Matrix && !output.List) {
+      return "Output will be displayed here!";
+    }
 
-  return (
-    <Box>
-      <Tabs>
-        <Tab title="Graph Visualization">
-          <Box pad="small">
-            {output.Graph && (
-              <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'white' }} round="small">
-                <img src={`data:image/png;base64,${output.Graph}`} alt="Graph" style={{ maxWidth: '100%', height: 'auto' }} />
-              </Box>
-            )}
-          </Box>
-        </Tab>
-        
-        <Tab title="Matrix Representation">
-          <Box pad="small">
-            {output.Matrix && (
-              <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'white' }} round="small">
-                <AdjacencyMatrix matrix={output.Matrix} />
-              </Box>
-            )}
-          </Box>
-        </Tab>
-        
-        <Tab title="List Representation">
-          <Box pad="small">
-            {output.List && (
-              <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'white' }} round="small">
-                <AdjacencyList list={output.List} />
-              </Box>
-            )}
-          </Box>
-        </Tab>
-      </Tabs>
-    </Box>
-  );
-};
+    return (
+      <Box>
+        <Tabs>
+          <Tab title="Graph Visualization">
+            <Box pad="small">
+              {output.Graph && (
+                <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'white' }} round="small">
+                  <img src={`data:image/png;base64,${output.Graph}`} alt="Graph" style={{ maxWidth: '100%', height: 'auto' }} />
+                </Box>
+              )}
+            </Box>
+          </Tab>
+          
+          <Tab title="Matrix Representation">
+            <Box pad="small">
+              {output.Matrix && (
+                <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'white' }} round="small">
+                  <AdjacencyMatrix matrix={output.Matrix} />
+                </Box>
+              )}
+            </Box>
+          </Tab>
+          
+          <Tab title="List Representation">
+            <Box pad="small">
+              {output.List && (
+                <Box align="center" justify="center" pad={{ vertical: 'small' }} background={{ color: 'white' }} round="small">
+                  <AdjacencyList list={output.List} />
+                </Box>
+              )}
+            </Box>
+          </Tab>
+        </Tabs>
+      </Box>
+    );
+  };
 
   return (
     <SolverPage
@@ -192,7 +188,8 @@ const renderOutput = () => {
         "By analyzing weighted graphs, you can understand the relationships and connections between different entities, taking into account the significance of the connections. This is useful in various applications such as network analysis, algorithm design, and optimization problems. This tool allows you to input a weighted graph and explore its properties and representations.",
         "Enter your weighted graph below to generate and analyze its properties using this tool!"
       ]}
-      InputComponent={WeightedGraphInputWithHelp}
+      InfoText={Info}
+      InputComponent={Input}
       input_props={null}
       error={error}
       handle_solve={handleSolve}

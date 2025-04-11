@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
-import { Box, Text, Button, Collapsible } from 'grommet';
+import React from 'react';
+import { Box, Text, Button } from 'grommet';
 import { solveWarshallsAlgorithm } from '../api';
 import SolverPage from '../components/SolverPage';
 import MatrixTable from '../components/MatrixTable';
 import MatrixToolbar from '../components/WarshallToolbar';
 import MatrixOutput from '../components/MatrixOutput';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-import { CircleInformation } from 'grommet-icons';
-
 /*
 * Name: WarshallsAlgorithm.js
 * Author: Parker Clark and Mathias Buchanan
@@ -35,54 +33,47 @@ const WarshallsAlgorithm = () => {
     setMatrix(SAMPLE_MATRIX);
   };
 
-  // Create a custom input component with help panel
-  const MatrixInputWithHelp = () => {
-    const [showHelp, setShowHelp] = useState(false);
-    
+  const Info = () => {
     return (
-      <Box>
-        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-        </Box>
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Warshall's Algorithm:
+        </Text>
+        <Text>
+          To input a matrix for Warshall's algorithm:
+        </Text>
+        <Text margin={{ top: "xsmall" }}>
+          • Enter a square adjacency matrix with only 0s and 1s
+        </Text>
+        <Text>
+          • 1 represents an edge from vertex i to vertex j
+        </Text>
+        <Text>
+          • 0 represents no edge between vertices
+        </Text>
+        <Text margin={{ top: "xsmall" }}>
+          The algorithm will compute the transitive closure of the graph, showing all possible paths between vertices.
+        </Text>
         
-        <Collapsible open={showHelp}>
-          <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-            <Text weight="bold" margin={{ bottom: "xsmall" }}>
-              Warshall's Algorithm:
-            </Text>
-            <Text>
-              To input a matrix for Warshall's algorithm:
-            </Text>
-            <Text margin={{ top: "xsmall" }}>
-              • Enter a square adjacency matrix with only 0s and 1s
-            </Text>
-            <Text>
-              • 1 represents an edge from vertex i to vertex j
-            </Text>
-            <Text>
-              • 0 represents no edge between vertices
-            </Text>
-            <Text margin={{ top: "xsmall" }}>
-              The algorithm will compute the transitive closure of the graph, showing all possible paths between vertices.
-            </Text>
-            
-            <Box margin={{ top: 'medium' }} align="center">
-              <Button 
-                label="Fill with Sample" 
-                onClick={fillWithSample} 
-                primary 
-                size="small"
-                border={{ color: 'black', size: '2px' }}
-                pad={{ vertical: 'xsmall', horizontal: 'small' }}
-              />
-            </Box>
-          </Box>
-        </Collapsible>
-        
-        <Box style={{ marginBottom: '20px' }}>
-          <MatrixTable label="Adjacency Matrix" matrix={matrix} setMatrix={setMatrix} />
-          <MatrixToolbar matrix={matrix} setMatrix={setMatrix} combined addRemoveBoth />
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
         </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
+    return (
+      <Box style={{ marginBottom: '20px' }}>
+        <MatrixTable label="Adjacency Matrix" matrix={matrix} setMatrix={setMatrix} />
+        <MatrixToolbar matrix={matrix} setMatrix={setMatrix} combined addRemoveBoth />
       </Box>
     );
   };
@@ -179,8 +170,9 @@ const WarshallsAlgorithm = () => {
       description="This tool helps you analyze graphs using Warshall's Algorithm, a fundamental concept in discrete mathematics."
       paragraphs={getNormalParagraphs()}
       alternative_paragraphs={getCavemanParagraphs()}
-      InputComponent={MatrixInputWithHelp}
-      input_props={null}  // Not needed as we're accessing state directly
+      InfoText={Info}
+      InputComponent={Input}
+      input_props={null}
       error={error}
       handle_solve={handleSolve}
       loading={loading}

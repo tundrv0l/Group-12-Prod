@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text } from 'grommet';
+import { Box, Text, Button } from 'grommet';
 import { solveCriticalPaths, solvePERTDiagrams, solveTopologicalSorting } from '../api';
 import TaskTableInput from '../components/TaskTableInput';
 import SolverPage from '../components/SolverPage';
@@ -173,7 +173,7 @@ const PERTDiagrams = () => {
       topic="Topological Sorting"
       description="This tool helps you analyze PERT Diagrams in discrete mathematics."
       DescriptionComponent={Description}
-      InfoText={Info}
+      InfoText={() => <Info fillWithSample={fillWithSample} />}
       InputComponent={TaskTableInput}
       input_props={{tasks, setTasks, isTimed, setIsTimed}}
       error={error}
@@ -201,14 +201,35 @@ const Description = () => {
     ); 
 }
 
-const Info = () => {
-    return (
-      <>
-        <Text margin={{ bottom: "small" }} textAlgin="start" weight="normal">
-          Info
-        </Text>
-      </>
-    ); 
+const Info = ({ fillWithSample }) => {
+  return (
+    <>
+      <Text weight="bold" margin={{ bottom: "xsmall" }}>
+        Task Table Input:
+      </Text>
+      <Text>
+        A task table represents activities with their dependencies and durations.
+      </Text>
+      <Text margin={{ top: "xsmall" }}>
+        To use this tool:
+      </Text>
+      <Text>1. Add tasks with descriptive names (A, B, C, etc.)</Text>
+      <Text>2. For each task, select its prerequisites (tasks that must be completed before it can start)</Text>
+      <Text>3. Enter the time required to complete each task</Text>
+      <Text>4. Click Solve to generate the diagram and analyze paths</Text>
+      
+      <Box margin={{ top: 'medium' }} align="center">
+        <Button 
+          label="Fill with Sample" 
+          onClick={fillWithSample} 
+          primary 
+          size="small"
+          border={{ color: 'black', size: '2px' }}
+          pad={{ vertical: 'xsmall', horizontal: 'small' }}
+        />
+      </Box>
+    </>
+  ); 
 }
 
 const Output = ({ output, isTimed }) => {

@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
-import { CheckBox, Button, Box, Text } from 'grommet';
-import { Page, PageContent, Card, CardBody, CardFooter, TextInput, Spinner, Collapsible } from 'grommet';
+import { CheckBox, Button, Box, Text, TextInput } from 'grommet';
 import { CircleInformation } from 'grommet-icons';
-import HomeButton from '../components/HomeButton';
-import WFFOperationsTable from '../components/PropositionalLogicOperationExample';
-import Background from '../components/Background';
-import ReportFooter from '../components/ReportFooter';
+import PropositionalLogicOperationsTable from '../components/PropositionalLogicOperationsTable';
 import { solvePropositionalLogic } from '../api';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-import PropositionalLogicOperationsTable from '../components/PropositionalLogicOperationsTable';
+import SolverPage from '../components/SolverPage';
 
 
 /*
@@ -19,8 +15,8 @@ import PropositionalLogicOperationsTable from '../components/PropositionalLogicO
 
 const PropositionalLogicSolver = () => {
   const [isCaveman, setIsCaveman] = useState(false);
-  const [hypotheses, setHypotheses] = React.useState('');
-  const [conclusion, setConclusion] = React.useState('');
+  const [hypotheses, setHypotheses] = useState('');
+  const [conclusion, setConclusion] = useState('');
   const [output, setOutput] = React.useState('');
   const [outputSymbol, setOutputSymbol] = React.useState('');
   const [error, setError] = React.useState('');
@@ -29,6 +25,67 @@ const PropositionalLogicSolver = () => {
   const [showOutput, setShowOutput] = useState(false);
 
   const { trackResults } = useDiagnostics("PROPOSITIONAL_LOGIC");
+
+  const SAMPLE_HYPOTHESES = "A → B ^ A";
+  const SAMPLE_CONCLUSION = "B";
+  
+  const fillWithSample = () => {
+    setHypotheses(SAMPLE_HYPOTHESES);
+    setConclusion(SAMPLE_CONCLUSION);
+  };
+
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Propositional Logic Syntax:
+        </Text>
+        <Text margin={{ bottom: "small" }}>
+          Enter your hypotheses and conclusion in the appropriate fields.
+        </Text>
+        <Text margin={{ bottom: "small" }}>
+          Use the following operators for logical expressions:
+        </Text>
+        <PropositionalLogicOperationsTable />
+        <Text margin={{ top: "small" }}>
+          Ensure that tokens and operators are delimited by spaces or parentheses.
+        </Text>
+        
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
+    return (
+      <Box>
+        <Box margin={{ bottom: "small" }}>
+          <TextInput 
+            placeholder="Example: Enter your hypotheses here (e.g., A → B ^ A)"
+            value={hypotheses}
+            onChange={(event) => setHypotheses(event.target.value)}
+          />
+        </Box>
+        <Box margin={{ top: "small" }} direction="row" align="center">
+          <Text margin={{ right: "small" }}>→</Text>
+          <TextInput
+            placeholder="Example: Enter your conclusion here (e.g., B)"
+            value={conclusion}
+            onChange={(event) => setConclusion(event.target.value)}
+          />
+        </Box>
+      </Box>
+    );
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -78,49 +135,17 @@ const PropositionalLogicSolver = () => {
         }
       }
 
-  const toggleText = () => setIsCaveman(!isCaveman);
-
-      const betterText = (
-        <>
-          <Text margin={{"bottom":"small"}} textAlign="center">This tool demonstrates the steps used to prove a tautology.</Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            Propositional logic is a branch of logic that determines whether a tautology is valid based on its premises. For example, consider the statement:  
-            "If the grass is green, then the sky is blue. The grass is green, therefore, the sky is blue."  
-            This is a tautology. Typically, tautologies are expressed using logical variables, such as [(A → B) ∧ A] → B.  
-            However, not every logical statement is a tautology. To be a tautology, the premises must logically guarantee the conclusion.  
-            For instance, the statement:  
-            "If I have a hat, then it is green. I have a TV, therefore, my house is blue."  
-            is not a tautology, as the conclusion does not logically follow from the premises.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            Propositional logic verifies whether given premises logically lead to a conclusion. 
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="center" weight="normal"> 
-            Enter a tautology below to see a step-by-step proof.
-          </Text>
-        </>
-      );
-    
-      const cavemanText = (
-        <>
-          <Text margin={{"bottom":"small"}} textAlign="center">
-            This tool show how to prove big smart statement true.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            Logic good. Logic check if big smart statement always true. Example:  
-            "If grass green, then sky blue. Grass green. So, sky blue."  
-            That always true. That tautology.  
-            Smart people use letters to show tautology, like [(A → B) ∧ A] → B.  
-            But not all statement tautology. Must make sense.  
-            Example bad:  
-            "If I have hat, hat is green. I have TV. So, house is blue."  
-            That not make sense. Not tautology.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="center" weight="normal">
-            Logic check if words make sense. Put tautology below. See proof!
-          </Text>
-        </>
-      );
+  const betterText = [
+    "Propositional logic is a branch of logic that determines whether a tautology is valid based on its premises. For example, consider the statement: \"If the grass is green, then the sky is blue. The grass is green, therefore, the sky is blue.\" This is a tautology. Typically, tautologies are expressed using logical variables, such as [(A → B) ∧ A] → B. However, not every logical statement is a tautology. To be a tautology, the premises must logically guarantee the conclusion. For instance, the statement: \"If I have a hat, then it is green. I have a TV, therefore, my house is blue.\" is not a tautology, as the conclusion does not logically follow from the premises.",
+    "Propositional logic verifies whether given premises logically lead to a conclusion.",
+    "Enter a tautology below to see a step-by-step proof."
+  ];
+  
+  const cavemanText = [
+    "Logic good. Logic check if big smart statement always true. Example: \"If grass green, then sky blue. Grass green. So, sky blue.\" That always true. That tautology. Smart people use letters to show tautology, like [(A → B) ∧ A] → B. But not all statement tautology. Must make sense. Example bad: \"If I have hat, hat is green. I have TV. So, house is blue.\" That not make sense. Not tautology.",
+    "Logic check if words make sense. Put tautology below. See proof!",
+    "Tool show fancy proof with steps so you understand tautology. Get smart!"
+  ];
 
   const validateInput = (input) => {
     // Regular expression to validate WFF general form, excluding V and S as variables.
@@ -151,87 +176,38 @@ const PropositionalLogicSolver = () => {
   
 };
 
+  const renderOutput = () => {
+    return (
+      <Box>
+        <Box direction="row" align="center" margin={{ bottom: "small" }}>
+          <CheckBox
+            label="Use words instead of symbols"
+            checked={showOutput}
+            onChange={(event) => setShowOutput(event.target.checked)}
+          />
+        </Box>
+        <Text style={{ whiteSpace: 'pre-wrap' }}>
+          {output ? (showOutput ? output : outputSymbol) : "Output will be displayed here!"}
+        </Text>
+      </Box>
+    );
+  };
+
 
   return (
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-      <PageContent align="center" skeleton={false}>
-      <Box style={{ position: 'absolute', top: 0, left: 0, padding: '10px' }}>
-            <HomeButton />
-          </Box>
-          <Box align="end" style={{ position: 'absolute', top: 0, right: 0, padding: '10px' }}>
-            <Button label={isCaveman ? "Switch to Normal" : "Switch to Caveman"} onClick={toggleText} style={{ color: 'white', border: '1px solid white' }}/>
-          </Box>
-          <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-            <Text size="xxlarge" weight="bold">Propositional Logic Validator</Text>
-          </Box>
-          <Box align="center" justify="start" direction="column" width={'large'}>
-            {isCaveman ? cavemanText : betterText}
-          </Box>
-        <Card width="large" pad="medium" background={{"color":"light-1"}}>
-        <CardBody pad="small">
-          <Box margin={{bottom : "small" }}><Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-            <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-          </Box>
-          <Collapsible open={showHelp}>
-            <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-              <Text margin={{ bottom: "small" }}>
-                Enter your hypotheses and conclusion in the appropiate fields.
-              </Text>
-              <Text margin={{ bottom: "small" }}>
-                Use the following operators for logical expressions:
-              </Text>
-              <PropositionalLogicOperationsTable />
-              <Text margin={{ top: "small" }}>
-                Ensure that tokens and operators are delimited by spaces or parentheses.
-              </Text>
-            </Box>
-          </Collapsible>
-          </Box>
-
-            <Box margin={{bottom : "small" }}>
-              <TextInput 
-                placeholder="Example: Enter your hypotheses here (e.g., A > B ^ A)"
-                value={hypotheses}
-                onChange={(event) => setHypotheses(event.target.value)}
-              />
-            </Box>
-            <Box margin={{ top: "small" }} direction="row" align="center">
-              <Text margin={{ right: "small" }}>→</Text>
-              <TextInput
-                placeholder="Example: Enter your conclusion here (e.g., B)"
-                value={conclusion}
-                onChange={(event) => setConclusion(event.target.value)}
-              />
-            </Box>
-            {error && <Text color="status-critical">{error}</Text>}
-          </CardBody>
-          <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
-          </CardFooter>
-        </Card>
-        <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
-          <CardBody pad="small">
-            <Box direction="row" align="center" margin={{"bottom":"small"}}>
-              <CheckBox
-                label="Use words instead of symbols"
-                checked={showOutput}
-                onChange={(event) => setShowOutput(event.target.checked)}
-              />
-            </Box>
-            <Text weight="bold">Output:</Text>
-            <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-              <Text style={{ whiteSpace: 'pre-wrap' }}>
-              {output ? (showOutput ? output : outputSymbol) : "Output will be displayed here!"}
-              </Text>
-            </Box>
-          </CardBody>
-        </Card>
-        <ReportFooter />
-      </PageContent>
-      </Box>
-    </Page>
+    <SolverPage
+    title="Propositional Logic Validator"
+    topic="Statement And Tautologies"
+    description="This tool demonstrates the steps used to prove a tautology."
+    paragraphs={isCaveman ? cavemanText : betterText}
+    InfoText={Info}
+    InputComponent={Input}
+    input_props={null}
+    error={error}
+    handle_solve={handleSolve}
+    loading={loading}
+    render_output={renderOutput}
+  />
   );
 };
 

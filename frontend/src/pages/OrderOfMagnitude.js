@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { Box, Text, Button, Collapsible } from 'grommet';
-import { CircleInformation } from 'grommet-icons';
+import React from 'react';
+import { Box, Text, Button } from 'grommet';
 import { solveOrderOfMagnitude } from '../api';
 import SolverPage from '../components/SolverPage';
 import PolynomialInput from '../components/PolynomialInput';
@@ -45,44 +44,39 @@ const OrderOfMagnitude = () => {
     setUseRoot(false);
   };
 
-  // Create a custom input component that includes the help collapsible
-  const OrderMagnitudeInputWithHelp = () => {
-    const [showHelp, setShowHelp] = useState(false);
-    
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Order of Magnitude Analysis:
+        </Text>
+        <Text>
+          Order of magnitude helps compare the asymptotic growth rates of functions as their inputs become very large.
+        </Text>
+        <Text margin={{ top: "xsmall" }}>
+          To use this tool:
+        </Text>
+        <Text>1. Set the polynomial order (highest power of n)</Text>
+        <Text>2. Enter coefficients for each term in both polynomials</Text>
+        <Text>3. Click Analyze to compare their asymptotic behavior</Text>
+        
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
     return (
       <Box>
-        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-        </Box>
-        
-        <Collapsible open={showHelp}>
-          <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-            <Text weight="bold" margin={{ bottom: "xsmall" }}>
-              Order of Magnitude Analysis:
-            </Text>
-            <Text>
-              Order of magnitude helps compare the asymptotic growth rates of functions as their inputs become very large.
-            </Text>
-            <Text margin={{ top: "xsmall" }}>
-              To use this tool:
-            </Text>
-            <Text>1. Set the polynomial order (highest power of n)</Text>
-            <Text>2. Enter coefficients for each term in both polynomials</Text>
-            <Text>3. Click Analyze to compare their asymptotic behavior</Text>
-            
-            <Box margin={{ top: 'medium' }} align="center">
-              <Button 
-                label="Fill with Sample" 
-                onClick={fillWithSample} 
-                primary 
-                size="small"
-                border={{ color: 'black', size: '2px' }}
-                pad={{ vertical: 'xsmall', horizontal: 'small' }}
-              />
-            </Box>
-          </Box>
-        </Collapsible>
-
         <PolynomialInput
           order={order}
           setOrder={setOrder}
@@ -206,7 +200,8 @@ const OrderOfMagnitude = () => {
         "By analyzing the order of magnitude, you can understand the relative size of functions and compare their growth rates. This is useful in various applications such as algorithm analysis and computational complexity.",
         "Enter your polynomial function below to analyze its order of magnitude!"
       ]}
-      InputComponent={OrderMagnitudeInputWithHelp}
+      InfoText = {Info}
+      InputComponent={Input}
       input_props={null}
       error={error}
       handle_solve={handleSolve}

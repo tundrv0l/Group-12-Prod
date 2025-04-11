@@ -1,6 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { Box, Text, Button, Collapsible } from 'grommet';
-import { CircleInformation } from 'grommet-icons';
+import React, { useRef } from 'react';
+import { Box, Text, Button } from 'grommet';
 import { solveMasterTheorem } from '../api';
 import SolverPage from '../components/SolverPage';
 import MasterTheoremInput from '../components/MasterTheoremInput';
@@ -38,64 +37,7 @@ const MasterTheorem = () => {
     setC(SAMPLE_C);
   };
 
-  // Create a custom input component that includes the help collapsible
-  const MasterTheoremInputWithHelp = () => {
-    const [showHelp, setShowHelp] = useState(false);
-    
-    return (
-      <Box>
-        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-        </Box>
-        
-        <Collapsible open={showHelp}>
-          <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-            <Text weight="bold" margin={{ bottom: "xsmall" }}>
-              The Master Theorem:
-            </Text>
-            <Text>
-              The Master Theorem is used for solving recurrence relations of the form: T(n) = aT(n/b) + f(n)
-            </Text>
-            <Text margin={{ top: "xsmall" }}>
-              Where:
-            </Text>
-            <Text>• a ≥ 1: Number of subproblems</Text>
-            <Text>• b {">"} 1: Factor by which problem size is reduced</Text>
-            <Text>• f(n) = n^c: Cost of dividing and combining solutions</Text>
-
-            <Text margin={{ top: "medium" }} weight="bold">The three cases for classification:</Text>
-            <Text>• Case 1: If log<sub>b</sub>(a) {"<"} c, then T(n) = Θ(n<sup>c</sup>)</Text>
-            
-            <Text>• Case 2: If log<sub>b</sub>(a) = c, then T(n) = Θ(n<sup>c</sup> log n)</Text>
-            
-            <Text>• Case 3: If log<sub>b</sub>(a) {">"} c, then T(n) = Θ(n<sup>log<sub>b</sub>(a)</sup>)</Text>
-
-            <Box margin={{ top: 'medium' }} align="center">
-              <Button 
-                label="Fill with Sample" 
-                onClick={fillWithSample} 
-                primary 
-                size="small"
-                border={{ color: 'black', size: '2px' }}
-                pad={{ vertical: 'xsmall', horizontal: 'small' }}
-              />
-            </Box>
-          </Box>
-        </Collapsible>
-        
-        <MasterTheoremInput
-          ref={inputRef}
-          a={a}
-          setA={setA}
-          b={b}
-          setB={setB}
-          c={c}
-          setC={setC}
-          setError={setError}
-        />
-      </Box>
-    );
-  };
+ 
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -146,6 +88,58 @@ const MasterTheorem = () => {
     }
   };
 
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          The Master Theorem:
+        </Text>
+        <Text>
+          The Master Theorem is used for solving recurrence relations of the form: T(n) = aT(n/b) + f(n)
+        </Text>
+        <Text margin={{ top: "xsmall" }}>
+          Where:
+        </Text>
+        <Text>• a ≥ 1: Number of subproblems</Text>
+        <Text>• b {">"} 1: Factor by which problem size is reduced</Text>
+        <Text>• f(n) = n^c: Cost of dividing and combining solutions</Text>
+
+        <Text margin={{ top: "medium" }} weight="bold">The three cases for classification:</Text>
+        <Text>• Case 1: If log<sub>b</sub>(a) {"<"} c, then T(n) = Θ(n<sup>c</sup>)</Text>
+        
+        <Text>• Case 2: If log<sub>b</sub>(a) = c, then T(n) = Θ(n<sup>c</sup> log n)</Text>
+        
+        <Text>• Case 3: If log<sub>b</sub>(a) {">"} c, then T(n) = Θ(n<sup>log<sub>b</sub>(a)</sup>)</Text>
+
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
+    return (
+      <MasterTheoremInput
+        ref={inputRef}
+        a={a}
+        setA={setA}
+        b={b}
+        setB={setB}
+        c={c}
+        setC={setC}
+        setError={setError}
+      />
+    );
+  };
+
   // Function to render the output with LaTeX
   const renderOutput = () => {
     if (!output) {
@@ -190,7 +184,8 @@ const MasterTheorem = () => {
         "By analyzing recurrence relations using the Master Theorem, you can understand the time complexity of algorithms and compare their efficiency. This is useful in various applications such as algorithm design, computational complexity, and performance analysis.",
         "Enter the parameters of your recurrence relation below to analyze its asymptotic complexity using the Master Theorem!"
       ]}
-      InputComponent={MasterTheoremInputWithHelp}
+      InfoText = {Info}
+      InputComponent={Input}
       input_props={null}
       error={error}
       handle_solve={handleSolve}

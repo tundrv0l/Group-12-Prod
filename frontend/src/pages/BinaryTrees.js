@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import { Box, Text, TextInput, Button, Select, Collapsible } from 'grommet';
+import React from 'react';
+import { Box, Text, TextInput, Button, Select} from 'grommet';
 import { solveBinaryTrees } from '../api';
 import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-import { CircleInformation } from 'grommet-icons';
 
 /*
 * Name: BinaryTrees.js
@@ -27,66 +26,61 @@ const BinaryTrees = () => {
     setInput(treeType === 'regular' ? SAMPLE_REGULAR_TREE : SAMPLE_MATH_EXPRESSION);
   };
 
-  // Create a custom input component that includes the help collapsible
-  const BinaryTreeInputWithHelp = () => {
-    const [showHelp, setShowHelp] = useState(false);
-    
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Binary Tree Input:
+        </Text>
+        {treeType === 'regular' ? (
+          <>
+            <Text>
+              For regular binary trees, enter nodes in level-order traversal (breadth-first).
+            </Text>
+            <Text>
+              Each node should be a single character. Use 'None' for empty nodes.
+            </Text>
+            <Text>
+              Example: <strong>A B C D E None F</strong>
+            </Text>
+            <Text margin={{ top: "xsmall" }}>
+              This creates a tree with A as root, B and C as children of A, D and E as children of B, and F as the right child of C.
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text>
+              For mathematical expressions, enter operators and operands with optional parentheses.
+            </Text>
+            <Text>
+              Supported operators: +, -, *, /, ^ (exponentiation)
+            </Text>
+            <Text>
+              Example: <strong>3*(x+4)</strong>
+            </Text>
+            <Text margin={{ top: "xsmall" }}>
+              This generates an expression tree representing the mathematical formula.
+            </Text>
+          </>
+        )}
+
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
     return (
       <Box>
-        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-        </Box>
-        
-        <Collapsible open={showHelp}>
-          <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-            <Text weight="bold" margin={{ bottom: "xsmall" }}>
-              Binary Tree Input:
-            </Text>
-            {treeType === 'regular' ? (
-              <>
-                <Text>
-                  For regular binary trees, enter nodes in level-order traversal (breadth-first).
-                </Text>
-                <Text>
-                  Each node should be a single character. Use 'None' for empty nodes.
-                </Text>
-                <Text>
-                  Example: <strong>A B C D E None F</strong>
-                </Text>
-                <Text margin={{ top: "xsmall" }}>
-                  This creates a tree with A as root, B and C as children of A, D and E as children of B, and F as the right child of C.
-                </Text>
-              </>
-            ) : (
-              <>
-                <Text>
-                  For mathematical expressions, enter operators and operands with optional parentheses.
-                </Text>
-                <Text>
-                Supported operators: +, -, *, /, ^ (exponentiation)
-                </Text>
-                <Text>
-                  Example: <strong>3*(x+4)</strong>
-                </Text>
-                <Text margin={{ top: "xsmall" }}>
-                  This generates an expression tree representing the mathematical formula.
-                </Text>
-              </>
-            )}
-
-<Box margin={{ top: 'medium' }} align="center">
-              <Button 
-                label="Fill with Sample" 
-                onClick={fillWithSample} 
-                primary 
-                size="small"
-                border={{ color: 'black', size: '2px' }}
-                pad={{ vertical: 'xsmall', horizontal: 'small' }}
-              />
-            </Box>
-          </Box>
-        </Collapsible>
-        
         <Box margin={{ bottom: 'small' }}>
           <Text margin={{ bottom: 'xsmall' }}>Select Tree Type:</Text>
           <Select
@@ -117,7 +111,7 @@ const BinaryTrees = () => {
     setOutput('');
     setError('');
 
-    // Validate the input first
+    // Validate the input first 
     const validation = validateInput(input, treeType);
     if (!validation.isValid) {
       setError(validation.error);
@@ -320,21 +314,22 @@ const BinaryTrees = () => {
 
   return (
     <SolverPage
-    title="Binary Trees and Their Properties"
-    topic="Trees And Their Representations"
-    description="This tool helps you analyze binary trees in discrete mathematics."
-    paragraphs={[
-      "Binary trees are a type of data structure in which each node has at most two children, referred to as the left child and the right child. Binary trees are used to implement binary search trees and binary heaps, and they are fundamental in various algorithms and applications.",
-      "In a binary tree, each node contains a value, and references to its left and right children. This hierarchical structure allows for efficient searching, insertion, and deletion operations, making binary trees a crucial component in computer science.",
-      "By analyzing binary trees, you can understand the relationships and connections between different nodes, and how they can be used to solve various computational problems. This tool allows you to input a binary tree and explore its properties and representations.",
-      "Enter your binary tree below to generate and analyze its properties using this tool!"
-    ]}
-    InputComponent={BinaryTreeInputWithHelp}
-    input_props={null}
-    error={error}
-    handle_solve={handleSolve}
-    loading={loading}
-    render_output={renderOutput}
+      title="Binary Trees and Their Properties"
+      topic="Trees And Their Representations"
+      description="This tool helps you analyze binary trees in discrete mathematics."
+      paragraphs={[
+        "Binary trees are a type of data structure in which each node has at most two children, referred to as the left child and the right child. Binary trees are used to implement binary search trees and binary heaps, and they are fundamental in various algorithms and applications.",
+        "In a binary tree, each node contains a value, and references to its left and right children. This hierarchical structure allows for efficient searching, insertion, and deletion operations, making binary trees a crucial component in computer science.",
+        "By analyzing binary trees, you can understand the relationships and connections between different nodes, and how they can be used to solve various computational problems. This tool allows you to input a binary tree and explore its properties and representations.",
+        "Enter your binary tree below to generate and analyze its properties using this tool!"
+      ]}
+      InfoText={Info}
+      InputComponent={Input}
+      input_props={null}
+      error={error}
+      handle_solve={handleSolve}
+      loading={loading}
+      render_output={renderOutput}
     />
   );
 };
