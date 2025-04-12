@@ -8,7 +8,6 @@ import Background from '../components/Background';
 import ReportFooter from '../components/ReportFooter';
 import { solvePropositionalLogic } from '../api';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-import PropositionalLogicOperationsTable from '../components/PropositionalLogicOperationsTable';
 
 
 /*
@@ -131,14 +130,14 @@ const PropositionalLogicSolver = () => {
     const balancedBrackets = (input.match(/\[/g) || []).length === (input.match(/\]/g) || []).length;
   
     // Check for at least one operator in the input
-    const containsOperator = /->|→|v|∨|~|`|>|\^|∧|not|¬|′/.test(input);
+    const containsOperator = /->|→|v|∨|V|~|`|>|\^|∧|¬|′|'|S|s/.test(input);
   
     // Reject single pair of parentheses or brackets
     const singlePairParentheses = /^\([^()]*\)$/.test(input);
     const singlePairBrackets = /^\[[^[\]]*\]$/.test(input);
   
     // Allow single negated variables excluding V, v, and S
-    const singleNegatedVariable = /^(not\s*)?(?![VvS])[A-IK-UWYZ]('|′|¬)?$/.test(input);
+    const singleNegatedVariable = /^(?:¬(?![VvS])[A-IK-UWYZ]|(?![VvS])[A-IK-UWYZ](?:'|′)?)$/.test(input);
   
     // Allow negated expressions with parentheses or brackets
     const negatedExpressionWithParentheses = /^\(\s*.*\s*\)('|′|¬)?$/.test(input);
@@ -175,21 +174,16 @@ const PropositionalLogicSolver = () => {
             <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
           </Box>
           <Collapsible open={showHelp}>
-            <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-              <Text margin={{ bottom: "small" }}>
-                Enter your hypotheses and conclusion in the appropiate fields.
-              </Text>
-              <Text margin={{ bottom: "small" }}>
-                Use the following operators for logical expressions:
-              </Text>
-              <PropositionalLogicOperationsTable />
-              <Text margin={{ top: "small" }}>
-                Ensure that tokens and operators are delimited by spaces or parentheses.
-              </Text>
-            </Box>
-          </Collapsible>
+              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
+                <Text>
+                 Use the symbols from the table below to create your tautology. The solver supports keyboard, unicode, and book syntax.
+                </Text>
+                <WFFOperationsTable />
+              </Box>
+            </Collapsible>
           </Box>
-
+          </CardBody>
+          <CardBody pad="small">
             <Box margin={{bottom : "small" }}>
               <TextInput 
                 placeholder="Example: Enter your hypotheses here (e.g., A > B ^ A)"

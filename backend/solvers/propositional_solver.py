@@ -11,12 +11,30 @@ printedH = []
 HsPrinted = 0
 hypothesi = []
 
+def replaceNot(inputString):
+    instr = ""
+    donext = True
+    for i, e in enumerate(inputString):
+        if e == "¬":
+            donext = False
+            instr += inputString[i + 1] + "'"
+        elif donext:
+            instr += e
+        else:
+            donext = True
+    
+    return instr
+
 def fixString(inputString):
     instr = inputString.replace(" ", "")
+    instr = replaceNot(instr)
     instr = instr.replace("->", ">")
+    instr = instr.replace("→", ">")
     instr = instr.replace("′", "'")
     instr = instr.replace("`", "^")
+    instr = instr.replace("∧", "^")
     instr = instr.replace("~", "v")
+    instr = instr.replace("V", "v")
     instr = instr.replace("S", ">")
     instr = instr.replace("[", "(")
     return instr.replace("]", ")")
@@ -216,9 +234,9 @@ class IMPLIES:
     def altPrint(self):
         returnStr = ""
         if isinstance(self.letter1, Letter):
-            returnStr += self.letter1.altPrint() + " > "
+            returnStr += self.letter1.altPrint() + " -> "
         else:
-            returnStr += f"({self.letter1.altPrint()}) > "
+            returnStr += f"({self.letter1.altPrint()}) -> "
 
         if isinstance(self.letter2, Letter):
             returnStr += self.letter2.altPrint()
@@ -262,10 +280,12 @@ class IMPLIES:
                 for h in hypothesi:
                     if h >= self.parent1:
                         outputString += ", " + str(h.pnumb)
+                        outputStrng += ", " + str(h.pnumb)
             if p2:
                 for h in hypothesi:
                     if h >= self.parent2:
                         outputString += ", " + str(h.pnumb)
+                        outputStrng += ", " + str(h.pnumb)
             if self.type != "none":
                 outputString += ", " + self.type
                 outputStrng += ", " + self.type
@@ -397,6 +417,8 @@ def cycleThrough(conclusion):
     global printedH
     global HsPrinted
     global letters
+    
+    print([str(h) for h in hypothesi])
 
 
     for h1 in hypothesi:
@@ -597,7 +619,7 @@ def cycleThrough(conclusion):
                     newOr = OR(l1s, l2s, h2, "none", "De Morgan's law", False)
                     if newOr not in hypothesi:
                         hypothesi.append(newOr)
-            if isinstance(h2, OR):
+            if isinstance(h2, OR) and not h2.is_Not:
                         notA = h2.letter1.clone()
                         notA.is_Not = not notA.is_Not
                         newImp1 = IMPLIES(notA, h2.letter2, h2, "none", "Conditional Dysjunction", False)
@@ -678,7 +700,7 @@ def cycleThrough(conclusion):
 
             while isinstance(conclusion, IMPLIES):
                 outputString += "Because this conclusion only matters if " + str(conclusion.letter1) + " is true, then we can assume that it is, and place it in our hypothesises. This also means our new conclusion is " + str(conclusion.letter2) + "\n"
-                outputStrng += "Because this conclusion only matters if " + str(conclusion.letter1) + " is true, then we can assume that it is, and place it in our hypothesises. This also means our new conclusion is " + str(conclusion.letter2) + "\n"
+                outputStrng += "Because this conclusion only matters if " + conclusion.letter1.altPrint() + " is true, then we can assume that it is, and place it in our hypothesises. This also means our new conclusion is " + conclusion.letter2.altPrint() + "\n"
                 conclusion.letter1.parent1 = "hypothesis"
                 hypothesi.append(conclusion.letter1)
                 conclusion = conclusion.letter2
