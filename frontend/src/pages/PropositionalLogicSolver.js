@@ -46,7 +46,7 @@ const PropositionalLogicSolver = () => {
         <Text margin={{ bottom: "small" }}>
           Use the following operators for logical expressions:
         </Text>
-        <PropositionalLogicOperationsTable />
+        <WFFOperationsTable />
         <Text margin={{ top: "small" }}>
           Ensure that tokens and operators are delimited by spaces or parentheses.
         </Text>
@@ -156,14 +156,14 @@ const PropositionalLogicSolver = () => {
     const balancedBrackets = (input.match(/\[/g) || []).length === (input.match(/\]/g) || []).length;
   
     // Check for at least one operator in the input
-    const containsOperator = /->|→|v|∨|~|`|>|\^|∧|not|¬|′/.test(input);
+    const containsOperator = /->|→|v|∨|V|~|`|>|\^|∧|¬|′|'|S|s/.test(input);
   
     // Reject single pair of parentheses or brackets
     const singlePairParentheses = /^\([^()]*\)$/.test(input);
     const singlePairBrackets = /^\[[^[\]]*\]$/.test(input);
   
     // Allow single negated variables excluding V, v, and S
-    const singleNegatedVariable = /^(not\s*)?(?![VvS])[A-IK-UWYZ]('|′|¬)?$/.test(input);
+    const singleNegatedVariable = /^(?:¬(?![VvS])[A-IK-UWYZ]|(?![VvS])[A-IK-UWYZ](?:'|′)?)$/.test(input);
   
     // Allow negated expressions with parentheses or brackets
     const negatedExpressionWithParentheses = /^\(\s*.*\s*\)('|′|¬)?$/.test(input);
