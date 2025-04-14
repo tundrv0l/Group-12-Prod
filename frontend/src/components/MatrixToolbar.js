@@ -7,22 +7,31 @@ import { Box, Button } from 'grommet';
 * Description: Toolbar with buttons to manipulate a single matrix input.
 */
 
-const MatrixToolbar = ({ matrix, setMatrix }) => {
+const MatrixToolbar = ({ matrix, setMatrix, maxDimension = 10 }) => {
   const addRow = () => {
-    if (matrix && matrix.length > 0) {
-      const newRow = Array(matrix[0].length).fill('');
-      setMatrix([...matrix, newRow]);
+
+    if (matrix.length >= maxDimension) {
+      return;
     } else {
-      setMatrix([['']]);
+      if (matrix && matrix.length > 0) {
+        const newRow = Array(matrix[0].length).fill('0');
+        setMatrix([...matrix, newRow]);
+      } else {
+        setMatrix([['0']]);
+      }
     }
   };
 
   const addColumn = () => {
-    if (matrix && matrix.length > 0) {
-      const newMatrix = matrix.map(row => [...row, '']);
-      setMatrix(newMatrix);
+    if (matrix[0].length >= maxDimension) {
+      return;
     } else {
-      setMatrix([['']]);
+      if (matrix && matrix.length > 0) {
+        const newMatrix = matrix.map(row => [...row, '0']);
+        setMatrix(newMatrix);
+      } else {
+        setMatrix([['0']]);
+      }
     }
   };
 
