@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Box, Button, Text, TextInput, Grid } from 'grommet';
 import { Add, Trash } from 'grommet-icons';
 
 const WeightedGraphInput = ({ value, onChange }) => {
   // Parse the initial value if it exists
-  const parseInitialEdges = () => {
+  // Parse the initial value if it exists - memoize to prevent unnecessary recalculations
+  const parseInitialEdges = useCallback(() => {
     if (!value || value === '{}') return [];
     
     try {
@@ -27,11 +28,15 @@ const WeightedGraphInput = ({ value, onChange }) => {
       console.error("Error parsing edges:", e);
       return [];
     }
-  };
+  }, [value]);
 
   const [edges, setEdges] = React.useState(parseInitialEdges());
   const [newEdge, setNewEdge] = React.useState({ source: '', target: '', weight: '' });
   const [inputError, setInputError] = React.useState('');
+
+  useEffect(() => {
+    setEdges(parseInitialEdges());
+  }, [parseInitialEdges]); 
 
   // Update the parent component when edges change
   React.useEffect(() => {

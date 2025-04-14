@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, TextInput } from 'grommet';
+import { Box, Text, TextInput, Button } from 'grommet';
 import { solvePropertiesOfRelations, solveClosureAxioms, solveHasseDiagram, solvePartialOrderings } from '../api';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import SolverPage from '../components/SolverPage';
@@ -19,6 +19,15 @@ const RelationProperties = () => {
   const [isPartial, setIsPartial] = React.useState(false);
 
   const { trackResults } = useDiagnostics("RELATION_PROPERTIES");
+
+  const SAMPLE_SET = "{a, b, c}";
+  const SAMPLE_RELATION = "{(a,a),(b,b),(c,c),(a,b),(b,c),(a,c)}";
+
+  // Add this function inside the RelationProperties component
+  const fillWithSample = () => {
+    setSet(SAMPLE_SET);
+    setRelation(SAMPLE_RELATION);
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -110,6 +119,37 @@ const RelationProperties = () => {
     return setRegex.test(input);
   };
 
+  const Info = () => {
+    return (
+      <>
+        <Text>
+          To input a set, use the following format:
+        </Text>
+        <Text>
+          <strong>{'{a,b,c}'}</strong>
+        </Text>
+        <Text>
+          To input a relation, use the following format:
+        </Text>
+        <Text>
+          <strong>{'{(a,a),(b,b),(c,c),(a,b),(b,c),(a,c)}'}</strong>
+        </Text>
+
+        <Box margin={{ top: 'medium' }} align="center">
+        <Button 
+          label="Fill with Sample" 
+          onClick={fillWithSample} 
+          primary 
+          size="small"
+          border={{ color: 'black', size: '2px' }}
+          pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          onMouseDown={(e) => e.preventDefault()}
+        />
+      </Box>
+      </>
+    );
+  };
+
   // Validate that relation conforms to format
   const validateRelation = (input, set) => {
     // Check for empty relation
@@ -174,43 +214,26 @@ const Description = () => {
     );
 };
 
-const Info = () => {
-    return (
-      <>
-        <Text>
-          To input a set, use the following format:
-        </Text>
-        <Text>
-          <strong>{'{a,b,c}'}</strong>
-        </Text>
-        <Text>
-          To input a relation, use the following format:
-        </Text>
-        <Text>
-          <strong>{'{(a,a),(b,b),(c,c),(a,b),(b,c),(a,c)}'}</strong>
-        </Text>
-      </>
-    );
-};
-
-const Input = ({set, relation, setSet, setRelation}) => {
+const Input = React.memo(({set, relation, setSet, setRelation}) => {
     return (
       <>
         <Box margin={{top : "small" }}>
           <TextInput 
             placeholder="Example: Enter your set here (e.g., {a, b, c, 23})"
+            value={set}
             onChange={(event) => setSet(event.target.value)}
           />
         </Box>
         <Box margin={{top : "small" }}>
           <TextInput 
             placeholder="Example: Enter your relation here (e.g., {(a, b), (23, c)})"
+            value={relation}
             onChange={(event) => setRelation(event.target.value)}
           />
         </Box>
       </>
     );
-};
+});
 
 const Output = ({ output }) => {
     if (!output) {

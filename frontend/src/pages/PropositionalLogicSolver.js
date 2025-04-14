@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { CheckBox, Button, Box, Text, TextInput } from 'grommet';
-import { CircleInformation } from 'grommet-icons';
 import PropositionalLogicOperationsTable from '../components/PropositionalLogicOperationsTable';
 import { solvePropositionalLogic } from '../api';
 import { useDiagnostics } from '../hooks/useDiagnostics';
@@ -21,7 +20,6 @@ const PropositionalLogicSolver = () => {
   const [outputSymbol, setOutputSymbol] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [showHelp, setShowHelp] = React.useState(false);
   const [showOutput, setShowOutput] = useState(false);
 
   const { trackResults } = useDiagnostics("PROPOSITIONAL_LOGIC");
@@ -56,6 +54,7 @@ const PropositionalLogicSolver = () => {
             label="Fill with Sample" 
             onClick={fillWithSample} 
             primary 
+            onMouseDown={(e) => e.preventDefault()}
             size="small"
             border={{ color: 'black', size: '2px' }}
             pad={{ vertical: 'xsmall', horizontal: 'small' }}
@@ -64,6 +63,8 @@ const PropositionalLogicSolver = () => {
       </>
     );
   };
+
+  // Update the Input component:
 
   const Input = () => {
     return (
@@ -149,7 +150,7 @@ const PropositionalLogicSolver = () => {
 
   const validateInput = (input) => {
     // Regular expression to validate WFF general form, excluding V and S as variables.
-    const wffRegex = /^(\(*\[*\s*(not\s*)?(?![VvS])[A-IK-UWYZ]('|′|¬)?\s*\]*\)*(\s*(->|→|v|∨|~|`|\^|∧|>)\s*\(*\[*\s*(not\s*)?(?![VvS])[A-IK-UWYZ]('|′|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|′|¬)?|\[\s*.*\s*\]('|′|¬)?$/;
+    const wffRegex = /^(\(*\[*\s*(not\s*)?(?![vS])[A-IK-UVWYZ]('|′|¬)?\s*\]*\)*(\s*(->|→|v|∨|~|`|\^|∧|>)\s*\(*\[*\s*(not\s*)?(?![vS])[A-IK-UVWYZ]('|′|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|′|¬)?|\[\s*.*\s*\]('|′|¬)?$/;
   
     // Check for balanced parentheses and brackets
     const balancedParentheses = (input.match(/\(/g) || []).length === (input.match(/\)/g) || []).length;

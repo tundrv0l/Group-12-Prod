@@ -1,3 +1,4 @@
+import React from 'react';
 import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
 import ReportFooter from './ReportFooter';
 import Background from './Background';
@@ -57,11 +58,13 @@ const SolverPage = ({ title, topic, description, paragraphs, DescriptionComponen
           <Card width="large" pad="medium" background={{"color":"light-1"}}>
             <CardBody pad="small">
               <InfoBox InfoText={InfoText} />
-              <InputComponent {...input_props} />
+              {typeof InputComponent === 'function' 
+                ? InputComponent({...input_props}) 
+                : <InputComponent {...input_props} />}
               {error && <Text color="status-critical" margin={{ top: 'small' }}>{error}</Text>}
             </CardBody>
             <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-              <Button label={loading ? <Spinner /> : "Solve"} onClick={handle_solve} disabled={loading} />
+              <Button label={loading ? <Spinner /> : "Solve"} onClick={handle_solve} onMouseDown={(e) => e.preventDefault()} disabled={loading} />
             </CardFooter>
           </Card>
           <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>

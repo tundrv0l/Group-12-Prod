@@ -57,10 +57,10 @@ const WFFSolverPage = () => {
     );
   };
 
-  const Input = () => {
+  const Input = ({setInput}) => {
     return (
       <Box>
-        <TextInput 
+        <TextInput
           placeholder="Example: Enter your formula here (e.g., A V B)"
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -275,7 +275,7 @@ const WFFSolverPage = () => {
       ]}
       InfoText={Info}
       InputComponent={Input}
-      input_props={null}
+      input_props={{ setInput }}
       error={error}
       handle_solve={handleSolve}
       loading={loading}
