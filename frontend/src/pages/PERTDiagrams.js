@@ -71,8 +71,8 @@ const PERTDiagrams = () => {
     }
     
     // Check for non-positive times
-    if (isTimed && tasks.some(task => task.time < 0)) {
-      setError('Task times cannot be negative.');
+    if (isTimed && tasks.some(task => task.time <= 0)) {
+      setError('Task times must be positive.');
       return false;
     }
     
