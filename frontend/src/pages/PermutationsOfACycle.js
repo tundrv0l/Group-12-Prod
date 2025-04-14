@@ -19,15 +19,41 @@ const PermutationsOfACycle = () => {
   const [loading, setLoading] = React.useState(false);
 
   const { trackResults } = useDiagnostics("PERMUTATIONS_CYCLE");
-  
-  // Sample permutation data
-  const SAMPLE_MATRIX = [
-    ['1', '2', '3', '4'],
-    ['2', '3', '4', '1']
-  ];
 
   
-  const fillWithSample = () => {
+  const fillWithSingle = () => {
+      const SAMPLE_MATRIX = [
+        ['1', '2', '3', '4'],
+        ['2', '3', '4', '1']
+      ];
+
+    setMatrix(SAMPLE_MATRIX);
+  };
+
+  const fillWithTwo = () => {
+      const SAMPLE_MATRIX = [
+        ['1', '2', '3', '4'],
+        ['2', '1', '4', '3']
+      ];
+
+    setMatrix(SAMPLE_MATRIX);
+  };
+
+  const fillWithThree = () => {
+      const SAMPLE_MATRIX = [
+        ['l', '2', '3', '4', 'p', '54', '1'],
+        ['2', 'l', '4', 'p', '3', '1', '54']
+      ];
+
+    setMatrix(SAMPLE_MATRIX);
+  };
+
+  const fillWithIdentity = () => {
+      const SAMPLE_MATRIX = [
+        ['1', '2', '3'],
+        ['1', '2', '3']
+      ];
+
     setMatrix(SAMPLE_MATRIX);
   };
 
@@ -52,8 +78,32 @@ const PermutationsOfACycle = () => {
         
         <Box margin={{ top: 'medium' }} align="center">
           <Button 
-            label="Fill with Sample" 
-            onClick={fillWithSample} 
+            label="Fill with Single Cycle" 
+            onClick={fillWithSingle} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Two Cycle" 
+            onClick={fillWithTwo} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Three Cycle" 
+            onClick={fillWithThree} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Identity" 
+            onClick={fillWithIdentity} 
             primary 
             size="small"
             border={{ color: 'black', size: '2px' }}
