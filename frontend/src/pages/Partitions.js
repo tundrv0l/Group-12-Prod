@@ -6,6 +6,8 @@ import ReportFooter from '../components/ReportFooter';
 import HomeButton from '../components/HomeButton';
 import Background from '../components/Background';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+import PartitionInput from '../components/PartitionInput';
+import PageTopScroller from '../components/PageTopScroller';
 
 /*
 * Name: Partitions.js
@@ -22,6 +24,14 @@ const Partitions = () => {
   const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("PARTITIONS");
+
+  const SAMPLE_SET = "{a, b, c, d}";
+  const SAMPLE_PARTITION = "{{a,b},{c,d}}";
+
+  const fillWithSample = () => {
+    setSet(SAMPLE_SET);
+    setRelation(SAMPLE_PARTITION);
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -85,7 +95,7 @@ const Partitions = () => {
       );
 
       console.log(err);
-      setError('An error occurred while analyzing the closure axioms.');
+      setError('An error occurred while analyzing the Partition.');
     } finally {
       setLoading(false);
     }
@@ -93,26 +103,82 @@ const Partitions = () => {
 
   // Validate that set conforms to format
   const validateSet = (input) => {
-    // Tests if input is in the form {a, b, c, 23}
-    const setRegex = /^\{(\s*[a-zA-Z0-9]+\s*,)*\s*[a-zA-Z0-9]+\s*\}$/;
+    // Tests if input is in the form {a, b, c, 23} or {}
+    const setRegex = /^\{\s*\}$|^\{(\s*[a-zA-Z0-9]+\s*,)*\s*[a-zA-Z0-9]+\s*\}$/;
     return setRegex.test(input);
   };
 
   // Validate that relation conforms to format
-  // Validate that relation conforms to format
   const validateRelation = (input, set) => {
-    // Tests if input is in the form {{a,b},{c,23}} or {{a,b}} or {{a}}
-    const relationRegex = /^\{(\s*\{\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\}\s*,)*\s*\{\s*[a-zA-Z0-9]+\s*,\s*[a-zA-Z0-9]+\s*\}\s*\}$/;
-  
-    if (!relationRegex.test(input)) {
+    // Check if input starts with { and ends with }
+    if (!input.startsWith('{') || !input.endsWith('}')) {
       return false;
     }
-  
-    // Checks if all elements in the relation are in the set
-    const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/);
-    const relationElements = input.replace(/[{}]/g, '').split(/\s*,\s*/);
-  
-    return relationElements.every(element => setElements.includes(element));
+    
+    // Handle empty relation case - just return true
+    if (input === '{}') {
+      return true;
+    }
+    
+    try {
+      // Remove outer braces
+      const withoutOuterBraces = input.substring(1, input.length - 1);
+      
+      // Find individual partitions by properly parsing the nested braces
+      const partitions = [];
+      let bracketCount = 0;
+      let currentPartition = '';
+      
+      for (let i = 0; i < withoutOuterBraces.length; i++) {
+        const char = withoutOuterBraces[i];
+        
+        if (char === '{') bracketCount++;
+        if (char === '}') bracketCount--;
+        
+        // We only split on commas that are at the top level between partitions
+        if (char === ',' && bracketCount === 0) {
+          partitions.push(currentPartition.trim());
+          currentPartition = '';
+        } else {
+          currentPartition += char;
+        }
+      }
+      
+      // Add the last partition
+      if (currentPartition.trim()) {
+        partitions.push(currentPartition.trim());
+      }
+      
+      // Check each partition starts with { and ends with }
+      if (!partitions.every(p => p.startsWith('{') && p.endsWith('}'))) {
+        return false;
+      }
+      
+      // Extract all elements from the set for validation
+      const setElements = set.replace(/[{}]/g, '').split(/\s*,\s*/).filter(Boolean);
+      
+      // Extract all elements from partitions (flattened)
+      const partitionElements = [];
+      for (const partition of partitions) {
+        // Remove outer braces and split by commas
+        const elements = partition.substring(1, partition.length - 1)
+                                .split(/\s*,\s*/)
+                                .filter(Boolean);
+        partitionElements.push(...elements);
+      }
+      
+      // Check if all elements in partitions are in the set
+      return partitionElements.every(element => {
+        // If the element contains braces, it's a nested structure
+        // We should extract just the alphanumeric parts for checking
+        const cleanElement = element.replace(/[{}]/g, '').trim();
+        return setElements.includes(cleanElement);
+      });
+      
+    } catch (e) {
+      console.error("Error validating relation:", e);
+      return false;
+    }
   };
 
   // Pretty print the output
@@ -132,6 +198,7 @@ const Partitions = () => {
   };
 
   return (
+    <PageTopScroller>
     <Page>
       <Background />
       <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -141,7 +208,7 @@ const Partitions = () => {
         </Box>
         <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
           <Text size="xxlarge" weight="bold">
-            Paritions
+            Partitions
           </Text>
         </Box>
         <Box align="center" justify="center">
@@ -150,20 +217,24 @@ const Partitions = () => {
           </Text>
         </Box>
         <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{"bottom":"small"}} textAlign="center">
-                This tool helps you analyze equivalence relations.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                An equivalence relation on a set is a relation that is reflexive, symmetric, and transitive. For example, a relation R on a set A is:
-            </Text>
-            <Box margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                <Text>- Reflexive if every element is related to itself, i.e., (a, a) ∈ R for all a ∈ A.</Text>
-                <Text>- Symmetric if for every (a, b) ∈ R, (b, a) ∈ R.</Text>
-                <Text>- Transitive if for every (a, b) ∈ R and (b, c) ∈ R, (a, c) ∈ R.</Text>
-            </Box>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-                Enter your relation below to analyze its properties and determine if it is an equivalence relation!
-            </Text>
+          <Text margin={{"bottom":"small"}} textAlign="center">
+            This tool helps you analyze partitions and their corresponding equivalence relations.
+          </Text>
+          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            A partition of a set A is a collection of non-empty, disjoint subsets whose union equals A. Each subset in a partition is called a part or a block.
+          </Text>
+          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            Every partition corresponds to a unique equivalence relation, where elements are related if and only if they belong to the same part of the partition. 
+          </Text>
+          <Box margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            <Text>An equivalence relation is a relation that is:</Text>
+            <Text>- Reflexive: Every element is related to itself, i.e., (a, a) ∈ R for all a ∈ A.</Text>
+            <Text>- Symmetric: For every (a, b) ∈ R, (b, a) ∈ R.</Text>
+            <Text>- Transitive: For every (a, b) ∈ R and (b, c) ∈ R, (a, c) ∈ R.</Text>
+          </Box>
+          <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+            Enter a set and its partition below to generate the corresponding equivalence relation!
+          </Text>
         </Box>
         <Card width="large" pad="medium" background={{"color":"light-1"}}>
           <CardBody pad="small">
@@ -184,6 +255,16 @@ const Partitions = () => {
                 <Text>
                   <strong>{'{{a,b},{c,d}}'}</strong>
                 </Text>
+                <Box margin={{ top: 'medium' }} align="center">
+                <Button 
+                  label="Fill with Sample" 
+                  onClick={fillWithSample} 
+                  primary 
+                  size="small"
+                  border={{ color: 'brand', size: '1px' }}
+                  pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                />
+                </Box>
               </Box>
             </Collapsible>
               <TextInput 
@@ -193,11 +274,9 @@ const Partitions = () => {
               />
             </Box>
             <Box margin={{top : "small" }}>
-              <TextInput 
-                placeholder="Example: Enter your set of sets here (e.g., {{a, b}, {23, c}})"
+              <PartitionInput
                 value={relation}
-                onChange={(event) => setRelation(event.target.value)}
-              />
+                onChange={setRelation} />
             </Box>
             {error && <Text color="status-critical">{error}</Text>}
           </CardBody>
@@ -221,6 +300,7 @@ const Partitions = () => {
       </PageContent>
       </Box>
     </Page>
+    </PageTopScroller>
   );
 };
 

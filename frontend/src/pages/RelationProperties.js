@@ -1,15 +1,12 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
-import { CircleInformation } from 'grommet-icons';
-import { solvePropertiesOfRelations } from '../api';
-import ReportFooter from '../components/ReportFooter';
-import Background from '../components/Background';
-import HomeButton from '../components/HomeButton';
+import { Box, Text, TextInput, Button } from 'grommet';
+import { solvePropertiesOfRelations, solveClosureAxioms, solveHasseDiagram, solvePartialOrderings } from '../api';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+import SolverPage from '../components/SolverPage';
 
 /*
 * Name: RelationProperties.js
-* Author: Parker Clark
+* Author: Parker Clark, Jacob Warren
 * Description: Solver page for properties of relations.
 */
 
@@ -19,9 +16,18 @@ const RelationProperties = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [showHelp, setShowHelp] = React.useState(false);
+  const [isPartial, setIsPartial] = React.useState(false);
 
   const { trackResults } = useDiagnostics("RELATION_PROPERTIES");
+
+  const SAMPLE_SET = "{a, b, c}";
+  const SAMPLE_RELATION = "{(a,a),(b,b),(c,c),(a,b),(b,c),(a,c)}";
+
+  // Add this function inside the RelationProperties component
+  const fillWithSample = () => {
+    setSet(SAMPLE_SET);
+    setRelation(SAMPLE_RELATION);
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -45,12 +51,32 @@ const RelationProperties = () => {
     const startTime = performance.now();
     
     try {
-      let result = await solvePropertiesOfRelations(set, relation);
-  
-      // Parse result if it is a string
-      if (typeof result === 'string') {
-        result = JSON.parse(result);
+      let properties_result = await solvePropertiesOfRelations(set, relation);
+      let closure_result = await solveClosureAxioms(set, relation);
+
+      properties_result = JSON.parse(properties_result);
+      closure_result = JSON.parse(closure_result);
+
+       // Establish partial ordering in a const
+      const isPartial = properties_result["Reflexive"] && 
+                             properties_result["Antisymmetric"] && 
+                             properties_result["Transitive"];
+      
+      // Set the state
+      setIsPartial(isPartial);
+
+      let result = Object.assign({}, properties_result, closure_result);
+      if (isPartial) {
+        let special_result = await solvePartialOrderings(set, relation);
+        let hasse_result = await solveHasseDiagram(set, relation);
+        special_result = JSON.parse(special_result);
+        hasse_result = JSON.parse(hasse_result);
+        result = Object.assign({}, result, special_result, hasse_result);
+
+        result.isPartial = true;
       }
+
+      setOutput(result);
   
       // Check if there is an error key in the result
       const errorKey = Object.keys(result).find(key => key.toLowerCase().includes('error'));
@@ -93,6 +119,37 @@ const RelationProperties = () => {
     return setRegex.test(input);
   };
 
+  const Info = () => {
+    return (
+      <>
+        <Text>
+          To input a set, use the following format:
+        </Text>
+        <Text>
+          <strong>{'{a,b,c}'}</strong>
+        </Text>
+        <Text>
+          To input a relation, use the following format:
+        </Text>
+        <Text>
+          <strong>{'{(a,a),(b,b),(c,c),(a,b),(b,c),(a,c)}'}</strong>
+        </Text>
+
+        <Box margin={{ top: 'medium' }} align="center">
+        <Button 
+          label="Fill with Sample" 
+          onClick={fillWithSample} 
+          primary 
+          size="small"
+          border={{ color: 'black', size: '2px' }}
+          pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          onMouseDown={(e) => e.preventDefault()}
+        />
+      </Box>
+      </>
+    );
+  };
+
   // Validate that relation conforms to format
   const validateRelation = (input, set) => {
     // Check for empty relation
@@ -118,116 +175,174 @@ const RelationProperties = () => {
     return relationElements.every(element => setElements.includes(element));
   };
 
-  // Pretty print the output
-  const renderOutput = () => {
+  return (
+    <SolverPage
+      title="Properties of Relations"
+      topic="Relations"
+      description="This tool helps you analyze the properties of relations."
+      DescriptionComponent={Description}
+      InfoText={Info}
+      InputComponent={Input}
+      input_props={{set, relation, setSet, setRelation}}
+      error={error}
+      handle_solve={handleSolve}
+      loading={loading}
+      OutputComponent={Output}
+      output_props={{output, isPartial}}
+    />
+  );
+};
+
+const Description = () => {
+    return (
+      <>
+        <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            A relation on a set is a collection of ordered pairs of elements from the set. Relations can have various properties such as reflexivity, symmetry, transitivity, and antisymmetry. For example, a relation R on a set A is:
+        </Text>
+        <Box margin={{"bottom":"small"}} textAlign="start" weight="normal">
+            <Text>- Reflexive if every element is related to itself, i.e., (a, a) ∈ R for all a ∈ A.</Text>
+            <Text>- Irreflexive if no element is related to itself, i.e., (a, a) ∉ R for all a ∈ A.</Text>
+            <Text>- Symmetric if for every (a, b) ∈ R, (b, a) ∈ R.</Text>
+            <Text>- Asymmetric if for every (a, b) ∈ R, (b, a) ∉ R.</Text>
+            <Text>- Antisymmetric if for every (a, b) ∈ R and (b, a) ∈ R, a = b.</Text>
+            <Text>- Transitive if for every (a, b) ∈ R and (b, c) ∈ R, (a, c) ∈ R.</Text>
+        </Box>
+        <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
+          Enter your relation below to analyze its properties and determine if it is reflexive, irreflexive, symmetric, asymmetric, antisymmetric, or transitive!
+        </Text>
+      </>
+    );
+};
+
+const Input = React.memo(({set, relation, setSet, setRelation}) => {
+    return (
+      <>
+        <Box margin={{top : "small" }}>
+          <TextInput 
+            placeholder="Example: Enter your set here (e.g., {a, b, c, 23})"
+            value={set}
+            onChange={(event) => setSet(event.target.value)}
+          />
+        </Box>
+        <Box margin={{top : "small" }}>
+          <TextInput 
+            placeholder="Example: Enter your relation here (e.g., {(a, b), (23, c)})"
+            value={relation}
+            onChange={(event) => setRelation(event.target.value)}
+          />
+        </Box>
+      </>
+    );
+});
+
+const Output = ({ output }) => {
     if (!output) {
       return "Output will be displayed here!";
     }
 
-    // Parse out json object and return out elements one by one
-    return (
-      <Box>
-        {Object.entries(output).map(([key, value]) => (
-          <Text key={key}>{`${key}: ${value}`}</Text>
-        ))}
-      </Box>
-    );
-  };
+    let properties = "This is a ";
+    let something = false;
+    let reflexive_closure;
+    if (output["Reflexive"]) {
+        properties += "reflexive, ";
+        something = true;
+    } else if (output["Irreflexive"]) {
+        reflexive_closure = output["Reflexive Closure"];
+        properties += "irreflexive, ";
+        something = true;
+    } else {
+        reflexive_closure = output["Reflexive Closure"];
+    }
+    
+    let symmetric_closure;
+    if (output["Symmetric"]) {
+        properties += "symmetric, ";
+        something = true;
+    } else if (output["Antisymmetric"]) {
+        symmetric_closure = output["Symmetric Closure"]
+        something = true;
+        // asymmetric implies antisymmetric
+        if (output["Asymmetric"]) {
+            properties += "asymmetric, ";
+        } else {
+            properties += "antisymmetric, ";
+        }
+    } else {
+        symmetric_closure = output["Symmetric Closure"];
+    }
 
-  return (
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-      <PageContent align="center" skeleton={false}>
-        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-          <HomeButton />
-        </Box>
-        <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-          <Text size="xxlarge" weight="bold">
-            Properties of Relations
-          </Text>
-        </Box>
-        <Box align="center" justify="center">
-          <Text size="large" margin="none" weight={500}>
-            Topic: Relations
-          </Text>
-        </Box>
-        <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{"bottom":"small"}} textAlign="center">
-                This tool helps you analyze the properties of relations.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                A relation on a set is a collection of ordered pairs of elements from the set. Relations can have various properties such as reflexivity, symmetry, transitivity, and antisymmetry. For example, a relation R on a set A is:
-            </Text>
-            <Box margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                <Text>- Reflexive if every element is related to itself, i.e., (a, a) ∈ R for all a ∈ A.</Text>
-                <Text>- Irreflexive if no element is related to itself, i.e., (a, a) ∉ R for all a ∈ A.</Text>
-                <Text>- Symmetric if for every (a, b) ∈ R, (b, a) ∈ R.</Text>
-                <Text>- Asymmetric if for every (a, b) ∈ R, (b, a) ∉ R.</Text>
-                <Text>- Antisymmetric if for every (a, b) ∈ R and (b, a) ∈ R, a = b.</Text>
-                <Text>- Transitive if for every (a, b) ∈ R and (b, c) ∈ R, (a, c) ∈ R.</Text>
-            </Box>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-            Enter your relation below to analyze its properties and determine if it is reflexive, irreflexive, symmetric, asymmetric, antisymmetric, or transitive!
-            </Text>
-        </Box>
-        <Card width="large" pad="medium" background={{"color":"light-1"}}>
-          <CardBody pad="small">
-            <Box margin={{bottom : "small" }}><Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-              <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-            </Box>
-            <Collapsible open={showHelp}>
-              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-                <Text>
-                  To input a set, use the following format:
-                </Text>
-                <Text>
-                  <strong>{'{a,b,c}'}</strong>
-                </Text>
-                <Text>
-                  To input a relation, use the following format:
-                </Text>
-                <Text>
-                  <strong>{'{(a,b),(b,c),(c,a)}'}</strong>
-                </Text>
-              </Box>
-            </Collapsible>
-              <TextInput 
-                placeholder="Example: Enter your set here (e.g., {a, b, c, 23})"
-                value={set}
-                onChange={(event) => setSet(event.target.value)}
-              />
-            </Box>
-            <Box margin={{top : "small" }}>
-              <TextInput 
-                placeholder="Example: Enter your relation here (e.g., {(a, b), (23, c)})"
-                value={relation}
-                onChange={(event) => setRelation(event.target.value)}
-              />
-            </Box>
-            {error && <Text color="status-critical">{error}</Text>}
-          </CardBody>
-          <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
-          </CardFooter>
-        </Card>
-        <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
-          <CardBody pad="small">
-            <Text weight="bold">
-              Output:
-            </Text>
-            <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-              <Text>
-                {renderOutput()}
-              </Text>
-            </Box>
-          </CardBody>
-        </Card>
-        <ReportFooter />
-      </PageContent>
-      </Box>
-    </Page>
-  );
+    let transitive_closure;
+    if (output["Transitive"]) {
+        properties += "transitive, ";
+        something = true;
+    } else {
+        transitive_closure = output["Transitive Closure"];
+    }
+
+    if (something) {
+        properties = properties.slice(0, -2);
+        properties += " "
+    }
+
+    properties += "relation."
+
+    // Control this render via isPartial
+    const isPartial = output.isPartial;
+
+    let least;
+    let greatest;
+    let minimals;
+    let maximals;
+    let diagram;
+    if (isPartial) {
+        least = output["Least Element"];
+        greatest = output["Greatest Element"];
+        minimals = output["Minimal Elements"];
+        maximals = output["Maximal Elements"];
+        diagram = output["Hasse Diagram"];
+    }
+
+    return (
+      <>
+          <div>
+            {properties}
+          </div>
+          {!output["Reflexive"] && (
+            <div>
+              Reflexive Closure: {reflexive_closure}
+            </div>
+          )}
+          {!output["Symmetric"] && (
+            <div>
+              Symmetric Closure: {symmetric_closure}
+            </div>
+          )}
+          {!output["Transitive"] && (
+            <div>
+              Transitive Closure: {transitive_closure}
+            </div>
+          )}
+          {isPartial && (
+              <>
+                  <div>
+                    Least Element: {least}
+                  </div>
+                  <div>
+                    Greatest Element: {greatest}
+                  </div>
+                  <div>
+                    Minimal Elements: {minimals}
+                  </div>
+                  <div>
+                    Maximal Elements: {maximals}
+                  </div>
+                  <Box>
+                    <img src={`data:image/png;base64,${diagram}`} alt="Hasse Diagram" />
+                  </Box>
+              </>
+          )}
+      </>
+    );
 };
 
 export default RelationProperties;

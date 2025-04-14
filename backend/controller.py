@@ -27,7 +27,7 @@ from backend.solvers import matrix_solver
 from backend.solvers import matrix_multiply_solver
 from backend.solvers import cycle_solver
 from backend.solvers import disjoint_solver
-from backend.solvers import compisitions_solver
+from backend.solvers import compositions_solver
 from backend.solvers import table_solver
 from backend.solvers import topological_solver
 from backend.solvers import critical_solver
@@ -39,7 +39,9 @@ from backend.solvers import set_function_solver
 from backend.solvers import order_solver
 from backend.solvers import master_solver
 from backend.solvers import set_complement_solver
-from backend.solvers import power_set_solver 
+from backend.solvers import power_set_solver
+from backend.solvers import binary_unary_solver
+from backend.solvers import cartesian_product_solver
 from solvers.util import exceptions
 
 #---Imports for the reporter---#
@@ -111,7 +113,6 @@ def solve_algorithim(solver_type, data):
         data = data["hypotheses"]
         return propositional_solver.solve(data['hypotheses'], data['conclusion'])
     elif solver_type == 'recursive-definitions':
-        data = data["formula"]
         return recursion_solver.solve(data['formula'], data['baseCase'], data['n'])
     elif solver_type == 'basic-set-functions':
         return set_function_solver.solve(data)
@@ -124,11 +125,14 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'set-complement':
         return set_complement_solver.solve(data["universal_set"], data["subset"])
     elif solver_type == 'binary-unary-operators':
-        # Call the appropriate function for binary and unary operators
-        pass
+        return binary_unary_solver.solve(
+        data.get('choice', '1'),
+        data.get('set', ''),
+        data.get('table', []),
+        data.get('expression', '')
+        )
     elif solver_type == 'cartesian-products':
-        # Call the appropriate function for cartesian products
-        pass
+        return cartesian_product_solver.solve(data["setOne"], data["setTwo"])
     elif solver_type == 'properties-of-relations':
         return properties_solver.solve(data["set"], data["relation"])
     elif solver_type == 'closure-axioms':
@@ -148,7 +152,7 @@ def solve_algorithim(solver_type, data):
     elif solver_type == 'permutations-cycle':
         return cycle_solver.solve(data['input'])
     elif solver_type == 'compositions':
-        return compisitions_solver.solve(data['setOne']['setOne'], data['setOne']['setTwo'])
+        return compositions_solver.solve(data['setOne']['setOne'], data['setOne']['setTwo'])
     elif solver_type == 'disjoint-cycles':
         return disjoint_solver.solve(data['input'])
     elif solver_type == 'order-of-magnitude':
@@ -159,7 +163,7 @@ def solve_algorithim(solver_type, data):
         use_log = data.get("useLog", False)
         use_root = data.get("useRoot", False)
 
-        return order_solver.solve(order, scalars_f, scalars_g)
+        return order_solver.solve(order, scalars_f, scalars_g, use_root)
     elif solver_type == 'master-theorem':
         return master_solver.solve(data["a"], data["b"], data["c"])
     elif solver_type == 'boolean-matrices':

@@ -1,26 +1,92 @@
-import React from 'react';
-import ReportFooter from '../components/ReportFooter';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner } from 'grommet';
+import React, { useState } from 'react';
+import { CheckBox, Button, Box, Text, TextInput } from 'grommet';
+import PropositionalLogicOperationsTable from '../components/PropositionalLogicOperationsTable';
 import { solvePropositionalLogic } from '../api';
-import Background from '../components/Background';
-import HomeButton from '../components/HomeButton';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+import SolverPage from '../components/SolverPage';
 
 
 /*
 * Name: PropositionalLogicSolver.js
-* Author: Parker Clark
+* Author: Parker Clark and Mathias Buchanan
 * Description: Solver page for the propositional logic solver.
 */
 
 const PropositionalLogicSolver = () => {
-  const [hypotheses, setHypotheses] = React.useState('');
-  const [conclusion, setConclusion] = React.useState('');
+  const [isCaveman, setIsCaveman] = useState(false);
+  const [hypotheses, setHypotheses] = useState('');
+  const [conclusion, setConclusion] = useState('');
   const [output, setOutput] = React.useState('');
+  const [outputSymbol, setOutputSymbol] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [showOutput, setShowOutput] = useState(false);
 
   const { trackResults } = useDiagnostics("PROPOSITIONAL_LOGIC");
+
+  const SAMPLE_HYPOTHESES = "A → B ^ A";
+  const SAMPLE_CONCLUSION = "B";
+  
+  const fillWithSample = () => {
+    setHypotheses(SAMPLE_HYPOTHESES);
+    setConclusion(SAMPLE_CONCLUSION);
+  };
+
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Propositional Logic Syntax:
+        </Text>
+        <Text margin={{ bottom: "small" }}>
+          Enter your hypotheses and conclusion in the appropriate fields.
+        </Text>
+        <Text margin={{ bottom: "small" }}>
+          Use the following operators for logical expressions:
+        </Text>
+        <PropositionalLogicOperationsTable />
+        <Text margin={{ top: "small" }}>
+          Ensure that tokens and operators are delimited by spaces or parentheses.
+        </Text>
+        
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            onMouseDown={(e) => e.preventDefault()}
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  // Update the Input component:
+
+  const Input = () => {
+    return (
+      <Box>
+        <Box margin={{ bottom: "small" }}>
+          <TextInput 
+            placeholder="Example: Enter your hypotheses here (e.g., A → B ^ A)"
+            value={hypotheses}
+            onChange={(event) => setHypotheses(event.target.value)}
+          />
+        </Box>
+        <Box margin={{ top: "small" }} direction="row" align="center">
+          <Text margin={{ right: "small" }}>→</Text>
+          <TextInput
+            placeholder="Example: Enter your conclusion here (e.g., B)"
+            value={conclusion}
+            onChange={(event) => setConclusion(event.target.value)}
+          />
+        </Box>
+      </Box>
+    );
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -41,34 +107,50 @@ const PropositionalLogicSolver = () => {
     setError('');
     const startTime = performance.now();
         
-        try {
-          const result = await solvePropositionalLogic({hypotheses, conclusion});
-          
-          // Track successful execution with timing
-          trackResults(
-            { hypotheses: hypotheses, conclusion: conclusion }, // Input data
-            result,       // Result data
-            performance.now() - startTime      // Execution time in ms
-          );
-          
-          setOutput(result);
-        } catch (err) {
-          // Track failed execution with timing
-          trackResults(
-            { hypotheses: hypotheses, conclusion: conclusion },
-            { error: err.message || 'Unknown error' },
-            performance.now() - startTime
-          );
-          
-          setError('An error occurred while solving the WFF.');
-        } finally {
+    try {
+      const result = await solvePropositionalLogic({ hypotheses, conclusion });
+      const parsedResult = JSON.parse(result); // Ensure it's properly parsed
+    
+      // Set output to the "String" entry
+      setOutput(parsedResult.String || "No output available");
+      setOutputSymbol(parsedResult.Symbol || "No output available");
+    
+      // Track successful execution with timing
+      trackResults(
+        { hypotheses, conclusion }, 
+        parsedResult.String,  // Only track the String output
+        parsedResult.Symbol,
+        performance.now() - startTime
+      );
+    } catch (err) {
+      // Handle errors
+      trackResults(
+        { hypotheses, conclusion },
+        { error: err.message || 'Unknown error' },
+        performance.now() - startTime
+      );
+    
+      setError('An error occurred while solving the WFF.');
+    } finally {
           setLoading(false);
         }
       }
 
+  const betterText = [
+    "Propositional logic is a branch of logic that determines whether a tautology is valid based on its premises. For example, consider the statement: \"If the grass is green, then the sky is blue. The grass is green, therefore, the sky is blue.\" This is a tautology. Typically, tautologies are expressed using logical variables, such as [(A → B) ∧ A] → B. However, not every logical statement is a tautology. To be a tautology, the premises must logically guarantee the conclusion. For instance, the statement: \"If I have a hat, then it is green. I have a TV, therefore, my house is blue.\" is not a tautology, as the conclusion does not logically follow from the premises.",
+    "Propositional logic verifies whether given premises logically lead to a conclusion.",
+    "Enter a tautology below to see a step-by-step proof."
+  ];
+  
+  const cavemanText = [
+    "Logic good. Logic check if big smart statement always true. Example: \"If grass green, then sky blue. Grass green. So, sky blue.\" That always true. That tautology. Smart people use letters to show tautology, like [(A → B) ∧ A] → B. But not all statement tautology. Must make sense. Example bad: \"If I have hat, hat is green. I have TV. So, house is blue.\" That not make sense. Not tautology.",
+    "Logic check if words make sense. Put tautology below. See proof!",
+    "Tool show fancy proof with steps so you understand tautology. Get smart!"
+  ];
+
   const validateInput = (input) => {
     // Regular expression to validate WFF general form, excluding V and S as variables.
-    const wffRegex = /^(\(*\[*\s*(not\s*)?(?![VvS])[A-IK-UWYZ]('|′|¬)?\s*\]*\)*(\s*(->|→|v|∨|~|`|\^|∧|>)\s*\(*\[*\s*(not\s*)?(?![VvS])[A-IK-UWYZ]('|′|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|′|¬)?|\[\s*.*\s*\]('|′|¬)?$/;
+    const wffRegex = /^(\(*\[*\s*(not\s*)?(?![vS])[A-IK-UVWYZ]('|′|¬)?\s*\]*\)*(\s*(->|→|v|∨|~|`|\^|∧|>)\s*\(*\[*\s*(not\s*)?(?![vS])[A-IK-UVWYZ]('|′|¬)?\s*\]*\)*\)*)*)+|\(\s*.*\s*\)('|′|¬)?|\[\s*.*\s*\]('|′|¬)?$/;
   
     // Check for balanced parentheses and brackets
     const balancedParentheses = (input.match(/\(/g) || []).length === (input.match(/\)/g) || []).length;
@@ -91,79 +173,42 @@ const PropositionalLogicSolver = () => {
     return (wffRegex.test(input) && balancedParentheses && balancedBrackets && containsOperator && 
             !singlePairParentheses && !singlePairBrackets) || 
             singleNegatedVariable || negatedExpressionWithParentheses || negatedExpressionWithBrackets;
+
+  
 };
+
+  const renderOutput = () => {
+    return (
+      <Box>
+        <Box direction="row" align="center" margin={{ bottom: "small" }}>
+          <CheckBox
+            label="Use words instead of symbols"
+            checked={showOutput}
+            onChange={(event) => setShowOutput(event.target.checked)}
+          />
+        </Box>
+        <Text style={{ whiteSpace: 'pre-wrap' }}>
+          {output ? (showOutput ? output : outputSymbol) : "Output will be displayed here!"}
+        </Text>
+      </Box>
+    );
+  };
 
 
   return (
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-      <PageContent align="center" skeleton={false}>
-        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-          <HomeButton />
-        </Box>
-        <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-          <Text size="xxlarge" weight="bold">
-            Propositional Logic Validator
-          </Text>
-        </Box>
-        <Box align="center" justify="center">
-          <Text size="large" margin="none" weight={500}>
-            Topic: Propositional Logic
-          </Text>
-        </Box>
-        <Box align="center" justify="start" direction="column" cssGap={false} width={'large'}>
-          <Text margin={{"bottom":"small"}} textAlign="center">
-            This tool helps you analyze propositional logic statements and their truth values
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            Propositional logic is a branch of logic that deals with statements that can be either true or false. These statements are combined using logical operators such as AND, OR, NOT, and IMPLIES to form more complex expressions. By evaluating these expressions, we can determine their validity, consistency, and logical relationships.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            A truth table systematically lists all possible truth values of a logical expression based on its components. This helps in verifying logical equivalences, identifying contradictions, and understanding how different logical statements interact.
-          </Text>
-          <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-            Enter your propositional logic hypotheses and conclusion below to generate its validity.
-          </Text>
-        </Box>
-        <Card width="large" pad="medium" background={{"color":"light-1"}}>
-          <CardBody pad="small">
-            <Box margin={{bottom : "small" }}>
-              <TextInput 
-                placeholder="Example: Enter your hypotheses here (e.g., A > B)"
-                value={hypotheses}
-                onChange={(event) => setHypotheses(event.target.value)}
-              />
-            </Box>
-            <Box margin={{top : "small" }}>
-              <TextInput 
-                placeholder="Example: Enter your conclusion here (e.g., B)"
-                value={conclusion}
-                onChange={(event) => setConclusion(event.target.value)}
-              />
-            </Box>
-            {error && <Text color="status-critical">{error}</Text>}
-          </CardBody>
-          <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
-          </CardFooter>
-        </Card>
-        <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
-          <CardBody pad="small">
-            <Text weight="bold">
-              Output:
-            </Text>
-            <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-              <Text style={{ whiteSpace: 'pre-wrap' }}>
-                {output ? output: "Output will be displayed here!"}
-              </Text>
-            </Box>
-          </CardBody>
-        </Card>
-        <ReportFooter />
-      </PageContent>
-      </Box>
-    </Page>
+    <SolverPage
+    title="Propositional Logic Validator"
+    topic="Statement And Tautologies"
+    description="This tool demonstrates the steps used to prove a tautology."
+    paragraphs={isCaveman ? cavemanText : betterText}
+    InfoText={Info}
+    InputComponent={Input}
+    input_props={null}
+    error={error}
+    handle_solve={handleSolve}
+    loading={loading}
+    render_output={renderOutput}
+  />
   );
 };
 

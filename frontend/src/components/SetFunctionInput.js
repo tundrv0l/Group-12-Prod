@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box, Text, Button, FormField, TextInput, Select,
-  Heading, Collapsible
+  Heading
 } from 'grommet';
-import { Add, Trash, CircleInformation } from 'grommet-icons';
+import { Add, Trash} from 'grommet-icons';
 
 /*
 * Name: SetFunctionInput.js
@@ -37,7 +37,6 @@ const SetFunctionInput = ({
   onExpressionsChange, 
   onValidate 
 }) => {
-  const [showHelp, setShowHelp] = useState(false);
 
   // Add a new set definition
   const addSet = () => {
@@ -105,41 +104,6 @@ const SetFunctionInput = ({
 
   return (
     <>
-      <Box margin={{bottom : "xxsmall" }}>
-        <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-          <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-        </Box>
-        <Collapsible open={showHelp}>
-          <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="full">
-            <Heading level={5} margin={{ bottom: "xsmall" }} weight="bold">Regular Set Notation</Heading>
-            <Text>Enter sets using curly braces with comma-separated elements:</Text>
-            <Text margin={{ top: "xsmall" }}>
-              <strong>{"{1, 2, 3}"}</strong> - Set containing numbers 1, 2, and 3
-            </Text>
-            <Text><strong>{"{a, b, c}"}</strong> - Set containing elements a, b, and c</Text>
-            <Text><strong>{"∅"}</strong> or <strong>{"{}"}</strong> - Empty set</Text>
-            <Text><strong>{"{1, {2, 3}}"}</strong> - Nested set</Text>
-            
-            <Heading level={5} margin={{ vertical: "xsmall" }} weight="bold">Set Builder Notation</Heading>
-            <Text>Describe sets using conditions:</Text>
-            <Text margin={{ top: "xsmall" }}>
-              <strong>{"{x | x ∈ Z and x > 3}"}</strong> - Integers greater than 3
-            </Text>
-            <Text><strong>{"{x | x ∈ N and x < 10}"}</strong> - Natural numbers less than 10</Text>
-            
-            <Heading level={5} margin={{ vertical: "xsmall" }} weight="bold">Available Set Operations</Heading>
-            <Text>A ⊆ B - A is a subset of B</Text>
-            <Text>A ⊂ B - A is a proper subset of B</Text>
-            <Text>a ∈ A - Element a is in set A</Text>
-            <Text>A = B - Sets A and B are equal</Text>
-            <Text>A ∪ B - Union of sets A and B</Text>
-            <Text>A ∩ B - Intersection of sets A and B</Text>
-            <Text>A - B - Difference of sets A and B</Text>
-            <Text>A × B - Cartesian product of sets A and B</Text>
-          </Box>
-        </Collapsible>
-      </Box>
-
       {/* Set Definitions Section */}
       <Box margin={{ bottom: "medium" }}>
         <Box direction="row" justify="between" align="center">
@@ -254,6 +218,11 @@ const SetFunctionInput = ({
                   align: { top: 'bottom' },
                   overflow: "auto"
                 }}
+                valueLabel={
+                  <Box pad="xsmall">
+                    <Text size="small">{SET_OPERATORS.find(op => op.value === expr.operator)?.label || expr.operator}</Text>
+                  </Box>
+                }
               />
             </Box>
             

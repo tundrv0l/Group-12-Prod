@@ -1,11 +1,15 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
-import { solvePERTDiagrams } from '../api';
-import ReportFooter from '../components/ReportFooter';
-import Background from '../components/Background';
-import HomeButton from '../components/HomeButton';
+import { Box, Text, Button } from 'grommet';
+import { solveCriticalPaths, solvePERTDiagrams, solveTopologicalSorting } from '../api';
 import TaskTableInput from '../components/TaskTableInput';
+import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+
+/*
+* Name: PERTDiagrams.js
+* Author: Parker Clark, Jacob Warren
+* Description: 5.2 task table analysis
+*/
 
 const PERTDiagrams = () => {
   const [tasks, setTasks] = React.useState([{ name: '', prerequisites: new Set(), time: 0 }]);
@@ -16,6 +20,18 @@ const PERTDiagrams = () => {
   
   // Add diagnostics
   const { trackResults } = useDiagnostics("PERT_DIAGRAMS");
+
+  const SAMPLE_TASKS = [
+    { name: 'A', prerequisites: new Set(), time: 3 },
+    { name: 'B', prerequisites: new Set(['A']), time: 4 },
+    { name: 'C', prerequisites: new Set(['A']), time: 2 },
+    { name: 'D', prerequisites: new Set(['B', 'C']), time: 5 },
+    { name: 'E', prerequisites: new Set(['D']), time: 1 }
+  ];
+  
+  const fillWithSample = () => {
+    setTasks(SAMPLE_TASKS);
+  };
 
   const formatTasksForBackend = () => {
     // Create an object to hold the formatted data
@@ -54,7 +70,7 @@ const PERTDiagrams = () => {
       return false;
     }
     
-    // Check for negative times
+    // Check for non-positive times
     if (isTimed && tasks.some(task => task.time < 0)) {
       setError('Task times cannot be negative.');
       return false;
@@ -118,9 +134,20 @@ const PERTDiagrams = () => {
     
     const startTime = performance.now();
     try {
-      let result = await solvePERTDiagrams(tableFormat);
-      result = JSON.parse(result);
-      setOutput(result["PERT Diagram"]);
+      // combine them
+      let critical_result;
+      if (isTimed) { critical_result = await solveCriticalPaths(tableFormat); }
+      let pert_result = await solvePERTDiagrams(tableFormat);
+      let topological_result = await solveTopologicalSorting(tableFormat);
+
+      if (isTimed) { critical_result = JSON.parse(critical_result); }
+      pert_result = JSON.parse(pert_result);
+      topological_result = JSON.parse(topological_result);
+
+      let result = Object.assign({}, pert_result, topological_result);
+      if (isTimed) { result = Object.assign({}, result, critical_result); }
+
+      setOutput(result);
       
       // Tracking results for diagnostics
       trackResults(
@@ -131,92 +158,111 @@ const PERTDiagrams = () => {
     } catch (err) {
       trackResults(
         { tasks: tableFormat, isTimed },
-        { error: err.message || "Error solving PERT diagram" },
+        { error: err.message || "Error solving table" },
         performance.now() - startTime
       );
-      setError('An error occurred while generating the PERT Diagram.');
+      setError('An error occurred while solving the table.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Convert base64 image string to image element
-  const renderOutput = () => {
+  return (
+    <SolverPage
+      title="PERT Diagrams"
+      topic="Topological Sorting"
+      description="This tool helps you analyze PERT Diagrams in discrete mathematics."
+      DescriptionComponent={Description}
+      InfoText={() => <Info fillWithSample={fillWithSample} />}
+      InputComponent={TaskTableInput}
+      input_props={{tasks, setTasks, isTimed, setIsTimed}}
+      error={error}
+      handle_solve={handleSolve}
+      loading={loading}
+      OutputComponent={Output}
+      output_props={{output, isTimed}}
+    />
+  );
+};
+
+const Description = () => {
+    return (
+      <>
+        <Text margin={{ bottom: "small" }} textAlgin="start" weight="normal">
+          A PERT (Program Evaluation Review Technique) diagram is a graphical representation used to model the tasks and dependencies in a project. This tool allows you to input a set of tasks and their dependencies to generate a PERT diagram.
+        </Text>
+        <Text margin={{ bottom: "small" }} textAlgin="start" weight="normal">
+          By analyzing PERT diagrams, you can visualize the sequence of tasks, identify critical paths, and optimize task scheduling. This tool allows you to input a set of tasks and their dependencies to generate the PERT diagram and analyze the critical paths.
+        </Text>
+        <Text margin={{ bottom: "medium" }} textAlgin="start" weight="normal">
+          Enter your tasks and dependencies below to generate and analyze the PERT diagram and critical paths!
+        </Text>
+      </>
+    ); 
+}
+
+const Info = ({ fillWithSample }) => {
+  return (
+    <>
+      <Text weight="bold" margin={{ bottom: "xsmall" }}>
+        Task Table Input:
+      </Text>
+      <Text>
+        A task table represents activities with their dependencies and durations.
+      </Text>
+      <Text margin={{ top: "xsmall" }}>
+        To use this tool:
+      </Text>
+      <Text>1. Add tasks with descriptive names (A, B, C, etc.)</Text>
+      <Text>2. For each task, select its prerequisites (tasks that must be completed before it can start)</Text>
+      <Text>3. Enter the time required to complete each task</Text>
+      <Text>4. Click Solve to generate the diagram and analyze paths</Text>
+      
+      <Box margin={{ top: 'medium' }} align="center">
+        <Button 
+          label="Fill with Sample" 
+          onClick={fillWithSample} 
+          primary 
+          size="small"
+          border={{ color: 'black', size: '2px' }}
+          pad={{ vertical: 'xsmall', horizontal: 'small' }}
+        />
+      </Box>
+    </>
+  ); 
+}
+
+const Output = ({ output, isTimed }) => {
     if (!output) {
       return "Output will be displayed here!";
     }
 
-    // Parse out json object and return out elements one by one
-    return (
-      <Box>
-        <img src={`data:image/png;base64,${output}`} alt="PERT Diagram" />
-      </Box>
-    );
-  };
+    let critical_path;
+    if (isTimed) { critical_path = output["Critical Path"]; }
+    const minimum_time = output["Minimum Time"];
+    const diagram = output["PERT Diagram"];
+    const total_relation = output["Relation"];
 
-  return (
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-        <PageContent align="center" skeleton={false}>
-          <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-            <HomeButton />
+    return (
+      <>
+          {isTimed && (
+              <>
+                  <div>
+                    Critcal Path: {critical_path}
+                  </div>
+                  <div>
+                    Minimum Time: {minimum_time}
+                  </div>
+              </>
+          )}
+          <div>
+            Total Relation: {total_relation}
+          </div>
+          <Box>
+            <img src={`data:image/png;base64,${diagram}`} alt="PERT Diagram" />
           </Box>
-          <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-            <Text size="xxlarge" weight="bold">
-              PERT Diagrams
-            </Text>
-          </Box>
-          <Box align="center" justify="center">
-            <Text size="large" margin="none" weight={500}>
-              Topic: Topological Sorting
-            </Text>
-          </Box>
-          <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{"bottom":"small"}} textAlign="center">
-              This tool helps you analyze PERT Diagrams in discrete mathematics.
-              </Text>
-              <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              A PERT (Program Evaluation Review Technique) diagram is a graphical representation used to model the tasks and dependencies in a project. This tool allows you to input a set of tasks and their dependencies to generate a PERT diagram.
-              </Text>
-              <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              By analyzing PERT diagrams, you can visualize the sequence of tasks, identify critical paths, and optimize task scheduling. This tool allows you to input a set of tasks and their dependencies to generate the PERT diagram and analyze the critical paths.
-              </Text>
-              <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-              Enter your tasks and dependencies below to generate and analyze the PERT diagram and critical paths!
-          </Text>
-          </Box>
-          <Card width="large" pad="medium" background={{"color":"light-1"}}>
-            <CardBody pad="small">
-              <TaskTableInput 
-                tasks={tasks} 
-                setTasks={setTasks}
-                isTimed={isTimed}
-                setIsTimed={setIsTimed}
-              />
-              {error && <Text color="status-critical" margin={{ top: 'small' }}>{error}</Text>}
-            </CardBody>
-            <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-              <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
-            </CardFooter>
-          </Card>
-          <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
-            <CardBody pad="small">
-              <Text weight="bold">
-                Output:
-              </Text>
-              <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                <Text>
-                  {renderOutput()}
-                </Text>
-              </Box>
-            </CardBody>
-          </Card>
-          <ReportFooter />
-        </PageContent>
-      </Box>
-    </Page>
-  );
+      </>
+    );
 };
 
 export default PERTDiagrams;

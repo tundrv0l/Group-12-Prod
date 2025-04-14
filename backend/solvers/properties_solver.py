@@ -29,21 +29,28 @@ bool[6]: a list of bools representing the respective properties
                                       of the relation on the set
 '''
 def solve(set_string, relation_string):
-    result_list = not_string(set_string, relation_string)
+    properties, violations, set_list = something(set_string, relation_string)
+
+    violation_strings = []
+    for v in violations:
+        violation_strings.append(strings.relation_to_string(set_list, v))
 
     # Return the result as json
     result = {
-        "Reflexive": result_list[0],
-        "Irreflexive": result_list[1],
-        "Symmetric": result_list[2],
-        "Asymmetric": result_list[3],
-        "Antisymmetric": result_list[4],
-        "Transitive": result_list[5]
+        "Reflexive": properties[0],
+        "Irreflexive": properties[1],
+        "Remove for Irrelexive": violation_strings[1],
+        "Symmetric": properties[2],
+        "Asymmetric": properties[3],
+        "Remove for Asymmetric": violation_strings[3],
+        "Antisymmetric": properties[4],
+        "Remove for Antisymmetric": violation_strings[4],
+        "Transitive": properties[5]
     }
 
     return json.dumps(result)
 
-def not_string(set_string, relation_string):
+def something(set_string, relation_string):
     set_list, relation = strings.is_a_relation(set_string, relation_string)
     set_ = {i for i in range(0, len(set_list))}
     
@@ -54,27 +61,39 @@ def not_string(set_string, relation_string):
     antisymmetric = True
     transitive = True
 
+    violations = [set() for i in range(0, 6)]
+
     # check reflexive and irreflexive
-    for element in set_:
-        if (element, element) in relation:
+    for a in set_:
+        if (a,a) in relation:
             irreflexive = False
+            violations[1].add((a,a))
         else:
             reflexive = False
+            violations[0].add((a,a))
 
     # check asymmetric, antisymmetric, and symmetric
-    for (a, b) in relation:
-        if (b, a) in relation:
+    for (a,b) in relation:
+        if (b,a) in relation:
             asymmetric = False
-            
+            violations[3].add((b,a))
             if a != b:
                 antisymmetric = False
+                violations[4].add((b,a))
         else:
             symmetric = False
+            violations[2].add((b,a))
 
     # check transitive
-    for (a, b) in relation:
-        for (c, d) in relation:
+    for (a,b) in relation:
+        for (c,d) in relation:
             if b == c and (a,d) not in relation:
                 transitive = False
+                violations[5].add((a,d))
 
-    return [reflexive, irreflexive, symmetric, asymmetric, antisymmetric, transitive]
+    return [reflexive, irreflexive, symmetric, asymmetric, antisymmetric, transitive], violations, set_list
+
+def not_string(set_string, relation_string):
+    properties, violations, set_list = something(set_string, relation_string)
+
+    return properties

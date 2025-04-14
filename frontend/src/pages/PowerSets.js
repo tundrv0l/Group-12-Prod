@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  Page, PageContent, Box, Text, Card, CardBody, CardFooter, 
-  Button, Spinner, Heading, Collapsible
-} from 'grommet';
-import { CircleInformation } from 'grommet-icons';
+import { Box, Text, Button, Heading } from 'grommet';
 import { solvePowerSet } from '../api';
-import ReportFooter from '../components/ReportFooter';
-import Background from '../components/Background';
-import HomeButton from '../components/HomeButton';
+import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import PowerSetInput from '../components/PowerSetInput';
 
@@ -23,10 +17,68 @@ const PowerSets = () => {
   const [output, setOutput] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
 
   const { trackResults } = useDiagnostics("POWER_SET");
 
+  const SAMPLE_SET = "{1, 2, 3}";
+  
+  const fillWithSample = () => {
+    setSets([SAMPLE_SET]);
+    setIterations(1);
+  };
+
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Power Sets:
+        </Text>
+        <Text>The power set of a set S is the set of all subsets of S, including the empty set and S itself.</Text>
+        <Text margin={{ vertical: "xsmall" }}>
+          <strong>For example:</strong> If S = {"{a, b}"}, then the power set of S is {"{{}, {a}, {b}, {a, b}}"}
+        </Text>
+        
+        <Heading level={5} margin={{ vertical: "xsmall" }} weight="bold">Set Notation Guidelines</Heading>
+        <Text>Enter sets using curly braces with comma-separated elements:</Text>
+        <Text margin={{ top: "xsmall" }}>
+          <strong>{"{1, 2, 3}"}</strong> - Set containing numbers 1, 2, and 3
+        </Text>
+        <Text><strong>{"{a, b, c}"}</strong> - Set containing elements a, b, and c</Text>
+        <Text><strong>{"∅"}</strong> or <strong>{"{}"}</strong> - Empty set</Text>
+        
+        <Heading level={5} margin={{ vertical: "xsmall" }} weight="bold">Power Set Iterations</Heading>
+        <Text>You can calculate the power set multiple times (iteratively):</Text>
+        <Text margin={{ top: "xsmall" }}>
+          <strong>1 iteration:</strong> P(S) = The regular power set of S
+        </Text>
+        <Text><strong>2 iterations:</strong> P(P(S)) = The power set of the power set of S</Text>
+        <Text><strong>3 iterations:</strong> P(P(P(S))) = The power set applied three times</Text>
+        
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
+    return (
+      <PowerSetInput
+        sets={sets}
+        iterations={iterations}
+        error={error}
+        onSetsChange={setSets}
+        onIterationsChange={setIterations}
+      />
+    );
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -134,7 +186,7 @@ const PowerSets = () => {
       const result = typeof data === 'string' ? JSON.parse(data) : data;
       
       return (
-        <Box>
+        <Box width="100%" fill="horizontal">
           {result.iterations && (
             <Box direction="row" margin={{ bottom: "medium" }}>
               <Text weight="bold" margin={{ right:"xsmall"}}>Iterations: </Text>
@@ -150,9 +202,9 @@ const PowerSets = () => {
           ))}
           
           {result.power_sets && Object.entries(result.power_sets).map(([iteration, powerSet]) => (
-            <Box key={iteration} margin={{ top: "medium" }}>
+            <Box key={iteration} margin={{ top: "medium" }} width="100%">
               <Text weight="bold">{iteration}: </Text>
-              <Box background="light-1" pad="small" margin={{ top: "xsmall" }} round="small">
+              <Box background="light-1" pad="small" margin={{ top: "xsmall" }} round="small" width="100%">
                 {typeof powerSet === 'object' ? (
                   <Box>
                     {powerSet.notation && (
@@ -204,113 +256,23 @@ const PowerSets = () => {
   };
 
   return (
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '65%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-      <PageContent align="center" skeleton={false}>
-        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-          <HomeButton />
-        </Box>
-        <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-          <Text size="xxlarge" weight="bold">
-            Power Sets
-          </Text>
-        </Box>
-        <Box align="center" justify="center">
-          <Text size="large" margin="none" weight={500}>
-            Topic: Sets
-          </Text>
-        </Box>
-        <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{"bottom":"small"}} textAlign="center">
-                This tool helps you generate and analyze power sets.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                A power set is the set of all subsets of a set, including the empty set and the set itself. For example, the power set of {"{A, B}"} is {"{{}, {A}, {B}, {A, B}}"}.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-                By generating power sets, you can explore all possible combinations of elements within a set. This tool allows you to input a set and generate its power set to analyze the relationships between its subsets.
-            </Text>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-                Enter your set notation below to generate its power set and analyze the results!
-            </Text>
-        </Box>
-        
-        <Card width="full" pad="medium" background={{"color":"light-1"}}>
-          <CardBody pad="small">
-            <Box direction="row" align="center" margin={{ bottom: 'small' }}>
-              <Button 
-                icon={<CircleInformation />} 
-                onClick={() => setShowHelp(!showHelp)} 
-                plain 
-                margin={{ right: 'small' }}
-              />
-              <Heading level={4} margin="none" weight="bold">Define your power set inputs:</Heading>
-            </Box>
-            
-            <Collapsible open={showHelp}>
-              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }}>
-                <Heading level={5} margin={{ bottom: "xsmall" }} weight="bold">Power Sets</Heading>
-                <Text>The power set of a set S is the set of all subsets of S, including the empty set and S itself.</Text>
-                <Text margin={{ vertical: "xsmall" }}>
-                  <strong>For example:</strong> If S = {"{a, b}"}, then the power set of S is {"{{}, {a}, {b}, {a, b}}"}
-                </Text>
-                
-                <Heading level={5} margin={{ vertical: "xsmall" }} weight="bold">Set Notation Guidelines</Heading>
-                <Text>Enter sets using curly braces with comma-separated elements:</Text>
-                <Text margin={{ top: "xsmall" }}>
-                  <strong>{"{1, 2, 3}"}</strong> - Set containing numbers 1, 2, and 3
-                </Text>
-                <Text><strong>{"{a, b, c}"}</strong> - Set containing elements a, b, and c</Text>
-                <Text><strong>{"∅"}</strong> or <strong>{"{}"}</strong> - Empty set</Text>
-                
-                <Heading level={5} margin={{ vertical: "xsmall" }} weight="bold">Power Set Iterations</Heading>
-                <Text>You can calculate the power set multiple times (iteratively):</Text>
-                <Text margin={{ top: "xsmall" }}>
-                  <strong>1 iteration:</strong> P(S) = The regular power set of S
-                </Text>
-                <Text><strong>2 iterations:</strong> P(P(S)) = The power set of the power set of S</Text>
-                <Text><strong>3 iterations:</strong> P(P(P(S))) = The power set applied three times</Text>
-                <Text margin={{ top: "small" }}>
-                  <strong>Note:</strong> The size of power sets grows exponentially with each iteration.
-                </Text>
-              </Box>
-            </Collapsible>
-
-            <PowerSetInput
-              sets={sets}
-              iterations={iterations}
-              error={error}
-              onSetsChange={setSets}
-              onIterationsChange={setIterations}
-            />
-          </CardBody>
-          <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-            <Button 
-              label={loading ? <Spinner /> : "Solve"} 
-              onClick={handleSolve} 
-              disabled={loading} 
-              primary
-            />
-          </CardFooter>
-        </Card>
-        
-        <Card width="full" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
-          <CardBody pad="small">
-            <Text weight="bold">
-              Output:
-            </Text>
-            <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-              <Box pad="small" width="100%">
-                {output ? renderOutput(output) : "Output will be displayed here!"}
-              </Box>
-            </Box>
-          </CardBody>
-        </Card>
-        <ReportFooter />
-      </PageContent>
-      </Box>
-    </Page>
+    <SolverPage
+      title="Power Sets"
+      topic="Sets"
+      description="This tool helps you generate and analyze power sets."
+      paragraphs={[
+        "A power set is the set of all subsets of a set, including the empty set and the set itself. For example, the power set of {A, B} is {{}, {A}, {B}, {A, B}}.",
+        "By generating power sets, you can explore all possible combinations of elements within a set. This tool allows you to input a set and generate its power set to analyze the relationships between its subsets.",
+        "Enter your set notation below to generate its power set and analyze the results!"
+      ]}
+      InfoText={Info}
+      InputComponent={Input}
+      input_props={null}
+      error={error}
+      handle_solve={handleSolve}
+      loading={loading}
+      render_output={() => output ? renderOutput(output) : "Output will be displayed here!"}
+    />
   );
 };
 

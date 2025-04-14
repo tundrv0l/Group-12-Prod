@@ -44,10 +44,23 @@ def _parse_formula(formula):
         return: str
             The parsed formula with Python equivalents of logical operators.
     '''
+
+    # Process any parenthesized expressions first
+    parenthesis_pattern =  re.findall(r'\(([^()]+)\)', formula)
+    for expr in parenthesis_pattern:
+        parsed_expr = _parse_formula(expr.strip())
+        formula = formula.replace(f"({expr})", f"({parsed_expr})")
+    
+    # Also process bracket expressions
+    bracket_pattern = re.findall(r'\[([^\[\]]+)\]', formula)
+    for expr in bracket_pattern:
+        parsed_expr = _parse_formula(expr.strip())
+        formula = formula.replace(f"[{expr}]", f"[{parsed_expr}]")
+
+
     # Replace characters from the book copy n paste format
     formula = formula.replace('`', ' and ')
     formula = formula.replace('~', ' or ')
-    formula = formula.replace('S', ' <= ')
     formula = formula.replace('4', ' == ')
     formula = re.sub(r"([A-Z])′", r'not \1', formula)
 
@@ -55,7 +68,6 @@ def _parse_formula(formula):
     formula = formula.replace('¬', 'not ')
     formula = formula.replace('∧', ' and ')
     formula = formula.replace('∨', ' or ')
-    formula = formula.replace('→', ' <= ')
     formula = formula.replace('↔', ' == ')
 
     formula = re.sub(r"\(([^()]+)\)\'", r'not (\1)', formula)  # ASCII apostrophe
@@ -71,29 +83,50 @@ def _parse_formula(formula):
     formula = formula.replace('V', ' or ')
     formula = formula.replace('^', ' and ')
     formula = formula.replace('<>', ' == ')
-    formula = formula.replace('->', ' <= ')
-    formula = formula.replace('>', ' <= ')
     formula = re.sub(r"([A-Z])'", r'not \1', formula)
 
-    # Handle the implies function for later eval() usage.
-    # Python is picky about how logical and conditional operators are validated.
-    if '->' in formula or '>' in formula or '→' in formula:
-        # Extract the left and right parts of the implication
-        parts = re.split(r'(->|>|→)', formula, 1)
-        if len(parts) >= 3:
-            left = parts[0].strip()
-            right = ''.join(parts[2:]).strip()
-            formula = f"implies({left}, {right})"
-    elif '<=' in formula or 'S' in formula:
-        # Same for <= operator
-        parts = re.split(r'(<=|S)', formula, 1)
-        if len(parts) >= 3:
-            left = parts[0].strip()
-            right = ''.join(parts[2:]).strip()
-            formula = f"implies({left}, {right})"
+    # Handle implication operators with improved pattern matching for complex expressions
+    implication_patterns = ['->', '→', '<=', '>', 'S']
+    
+    # Check if any implication operator exists in the formula
+    has_implication = any(pattern in formula for pattern in implication_patterns)
 
-    # Replace parentheses with brackets for easier parsing
-    formula = formula.replace('[', '(').replace(']', ')')
+    # Special handling of implication specifically because python hates this operation.
+    if has_implication:
+        
+        # Track parentheses/brackets balance to find the main implication operator
+        balance = 0
+        implication_pos = -1
+        implication_operator = None
+        
+        for i in range(len(formula)):
+            char = formula[i]
+            
+            # Track parentheses/brackets balance
+            if char in '([':
+                balance += 1
+            elif char in ')]':
+                balance -= 1
+            
+            # Only look for implication operators at top level (balance == 0)
+            if balance == 0:
+                # Check for each implication pattern
+                for pattern in implication_patterns:
+                    if i + len(pattern) <= len(formula) and formula[i:i+len(pattern)] == pattern:
+                        implication_pos = i
+                        implication_operator = pattern
+                        break
+                
+                if implication_pos != -1:
+                    break
+        
+        # If we found an implication operator at the top level
+        if implication_pos != -1:
+            left_side = formula[:implication_pos].strip()
+            right_side = formula[implication_pos + len(implication_operator):].strip()
+            
+            # Convert to implies function
+            formula = f"implies({left_side}, {right_side})"
 
     return formula
 
@@ -216,6 +249,7 @@ def solve(formula):
             # Evaluate the intermediate expression via Python's eval function
             row.append(eval(parsed_expr, {}, env))
         
+        print(parsed_formula)
         # Evaluate the main formula and append it to results
         row.append(eval(parsed_formula, {}, env))
         results.append(row)

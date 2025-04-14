@@ -99,8 +99,8 @@ def solve(set_string, relation_string):
     result = {
         "Least Element": least_string,
         "Greatest Element": greatest_string,
-        "Minimal Element": minimals_string,
-        "Maximal Element": maximals_string
+        "Minimal Elements": minimals_string,
+        "Maximal Elements": maximals_string
     }
 
     return json.dumps(result)

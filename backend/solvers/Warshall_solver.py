@@ -35,7 +35,7 @@ def solve(matrix):
     noOfMatrix = 1
     # Add the rows to the truth table
     for row in matriix:
-        truth_table["Matrix" + str(noOfMatrix)] = row
+        truth_table["Matrix " + str(noOfMatrix)] = row
         noOfMatrix += 1
 
     return json.dumps(truth_table)
