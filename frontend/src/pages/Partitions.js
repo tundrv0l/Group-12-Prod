@@ -25,6 +25,14 @@ const Partitions = () => {
 
   const { trackResults } = useDiagnostics("PARTITIONS");
 
+  const SAMPLE_SET = "{a, b, c, d}";
+  const SAMPLE_PARTITION = "{{a,b},{c,d}}";
+
+  const fillWithSample = () => {
+    setSet(SAMPLE_SET);
+    setRelation(SAMPLE_PARTITION);
+  };
+
   const handleSolve = async () => {
     // Empty output and error messages
     setLoading(true);
@@ -247,6 +255,16 @@ const Partitions = () => {
                 <Text>
                   <strong>{'{{a,b},{c,d}}'}</strong>
                 </Text>
+                <Box margin={{ top: 'medium' }} align="center">
+                <Button 
+                  label="Fill with Sample" 
+                  onClick={fillWithSample} 
+                  primary 
+                  size="small"
+                  border={{ color: 'brand', size: '1px' }}
+                  pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                />
+                </Box>
               </Box>
             </Collapsible>
               <TextInput 

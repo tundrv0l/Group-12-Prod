@@ -1,15 +1,11 @@
 import React, { useRef } from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, Spinner } from 'grommet';
+import { Box, Text, Button } from 'grommet';
 import { solveMasterTheorem } from '../api';
-import ReportFooter from '../components/ReportFooter';
-import Background from '../components/Background';
-import HomeButton from '../components/HomeButton';
+import SolverPage from '../components/SolverPage';
 import MasterTheoremInput from '../components/MasterTheoremInput';
 import Latex from 'react-latex-next';
 import 'katex/dist/katex.min.css';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-import PageTopScroller from '../components/PageTopScroller';
-
 /*
 * Name: MasterTheorem.js
 * Author: Parker Clark
@@ -29,6 +25,19 @@ const MasterTheorem = () => {
 
   // Diagnostics tracking
   const { trackResults } = useDiagnostics("MASTER_THEOREM");
+
+  // Sample data for the "Fill with Sample" button
+  const SAMPLE_A = "2";
+  const SAMPLE_B = "2";
+  const SAMPLE_C = "1";
+  
+  const fillWithSample = () => {
+    setA(SAMPLE_A);
+    setB(SAMPLE_B);
+    setC(SAMPLE_C);
+  };
+
+ 
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -79,6 +88,58 @@ const MasterTheorem = () => {
     }
   };
 
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          The Master Theorem:
+        </Text>
+        <Text>
+          The Master Theorem is used for solving recurrence relations of the form: T(n) = aT(n/b) + f(n)
+        </Text>
+        <Text margin={{ top: "xsmall" }}>
+          Where:
+        </Text>
+        <Text>• a ≥ 1: Number of subproblems</Text>
+        <Text>• b {">"} 1: Factor by which problem size is reduced</Text>
+        <Text>• f(n) = n^c: Cost of dividing and combining solutions</Text>
+
+        <Text margin={{ top: "medium" }} weight="bold">The three cases for classification:</Text>
+        <Text>• Case 1: If log<sub>b</sub>(a) {"<"} c, then T(n) = Θ(n<sup>c</sup>)</Text>
+        
+        <Text>• Case 2: If log<sub>b</sub>(a) = c, then T(n) = Θ(n<sup>c</sup> log n)</Text>
+        
+        <Text>• Case 3: If log<sub>b</sub>(a) {">"} c, then T(n) = Θ(n<sup>log<sub>b</sub>(a)</sup>)</Text>
+
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
+    return (
+      <MasterTheoremInput
+        ref={inputRef}
+        a={a}
+        setA={setA}
+        b={b}
+        setB={setB}
+        c={c}
+        setC={setC}
+        setError={setError}
+      />
+    );
+  };
+
   // Function to render the output with LaTeX
   const renderOutput = () => {
     if (!output) {
@@ -114,71 +175,23 @@ const MasterTheorem = () => {
   };
 
   return (
-    <PageTopScroller>
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-        <PageContent align="center" skeleton={false}>
-          <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-            <HomeButton />
-          </Box>
-          <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-            <Text size="xxlarge" weight="bold">
-              The Master Theorem
-            </Text>
-          </Box>
-          <Box align="center" justify="center">
-            <Text size="large" margin="none" weight={500}>
-              Topic: Order of Magnitude
-            </Text>
-          </Box>
-          <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{"bottom":"small"}} textAlign="center">
-              This tool helps you analyze the Master Theorem in discrete mathematics.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              The Master Theorem provides a straightforward way to determine the asymptotic behavior of recurrence relations that arise in the analysis of divide-and-conquer algorithms. This tool allows you to input a recurrence relation and determine its asymptotic complexity.
-            </Text>
-            <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-              By analyzing recurrence relations using the Master Theorem, you can understand the time complexity of algorithms and compare their efficiency. This is useful in various applications such as algorithm design, computational complexity, and performance analysis.
-            </Text>
-            <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-              Enter the parameters of your recurrence relation below to analyze its asymptotic complexity using the Master Theorem!
-            </Text>
-          </Box>
-          <Card width="large" pad="medium" background={{"color":"light-1"}}>
-            <CardBody pad="small">
-              <MasterTheoremInput
-                ref={inputRef}
-                a={a}
-                setA={setA}
-                b={b}
-                setB={setB}
-                c={c}
-                setC={setC}
-                setError={setError}
-              />
-              {error && <Text color="status-critical">{error}</Text>}
-            </CardBody>
-            <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"xxsmall"}}>
-              <Button label={loading ? <Spinner /> : "Analyze"} onClick={handleSolve} disabled={loading} />
-            </CardFooter>
-          </Card>
-          <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
-            <CardBody pad="small">
-              <Text weight="bold">
-                Output:
-              </Text>
-              <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-                {renderOutput()}
-              </Box>
-            </CardBody>
-          </Card>
-          <ReportFooter />
-        </PageContent>
-      </Box>
-    </Page>
-    </PageTopScroller>
+    <SolverPage
+      title="The Master Theorem"
+      topic="Order of Magnitude"
+      description="This tool helps you analyze the Master Theorem in discrete mathematics."
+      paragraphs={[
+        "The Master Theorem provides a straightforward way to determine the asymptotic behavior of recurrence relations that arise in the analysis of divide-and-conquer algorithms. This tool allows you to input a recurrence relation and determine its asymptotic complexity.",
+        "By analyzing recurrence relations using the Master Theorem, you can understand the time complexity of algorithms and compare their efficiency. This is useful in various applications such as algorithm design, computational complexity, and performance analysis.",
+        "Enter the parameters of your recurrence relation below to analyze its asymptotic complexity using the Master Theorem!"
+      ]}
+      InfoText = {Info}
+      InputComponent={Input}
+      input_props={null}
+      error={error}
+      handle_solve={handleSolve}
+      loading={loading}
+      render_output={renderOutput}
+    />
   );
 };
 

@@ -1,16 +1,12 @@
-import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
-import { solvePartitions } from '../api';
-import { CircleInformation, Add, Trash } from 'grommet-icons';
-import ReportFooter from '../components/ReportFooter';
-import HomeButton from '../components/HomeButton';
-import Background from '../components/Background';
-import { useDiagnostics } from '../hooks/useDiagnostics';
+import React, { useCallback, useEffect, useState} from 'react';
+import { Box, Text, TextInput, Button } from 'grommet';
+import { Add, Trash } from 'grommet-icons';
 
 // Custom component for adding multiple partitions
 const PartitionInput = ({ value, onChange }) => {
   // Parse the initial value if it exists
-  const parseInitialPartitions = () => {
+   // Parse the initial value if it exists - memoize this function
+   const parseInitialPartitions = useCallback(() => {
     if (!value) return [''];  // Start with one empty partition by default
     try {
       // Remove outer braces and split by },{ to get individual partition sets
@@ -24,12 +20,21 @@ const PartitionInput = ({ value, onChange }) => {
     } catch (e) {
       return [''];
     }
-  };
+  }, [value]);
 
-  const [partitions, setPartitions] = React.useState(parseInitialPartitions());
+  const [partitions, setPartitions] = useState(parseInitialPartitions());
 
-    // Update the parent component when partitions change
+  useEffect(() => {
+    // Only update internal state when value changes from outside
+    if (value) {
+      const parsedPartitions = parseInitialPartitions();
+      setPartitions(parsedPartitions);
+    }
+  }, [value, parseInitialPartitions]); // Include both dependencies
+  
+  // Update the parent component when partitions change
   React.useEffect(() => {
+    
     // Handle empty partitions - for empty partitions, represent as empty sets
     const formattedPartitions = partitions.map(p => {
       const trimmedValue = p.trim();

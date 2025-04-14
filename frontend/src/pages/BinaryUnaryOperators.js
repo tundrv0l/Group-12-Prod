@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, RadioButtonGroup, FormField, Tab, Tabs, Collapsible } from 'grommet';
+import { Box, Text, TextInput, RadioButtonGroup, FormField, Tab, Tabs, Button } from 'grommet';
 import { solveBinaryUnaryOperators } from '../api';
-import ReportFooter from '../components/ReportFooter';
-import Background from '../components/Background';
-import HomeButton from '../components/HomeButton';
+import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-import { CircleInformation } from 'grommet-icons';
-import PageTopScroller from '../components/PageTopScroller';
 
 
  
@@ -28,8 +24,9 @@ const BinaryUnaryOperators = () => {
   const [output, setOutput] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
   
+  const SAMPLE_SET = "a b c";
+  const SAMPLE_EXPRESSION = "x ⊕ y = (x + y) % 3; S = {0,1,2}";
 
   const { trackResults } = useDiagnostics("BINARY_UNARY_OPERATORS");
 
@@ -38,6 +35,25 @@ const BinaryUnaryOperators = () => {
     setActiveTab(choice === '1' ? 0 : 1);
   }, [choice]);
 
+  const fillWithTableSample = () => {
+    setChoice('1');
+    setActiveTab(0);
+    setSetInput(SAMPLE_SET);
+    
+    // Create sample table matrix for a b c
+    const sampleMatrix = [
+      ['a', 'b', 'c'],
+      ['b', 'c', 'a'],
+      ['c', 'a', 'b']
+    ];
+    setTableMatrix(sampleMatrix);
+  };
+
+  const fillWithExpressionSample = () => {
+    setChoice('2');
+    setActiveTab(1);
+    setExpressionInput(SAMPLE_EXPRESSION);
+  };
 
   // Update matrix size based on set elements
   const updateTableSize = (newSetInput) => {
@@ -119,6 +135,20 @@ const BinaryUnaryOperators = () => {
     }
     
     return true;
+  };
+
+  const renderOutput = () => {
+    if (!output) {
+      return <Text>Output will be displayed here!</Text>;
+    }
+    
+    return (
+      <Box>
+        <Text style={{ whiteSpace: 'pre-wrap', width: '100%', fontFamily: 'monospace' }}>
+          {output}
+        </Text>
+      </Box>
+    );
   };
 
   const validateExpression = () => {
@@ -211,173 +241,172 @@ const BinaryUnaryOperators = () => {
     return setInput.trim().split(/\s+/).filter(Boolean);
   };
 
-  return (
-    <PageTopScroller>
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-      <PageContent align="center" skeleton={false}>
-        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-          <HomeButton />
-        </Box>
-        <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-          <Text size="xxlarge" weight="bold">
-            Binary & Unary Operators
-          </Text>
-        </Box>
-        <Box align="center" justify="center">
-          <Text size="large" margin="none" weight={500}>
-            Topic: Sets
-          </Text>
-        </Box>
-        <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-            <Text margin={{ "bottom": "small" }} textAlign="center">
-                This tool helps you analyze binary and unary operations on sets.
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Binary & Unary Operations:
+        </Text>
+        
+        {activeTab === 0 ? (
+          <>
+            <Text margin={{ bottom: 'small' }}>
+              Table Input Format:
             </Text>
-            <Text margin={{ "bottom": "small" }} textAlign="start" weight="normal">
-                Binary operations take two inputs from a set and return an output in the same set. 
-                Examples include addition and multiplication on numbers.
+            <Text margin={{ bottom: 'xsmall' }}>
+              1. Enter space-separated elements for your set (e.g., <strong>1 2 3</strong> or <strong>a b c</strong>)
             </Text>
-            <Text margin={{ "bottom": "small" }} textAlign="start" weight="normal">
-                Unary operations take one input from a set and return an output in the same set. 
-                Examples include negation and squaring of numbers.
+            <Text margin={{ bottom: 'small' }}>
+              2. Fill in the operation table with valid set elements
             </Text>
-            <Text textAlign="start" weight="normal" margin={{ "bottom": "medium" }}>
-                Choose an input method below to check if an operation is well-defined on a set!
-            </Text>
-        </Box>
-        <Card width="large" pad="medium" background={{ "color": "light-1" }}>
-          <CardBody pad="small">
-          <Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-              <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
+            
+            <Box margin={{ top: 'medium' }} align="center">
+              <Button 
+                label="Fill with Table Sample" 
+                onClick={fillWithTableSample} 
+                primary 
+                size="small"
+                border={{ color: 'black', size: '2px' }}
+                pad={{ vertical: 'xsmall', horizontal: 'small' }}
+              />
             </Box>
-            <Collapsible open={showHelp}>
-              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-                <Text weight="bold" margin={{ bottom: 'xsmall' }}>Table Input Format:</Text>
-                <Text margin={{ bottom: 'small' }}>
-                  1. Enter space-separated elements for your set (e.g., <strong>1 2 3</strong> or <strong>a b c</strong>)
-                </Text>
-                <Text margin={{ bottom: 'small' }}>
-                  2. Fill in the operation table with valid set elements
-                </Text>
-                <Box height="8px" />
-                
-                <Text weight="bold" margin={{ bottom: 'xsmall' }}>Expression Input Format:</Text>
-                <Text margin={{ bottom: 'small' }}>
-                  Use the format: <strong>operation = expression; S = set</strong>
-                </Text>
-                <Text margin={{ bottom: 'xsmall' }}>Examples:</Text>
-                <Text margin={{ bottom: 'xsmall' }}>
-                  • <strong>x# = x^2; S = Z</strong> (Unary operation squaring integers)
-                </Text>
-                <Text margin={{ bottom: 'xsmall' }}>
-                  • <strong>x ⊕ y = (x + y) % 3; S = {"{0,1,2}"}</strong> (Binary operation on modular arithmetic)
-                </Text>
-              </Box>
-            </Collapsible>
-            <Box margin={{ "bottom": "medium" }}>
-              <FormField label="Choose Input Type">
-                <RadioButtonGroup
-                  name="inputType"
-                  options={[
-                    { label: 'Table', value: '1' },
-                    { label: 'Expression', value: '2' }
-                  ]}
-                  value={choice}
-                  onChange={(event) => setChoice(event.target.value)}
+          </>
+        ) : (
+          <>
+            <Text margin={{ bottom: 'small' }}>
+              Expression Input Format:
+            </Text>
+            <Text margin={{ bottom: 'small' }}>
+              Use the format: <strong>operation = expression; S = set</strong>
+            </Text>
+            <Text margin={{ bottom: 'xsmall' }}>Examples:</Text>
+            <Text margin={{ bottom: 'xsmall' }}>
+              • <strong>x# = x^2; S = Z</strong> (Unary operation squaring integers)
+            </Text>
+            <Text margin={{ bottom: 'xsmall' }}>
+              • <strong>x ⊕ y = (x + y) % 3; S = {"{0,1,2}"}</strong> (Binary operation on modular arithmetic)
+            </Text>
+            
+            <Box margin={{ top: 'medium' }} align="center">
+              <Button 
+                label="Fill with Expression Sample" 
+                onClick={fillWithExpressionSample} 
+                primary 
+                size="small"
+                border={{ color: 'black', size: '2px' }}
+                pad={{ vertical: 'xsmall', horizontal: 'small' }}
+              />
+            </Box>
+          </>
+        )}
+      </>
+    );
+  };
+
+  const Input = () => {
+    return (
+      <Box>
+        <Box margin={{ "bottom": "medium" }}>
+          <FormField label="Choose Input Type">
+            <RadioButtonGroup
+              name="inputType"
+              options={[
+                { label: 'Table', value: '1' },
+                { label: 'Expression', value: '2' }
+              ]}
+              value={choice}
+              onChange={(event) => setChoice(event.target.value)}
+            />
+          </FormField>
+        </Box>
+
+        <Tabs activeIndex={activeTab} onActive={handleTabChange}>
+          <Tab title="Table Input">
+            <Box margin={{ top: 'small' }}>
+              <FormField label="Set Elements (space-separated)" required>
+                <TextInput
+                  placeholder="e.g., 1 2 3"
+                  value={setInput}
+                  onChange={handleSetInputChange}
+                />
+              </FormField>
+
+              {getSetElements().length > 0 && (
+                <Box margin={{ top: 'medium' }}>
+                  <Text weight="bold" margin={{ bottom: 'small' }}>Operation Table:</Text>
+                  
+                  {/* Display row headers */}
+                  <Box direction="row" margin={{ bottom: 'xsmall' }}>
+                    <Box width="50px" margin={{ right: 'small' }}></Box>
+                    {getSetElements().map((element, index) => (
+                      <Box key={index} width="50px" align="center">
+                        <Text weight="bold">{element}</Text>
+                      </Box>
+                    ))}
+                  </Box>
+
+                  {/* Matrix with row headers */}
+                  {getSetElements().map((rowElement, rowIndex) => (
+                    <Box key={rowIndex} direction="row" margin={{ bottom: 'xsmall' }}>
+                      <Box width="50px" align="center" margin={{ right: 'small' }}>
+                        <Text weight="bold">{rowElement}</Text>
+                      </Box>
+                      <Box direction="row">
+                        {tableMatrix[rowIndex]?.map((cell, colIndex) => (
+                          <TextInput
+                            key={colIndex}
+                            value={cell}
+                            onChange={(e) => {
+                              const newMatrix = [...tableMatrix];
+                              newMatrix[rowIndex][colIndex] = e.target.value;
+                              setTableMatrix(newMatrix);
+                            }}
+                            width="50px"
+                            textAlign="center"
+                          />
+                        ))}
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
+              )}
+            </Box>
+          </Tab>
+
+          <Tab title="Expression Input">
+            <Box margin={{ top: 'small' }}>
+              <FormField label="Operation Expression" required>
+                <TextInput
+                  placeholder="e.g., x# = x^2; S = Z"
+                  value={expressionInput}
+                  onChange={(e) => setExpressionInput(e.target.value)}
                 />
               </FormField>
             </Box>
-
-            <Tabs activeIndex={activeTab} onActive={handleTabChange}>
-              <Tab title="Table Input">
-                <Box margin={{ top: 'small' }}>
-                  <FormField label="Set Elements (space-separated)" required>
-                    <TextInput
-                      placeholder="e.g., 1 2 3"
-                      value={setInput}
-                      onChange={handleSetInputChange}
-                    />
-                  </FormField>
-                  
-                  {getSetElements().length > 0 && (
-                    <Box margin={{ top: 'medium' }}>
-                      <Text weight="bold" margin={{ bottom: 'small' }}>Operation Table:</Text>
-                      
-                      {/* Display row headers */}
-                      <Box direction="row" margin={{ bottom: 'xsmall' }}>
-                        <Box width="50px" margin={{ right: 'small' }}></Box>
-                        {getSetElements().map((element, index) => (
-                          <Box key={index} width="50px" align="center">
-                            <Text weight="bold">{element}</Text>
-                          </Box>
-                        ))}
-                      </Box>
-                      
-                      {/* Matrix with row headers */}
-                      {getSetElements().map((rowElement, rowIndex) => (
-                        <Box key={rowIndex} direction="row" margin={{ bottom: 'xsmall' }}>
-                          <Box width="50px" align="center" margin={{ right: 'small' }}>
-                            <Text weight="bold">{rowElement}</Text>
-                          </Box>
-                          <Box direction="row">
-                            {tableMatrix[rowIndex]?.map((cell, colIndex) => (
-                              <TextInput
-                                key={colIndex}
-                                value={cell}
-                                onChange={(e) => {
-                                  const newMatrix = [...tableMatrix];
-                                  newMatrix[rowIndex][colIndex] = e.target.value;
-                                  setTableMatrix(newMatrix);
-                                }}
-                                width="50px"
-                                textAlign="center"
-                              />
-                            ))}
-                          </Box>
-                        </Box>
-                      ))}
-                    </Box>
-                  )}
-                </Box>
-              </Tab>
-              
-              <Tab title="Expression Input">
-                <Box margin={{ top: 'small' }}>
-                  <FormField label="Operation Expression" required>
-                    <TextInput
-                      placeholder="e.g., x# = x^2; S = Z"
-                      value={expressionInput}
-                      onChange={(e) => setExpressionInput(e.target.value)}
-                    />
-                  </FormField>
-                </Box>
-              </Tab>
-            </Tabs>
-
-            {error && <Text color="status-critical" margin={{ top: 'small' }}>{error}</Text>}
-          </CardBody>
-          <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{ "top": "small" }}>
-            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
-          </CardFooter>
-        </Card>
-        <Card width="large" pad="medium" background={{ "color": "light-2" }} margin={{ "top": "medium" }}>
-          <CardBody pad="small">
-            <Text weight="bold">
-              Output:
-            </Text>
-            <Box align="start" justify="center" pad={{ "vertical": "small" }} background={{ "color": "light-3" }} round="xsmall">
-              <Text style={{ whiteSpace: 'pre-wrap', width: '100%', fontFamily: 'monospace' }}>
-                {output ? output : "Output will be displayed here!"}
-              </Text>
-            </Box>
-          </CardBody>
-        </Card>
-        <ReportFooter />
-      </PageContent>
+          </Tab>
+        </Tabs>
       </Box>
-    </Page>
-    </PageTopScroller>
+    );
+  };
+
+  return (
+    <SolverPage
+      title="Binary & Unary Operators"
+      topic="Sets"
+      description="This tool helps you analyze binary and unary operations on sets."
+      paragraphs={[
+        "Binary operations take two inputs from a set and return an output in the same set. Examples include addition and multiplication on numbers.",
+        "Unary operations take one input from a set and return an output in the same set. Examples include negation and squaring of numbers.",
+        "Choose an input method below to check if an operation is well-defined on a set!"
+      ]}
+      InfoText={Info}
+      InputComponent={Input}
+      input_props={null}
+      error={error}
+      handle_solve={handleSolve}
+      loading={loading}
+      render_output={renderOutput}
+    />
   );
 };
 

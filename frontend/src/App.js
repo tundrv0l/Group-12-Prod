@@ -11,7 +11,6 @@ import BasicSetFunctions from './pages/BasicSetFunctions';
 import PowerSets from './pages/PowerSets';
 import SetComplement from './pages/SetComplement';
 import BinaryUnaryOperators from './pages/BinaryUnaryOperators';
-import CartesianProducts from './pages/CartesianProducts';
 import RelationProperties from './pages/RelationProperties';
 import Partitions from './pages/Partitions';
 import PERTDiagrams from './pages/PERTDiagrams';
@@ -45,7 +44,6 @@ const App = () => (
         <Route path="/power-set" element={<PowerSets />} />
         <Route path="/set-complement" element={<SetComplement />} />
         <Route path="/binary-unary-operators" element={<BinaryUnaryOperators />} />
-        <Route path="/cartesian-products" element={<CartesianProducts />} />
         <Route path="/properties-of-relations" element={<RelationProperties />} />
         <Route path="/partitions" element={<Partitions />} />
         <Route path="/pert-diagrams" element={<PERTDiagrams />} />

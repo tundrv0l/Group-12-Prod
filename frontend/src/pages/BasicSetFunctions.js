@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  Page, PageContent, Box, Text, Card, CardBody, CardFooter, Button, 
-  Spinner, Heading
-} from 'grommet';
+import { Box, Text, Button, Heading } from 'grommet';
 import { solveBasicSetFunctions } from '../api';
-import ReportFooter from '../components/ReportFooter';
-import Background from '../components/Background';
-import HomeButton from '../components/HomeButton';
+import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import SetFunctionInput from '../components/SetFunctionInput';
 
@@ -31,6 +26,79 @@ const BasicSetFunctions = () => {
   const [loading, setLoading] = useState(false);
 
   const { trackResults } = useDiagnostics("BASIC_SET_FUNCTIONS");
+
+  const SAMPLE_SETS = [
+    { name: "A", type: "regular", value: "{1, 2, 3, 4}" },
+    { name: "B", type: "regular", value: "{3, 4, 5, 6}" }
+  ];
+  
+  const SAMPLE_EXPRESSIONS = [
+    { leftOperand: "A", operator: "⊆", rightOperand: "B" },
+    { leftOperand: "1", operator: "∈", rightOperand: "A" }
+  ];
+
+  const fillWithSample = () => {
+    setSets(SAMPLE_SETS);
+    setExpressions(SAMPLE_EXPRESSIONS);
+  };
+
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Set Functions:
+        </Text>
+        <Text>
+          This tool evaluates set operations and relationships between sets.
+        </Text>
+        <Text margin={{ top: "small" }}>
+          <strong>Defining Sets:</strong>
+        </Text>
+        <Text>
+          • Regular Set Format: {'{a, b, c}'} or {'{1, 2, 3}'} or ∅ (empty set)
+        </Text>
+        <Text>
+          • Set Builder Notation: {'{x | x ∈ Z and x > 0}'} (elements x from Z where x {">"} 0)
+        </Text>
+        
+        <Text margin={{ top: "small" }}>
+          <strong>Available Operations:</strong>
+        </Text>
+        <Text>• ⊆ (Subset): Tests if every element in the left set is also in the right set</Text>
+        <Text>• ⊂ (Proper Subset): Tests if left is a subset of right but not equal to right</Text>
+        <Text>• = (Equality): Tests if both sets contain the exact same elements</Text>
+        <Text>• ∈ (Membership): Tests if an element is in a set</Text>
+        <Text>• ∩ (Intersection): Finds common elements in both sets</Text>
+        <Text>• ∪ (Union): Combines all elements from both sets</Text>
+        <Text>• − (Difference): Returns elements in left set that aren't in right set</Text>
+        <Text>• × (Cartesian Product): Creates all possible ordered pairs from the sets</Text>
+
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
+    return (
+      <SetFunctionInput
+        sets={sets}
+        expressions={expressions}
+        error={error}
+        onSetsChange={setSets}
+        onExpressionsChange={setExpressions}
+        onValidate={validateInput}
+      />
+    );
+  };
 
   // Validate the entire input form
   const validateInput = () => {
@@ -129,7 +197,11 @@ const BasicSetFunctions = () => {
   };
 
   // Helper function to render the structured output
-  const renderOutput = (output) => {
+  const renderOutput = () => {
+    if (!output) {
+      return "Output will be displayed here!";
+    }
+    
     try {
       let result;
       if (typeof output === 'string') {
@@ -152,7 +224,7 @@ const BasicSetFunctions = () => {
               ))}
             </Box>
           )}
-          
+
           {/* Display statement results */}
           {result.statements && (
             <Box>
@@ -239,79 +311,23 @@ const BasicSetFunctions = () => {
 
 
   return (
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '60%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-      <PageContent align="center" skeleton={false}>
-        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-          <HomeButton />
-        </Box>
-        <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-          <Text size="xxlarge" weight="bold">
-            Basic Set Functions
-          </Text>
-        </Box>
-        <Box align="center" justify="center">
-          <Text size="large" margin="none" weight={500}>
-            Topic: Sets
-          </Text>
-        </Box>
-        <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-          <Text margin={{"bottom":"small"}} textAlign="center">
-            This tool helps you apply basic set functions.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            A set is a collection of distinct objects, considered as an object in its own right. Basic set functions include the ability to test if sets are a subset of another, and determine elements of the set.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            By applying set functions, you can identify relationships between sets, find common elements, and determine the differences between sets. This tool allows you to input sets and apply basic set functions to generate the corresponding results.
-          </Text>
-          <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-            Define your sets below and create expressions to evaluate!
-          </Text>
-        </Box>
-        
-        <Card width="full" pad="medium" background={{"color":"light-1"}}>
-          <CardBody pad="small">
-            <SetFunctionInput
-              sets={sets}
-              expressions={expressions}
-              error={error}
-              onSetsChange={setSets}
-              onExpressionsChange={setExpressions}
-              onValidate={validateInput}
-            />
-          </CardBody>
-          <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-            <Button 
-              label={loading ? <Spinner /> : "Solve"} 
-              onClick={handleSolve} 
-              disabled={loading} 
-              primary
-            />
-          </CardFooter>
-        </Card>
-        
-        <Card width="full" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
-          <CardBody pad="small">
-            <Text weight="bold">
-              Output:
-            </Text>
-            <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-              {output ? (
-                <Box pad="small" width="100%">
-                  {renderOutput(output)}
-                </Box>
-              ) : (
-                <Text>Output will be displayed here!</Text>
-              )}
-            </Box>
-          </CardBody>
-        </Card>
-        <ReportFooter />
-      </PageContent>
-      </Box>
-    </Page>
+    <SolverPage
+      title="Basic Set Functions"
+      topic="Sets"
+      description="This tool helps you apply basic set functions."
+      paragraphs={[
+        "A set is a collection of distinct objects, considered as an object in its own right. Basic set functions include the ability to test if sets are a subset of another, and determine elements of the set.",
+        "By applying set functions, you can identify relationships between sets, find common elements, and determine the differences between sets. This tool allows you to input sets and apply basic set functions to generate the corresponding results.",
+        "Define your sets below and create expressions to evaluate!"
+      ]}
+      InfoText={Info}
+      InputComponent={Input}
+      input_props={null}
+      error={error}
+      handle_solve={handleSolve}
+      loading={loading}
+      render_output={renderOutput}
+    />
   );
 };
 
