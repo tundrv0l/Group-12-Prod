@@ -21,11 +21,45 @@ const RelationProperties = () => {
 
   const { trackResults } = useDiagnostics("RELATION_PROPERTIES");
 
-  const SAMPLE_SET = "{a, b, c}";
-  const SAMPLE_RELATION = "{(a,a),(b,b),(c,c),(a,b),(b,c),(a,c)}";
+//  const SAMPLE_SET = "{a, b, c}";
+//  const SAMPLE_RELATION = "{(a,a),(b,b),(c,c),(a,b),(b,c),(a,c)}";
+//
+//      const SAMPLE_SET = [];
+//      [];
+//      SAMPLE_SET.push("{}");
+//      SAMPLE_RELATION.push("{}");
+//      SAMPLE_SET.push("{a,b,c,11}");
+//      SAMPLE_RELATION.push("{(a,a),(b,b),(c,c),(11,11),(a,11),(b,11),(11,c),(a,c),(b,c)}");
+//      SAMPLE_SET.push("{ls,53534,12}");
+//      SAMPLE_RELATION.push("{(53534,53534),(ls,ls),(12,12),(12,ls),(ls,12),(ls,53534),(53534,ls),(12,53534),(53534,12)}");
+//      SAMPLE_SET.push("{a,b,c}");
+//      SAMPLE_RELATION.push("{(c,c),(a,b),(b,a),(a,c)}");
 
   // Add this function inside the RelationProperties component
-  const fillWithSample = () => {
+  const fillWithEmpty = () => {
+    const SAMPLE_SET = "{}";
+    const SAMPLE_RELATION = "{}";
+    setSet(SAMPLE_SET);
+    setRelation(SAMPLE_RELATION);
+  };
+
+  const fillWithPartial = () => {
+    const SAMPLE_SET = "{a,b,c,11}";
+    const SAMPLE_RELATION = "{(a,a),(b,b),(c,c),(11,11),(a,11),(b,11),(11,c),(a,c),(b,c)}";
+    setSet(SAMPLE_SET);
+    setRelation(SAMPLE_RELATION);
+  };
+
+  const fillWithEquivalence = () => {
+    const SAMPLE_SET = "{ls,53534,12}";
+    const SAMPLE_RELATION = "{(53534,53534),(ls,ls),(12,12),(12,ls),(ls,12),(ls,53534),(53534,ls),(12,53534),(53534,12)}";
+    setSet(SAMPLE_SET);
+    setRelation(SAMPLE_RELATION);
+  };
+
+  const fillWithNo = () => {
+    const SAMPLE_SET = "{a,b,c}";
+    const SAMPLE_RELATION = "{(c,c),(a,b),(b,a),(a,c)}";
     setSet(SAMPLE_SET);
     setRelation(SAMPLE_RELATION);
   };
@@ -125,9 +159,36 @@ const RelationProperties = () => {
 
             <Box margin={{ top: 'medium' }} align="center">
             <Button 
-              label="Fill with Sample" 
-              onClick={fillWithSample} 
+              label="Fill with Empty" 
+              onClick={fillWithEmpty} 
               primary 
+              size="small"
+              border={{ color: 'black', size: '2px' }}
+              pad={{ vertical: 'xsmall', horizontal: 'small' }}
+              onMouseDown={(e) => e.preventDefault()}
+            />
+            <Button 
+              label="Fill with Partial Ordering" 
+              onClick={fillWithPartial} 
+              primary 
+              size="small"
+              border={{ color: 'black', size: '2px' }}
+              pad={{ vertical: 'xsmall', horizontal: 'small' }}
+              onMouseDown={(e) => e.preventDefault()}
+            />
+            <Button 
+              label="Fill with Equivalence Relation" 
+              onClick={fillWithEquivalence} 
+              primary
+              size="small"
+              border={{ color: 'black', size: '2px' }}
+              pad={{ vertical: 'xsmall', horizontal: 'small' }}
+              onMouseDown={(e) => e.preventDefault()}
+            />
+            <Button 
+              label="Fill with No Properties" 
+              onClick={fillWithNo} 
+              primary
               size="small"
               border={{ color: 'black', size: '2px' }}
               pad={{ vertical: 'xsmall', horizontal: 'small' }}
