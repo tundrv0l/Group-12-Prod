@@ -13,7 +13,7 @@ import SetComplement from './pages/SetComplement';
 import BinaryUnaryOperators from './pages/BinaryUnaryOperators';
 import RelationProperties from './pages/RelationProperties';
 import Partitions from './pages/Partitions';
-import PERTDiagrams from './pages/PERTDiagrams';
+import TaskTables from './pages/TaskTables';
 import PermutationsOfACycle from './pages/PermutationsOfACycle';
 import CompositionOfPermutations from './pages/CompositionsOfPermutations';
 import DisjointCycles from './pages/DisjointCycles';
@@ -46,7 +46,7 @@ const App = () => (
         <Route path="/binary-unary-operators" element={<BinaryUnaryOperators />} />
         <Route path="/properties-of-relations" element={<RelationProperties />} />
         <Route path="/partitions" element={<Partitions />} />
-        <Route path="/pert-diagrams" element={<PERTDiagrams />} />
+        <Route path="/pert-diagrams" element={<TaskTables />} />
         <Route path="/permutations-cycle" element={<PermutationsOfACycle />} />
         <Route path="/compositions-of-permutations" element={<CompositionOfPermutations />} />
         <Route path="/compositions" element={<CompositionOfPermutations />} />

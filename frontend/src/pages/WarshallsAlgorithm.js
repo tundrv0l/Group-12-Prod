@@ -3,7 +3,7 @@ import { Box, Text, Button } from 'grommet';
 import { solveWarshallsAlgorithm } from '../api';
 import SolverPage from '../components/SolverPage';
 import MatrixTable from '../components/MatrixTable';
-import MatrixToolbar from '../components/WarshallToolbar';
+import WarshallToolbar from '../components/WarshallToolbar';
 import MatrixOutput from '../components/MatrixOutput';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 /*
@@ -11,6 +11,8 @@ import { useDiagnostics } from '../hooks/useDiagnostics';
 * Author: Parker Clark and Mathias Buchanan
 * Description: Solver page for solving Warhsall's Algorithm problems.
 */
+
+const MAX_MATRIX_DIMENSION = 10;
 
 const WarshallsAlgorithm = () => {
   const [matrix, setMatrix] = React.useState([['0']]);
@@ -54,6 +56,10 @@ const WarshallsAlgorithm = () => {
         <Text margin={{ top: "xsmall" }}>
           The algorithm will compute the transitive closure of the graph, showing all possible paths between vertices.
         </Text>
+
+        <Text margin={{ top: "medium" }} color="status-warning">
+          Important: Matrices are limited to {MAX_MATRIX_DIMENSION}×{MAX_MATRIX_DIMENSION} dimensions for performance reasons.
+        </Text>
         
         <Box margin={{ top: 'medium' }} align="center">
           <Button 
@@ -73,7 +79,7 @@ const WarshallsAlgorithm = () => {
     return (
       <Box style={{ marginBottom: '20px' }}>
         <MatrixTable label="Adjacency Matrix" matrix={matrix} setMatrix={setMatrix} />
-        <MatrixToolbar matrix={matrix} setMatrix={setMatrix} combined addRemoveBoth />
+        <WarshallToolbar matrix={matrix} setMatrix={setMatrix} combined addRemoveBoth maxDimension={MAX_MATRIX_DIMENSION} />
       </Box>
     );
   };
@@ -141,6 +147,12 @@ const WarshallsAlgorithm = () => {
     // Check if the matrix is square
     const columns = matrix[0].length;
     const isSquareMatrix = matrix.length === columns;
+    
+    // Check if the matrix exceeds maximum dimensions
+    if (matrix.length > MAX_MATRIX_DIMENSION || columns > MAX_MATRIX_DIMENSION) {
+      setError(`Matrix exceeds maximum dimension of ${MAX_MATRIX_DIMENSION}×${MAX_MATRIX_DIMENSION}.`);
+      return false;
+    }
 
     // Check to make sure all cells are either 0 or 1
     const isValidMatrix = matrix.every(row => row.every(cell => cell === '0' || cell === '1'));
