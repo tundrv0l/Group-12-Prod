@@ -6,16 +6,12 @@ import json
 import os
 import sys
 import networkx as nx
-import matplotlib
-matplotlib.use('Agg') # Use to generate diagrams without a display
-import matplotlib.pyplot as plt
-from io import BytesIO
-import base64
 
 # Append the parent directory to the path so we can import in utility
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from solvers.util import exceptions
 from solvers.util import methods
+from solvers.util import images
 
 '''
 ==========
@@ -72,20 +68,10 @@ def generate_diagram(table):
     labels = [f"{set_list[e]}({table[set_list[e]][1]})" for e in range(0, size)]
     layers = methods.generate_layers(set_, relation, labels, size)
 
-    # generate the PERT diagram
-    G = nx.DiGraph()
-    G.add_nodes_from([labels[e] for e in set_])
-    G.add_edges_from([(labels[a], labels[b]) for (a, b) in relation])
-    pos = nx.multipartite_layout(G, subset_key=layers, align="vertical")
-    plt.figure()
-    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=15, font_color="black", font_weight="bold")
-    plt.title("PERT Diagram")
+    # make the graph
+    graph = nx.DiGraph()
+    graph.add_nodes_from([labels[e] for e in set_])
+    graph.add_edges_from([(labels[a], labels[b]) for (a, b) in relation])
+    pos = nx.multipartite_layout(graph, subset_key=layers, align="vertical")
 
-    # convert to image
-    img_buf = BytesIO()
-    plt.savefig(img_buf, format='png')
-    img_buf.seek(0)
-    img_data = base64.b64encode(img_buf.getvalue()).decode('utf-8')
-    plt.close()
-
-    return img_data
+    return images.graph_to_base64(graph, pos)

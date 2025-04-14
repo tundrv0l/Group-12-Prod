@@ -68,6 +68,9 @@ def not_json(permutation):
                 normalized_cycle = cycle[min_index:] + cycle[:min_index]
                 cycles.append(tuple(normalized_cycle))
 
+    if not cycles:
+        cycles.append([list(permutation.keys())[0]])
+
     # sort the cycles by the lowest first element in the cycle
     # (they are disjoint, so composition is commutative)
     cycles.sort(key=lambda x: x[0])

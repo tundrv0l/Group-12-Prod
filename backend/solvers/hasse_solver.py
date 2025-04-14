@@ -6,11 +6,6 @@ import os
 import sys
 import json
 import networkx as nx
-import matplotlib
-matplotlib.use('Agg') # Use to generate diagrams without a display
-import matplotlib.pyplot as plt
-from io import BytesIO
-import base64
 
 # Append the parent directory to the path so we can import in utility
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -18,6 +13,7 @@ from solvers.util import strings
 from solvers.util import methods
 from solvers import properties_solver
 from solvers.util import exceptions
+from solvers.util import images
 
 '''
 ==========
@@ -63,21 +59,11 @@ def generate_diagram(set_list, relation):
     set_ = {i for i in range(0, size)}
     layers = methods.generate_layers(set_, relation, set_list, size)
     
-    # generate the Hasse diagram
-    G = nx.Graph()
-    G.add_nodes_from(set_list)
-    G.add_edges_from([(set_list[a], set_list[b]) for (a, b) in relation])
-    pos = nx.multipartite_layout(G, subset_key=layers, align="horizontal")
-    plt.figure()
-    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=15, font_color="black", font_weight="bold")
-    plt.title("Hasse Diagram")
+    # make the graph
+    graph = nx.Graph()
+    graph.add_nodes_from(set_list)
+    graph.add_edges_from([(set_list[a], set_list[b]) for (a, b) in relation])
+    pos = nx.multipartite_layout(graph, subset_key=layers, align="horizontal")
 
-    # convert to image
-    img_buf = BytesIO()
-    plt.savefig(img_buf, format='png')
-    img_buf.seek(0)
-    img_data = base64.b64encode(img_buf.getvalue()).decode('utf-8')
-    plt.close()
-
-    return img_data
+    return images.graph_to_base64(graph, pos)
 

@@ -19,15 +19,41 @@ const PermutationsOfACycle = () => {
   const [loading, setLoading] = React.useState(false);
 
   const { trackResults } = useDiagnostics("PERMUTATIONS_CYCLE");
-  
-  // Sample permutation data
-  const SAMPLE_MATRIX = [
-    ['1', '2', '3', '4'],
-    ['2', '3', '4', '1']
-  ];
 
   
-  const fillWithSample = () => {
+  const fillWithSingle = () => {
+      const SAMPLE_MATRIX = [
+        ['1', '2', '3', '4'],
+        ['2', '3', '4', '1']
+      ];
+
+    setMatrix(SAMPLE_MATRIX);
+  };
+
+  const fillWithTwo = () => {
+      const SAMPLE_MATRIX = [
+        ['1', '2', '3', '4'],
+        ['2', '1', '4', '3']
+      ];
+
+    setMatrix(SAMPLE_MATRIX);
+  };
+
+  const fillWithThree = () => {
+      const SAMPLE_MATRIX = [
+        ['l', '2', '3', '4', 'p', '54', '1'],
+        ['2', 'l', '4', 'p', '3', '1', '54']
+      ];
+
+    setMatrix(SAMPLE_MATRIX);
+  };
+
+  const fillWithIdentity = () => {
+      const SAMPLE_MATRIX = [
+        ['1', '2', '3'],
+        ['1', '2', '3']
+      ];
+
     setMatrix(SAMPLE_MATRIX);
   };
 
@@ -52,8 +78,32 @@ const PermutationsOfACycle = () => {
         
         <Box margin={{ top: 'medium' }} align="center">
           <Button 
-            label="Fill with Sample" 
-            onClick={fillWithSample} 
+            label="Fill with Single Cycle" 
+            onClick={fillWithSingle} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Two Cycle" 
+            onClick={fillWithTwo} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Three Cycle" 
+            onClick={fillWithThree} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Identity" 
+            onClick={fillWithIdentity} 
             primary 
             size="small"
             border={{ color: 'black', size: '2px' }}
@@ -101,6 +151,22 @@ const PermutationsOfACycle = () => {
       setError('Matrix must have exactly 2 rows.');
       return;
     }
+    
+    const top = []
+    const bottom = []
+
+    for (let i = 0; i < matrix[0].length; i++) {
+        if (top.includes(matrix[0][i])) {
+            setError("Can't have duplicate inputs:" + matrix[0][i]);
+        }
+
+        if (bottom.includes(matrix[1][i])) {
+            setError("Can't have duplicate outputs:" + matrix[1][i]);
+        }
+
+        top.push(matrix[0][i]);
+        bottom.push(matrix[1][i]);
+    }
 
     try {
       const result = await solvePermutationsCycle(matrix);
@@ -119,7 +185,7 @@ const PermutationsOfACycle = () => {
   
       setOutput(result);
     } catch (err) {
-      if (err.message.includes("Not a permutation")) {
+      if (err.message.includes("Not a permutation.")) {
         setError("Not a permutation. Please ensure your input is a valid bijection.");
         // Tracking failures for diagnostics
         trackResults(
@@ -129,7 +195,7 @@ const PermutationsOfACycle = () => {
         );
         return;
       } else {
-        setError("An error occurred while generating the permutations.");
+        setError("Not a permutation. Please ensure your input is a valid bijection.");
         return;
       }
     } finally {

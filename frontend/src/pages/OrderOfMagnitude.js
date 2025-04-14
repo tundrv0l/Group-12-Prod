@@ -31,17 +31,70 @@ const OrderOfMagnitude = () => {
   // Track diagnostics
   const { trackResults } = useDiagnostics("ORDER_OF_MAGNITUDE");
 
-  // Sample data for the "Fill with Sample" button
-  const SAMPLE_ORDER = "2";
-  const SAMPLE_COEFFICIENTS = ["2", "3", "1"];  // 2n² + 3n + 1
-  const SAMPLE_COEFFICIENTS2 = ["1", "0", "0"];  // n²
-
-  const fillWithSample = () => {
+  const fillWithZero = () => {
+      const SAMPLE_ORDER = "0";
+      const SAMPLE_COEFFICIENTS = ["12"];
+      const SAMPLE_COEFFICIENTS2 = ["1.5"];
     setOrder(SAMPLE_ORDER);
     setCoefficients(SAMPLE_COEFFICIENTS);
     setCoefficients2(SAMPLE_COEFFICIENTS2);
     setUseLog(false);
     setUseRoot(false);
+  };
+
+  const fillWithTwo = () => {
+      const SAMPLE_ORDER = "2";
+      const SAMPLE_COEFFICIENTS = ["2", "3", "1"];
+      const SAMPLE_COEFFICIENTS2 = ["1", "0", "0"];
+    setOrder(SAMPLE_ORDER);
+    setCoefficients(SAMPLE_COEFFICIENTS);
+    setCoefficients2(SAMPLE_COEFFICIENTS2);
+    setUseLog(false);
+    setUseRoot(false);
+  };
+
+  const fillWithFour = () => {
+      const SAMPLE_ORDER = "4";
+      const SAMPLE_COEFFICIENTS = ["3.2", "0", "2", "-3", "1"];
+      const SAMPLE_COEFFICIENTS2 = ["0.5", "3", "1", "-1", "12"];
+    setOrder(SAMPLE_ORDER);
+    setCoefficients(SAMPLE_COEFFICIENTS);
+    setCoefficients2(SAMPLE_COEFFICIENTS2);
+    setUseLog(false);
+    setUseRoot(false);
+  };
+
+  const fillWithBigConstant = () => {
+      const SAMPLE_ORDER = "2";
+      const SAMPLE_COEFFICIENTS = ["2", "3", "154344"];
+      const SAMPLE_COEFFICIENTS2 = ["1", "0", "0"];
+    setOrder(SAMPLE_ORDER);
+    setCoefficients(SAMPLE_COEFFICIENTS);
+    setCoefficients2(SAMPLE_COEFFICIENTS2);
+    setUseLog(false);
+    setUseRoot(false);
+  };
+
+  const fillWithBigLeading = () => {
+      const SAMPLE_ORDER = "2";
+      const SAMPLE_COEFFICIENTS = ["2424", "3", "4"];
+      const SAMPLE_COEFFICIENTS2 = ["1", "0", "0"];
+    setOrder(SAMPLE_ORDER);
+    setCoefficients(SAMPLE_COEFFICIENTS);
+    setCoefficients2(SAMPLE_COEFFICIENTS2);
+    setUseLog(false);
+    setUseRoot(false);
+  };
+
+  const fillWithRoot = () => {
+      const SAMPLE_ORDER = "2";
+      const SAMPLE_COEFFICIENTS = ["2424", "3", "4"];
+      const SAMPLE_COEFFICIENTS2 = ["1", "0", "0"];
+    setOrder(SAMPLE_ORDER);
+    setCoefficients(SAMPLE_COEFFICIENTS);
+    setCoefficients2(SAMPLE_COEFFICIENTS2);
+    setUseLog(false);
+    setUseRoot(true);
   };
 
   const Info = () => {
@@ -62,8 +115,48 @@ const OrderOfMagnitude = () => {
         
         <Box margin={{ top: 'medium' }} align="center">
           <Button 
-            label="Fill with Sample" 
-            onClick={fillWithSample} 
+            label="Fill with Order 0" 
+            onClick={fillWithZero} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Order 2" 
+            onClick={fillWithTwo} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Order 4" 
+            onClick={fillWithFour} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Large Constant" 
+            onClick={fillWithBigConstant} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Large Leading Coefficient" 
+            onClick={fillWithBigLeading} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Rooted" 
+            onClick={fillWithRoot} 
             primary 
             size="small"
             border={{ color: 'black', size: '2px' }}

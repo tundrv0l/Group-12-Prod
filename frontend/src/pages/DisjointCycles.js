@@ -18,10 +18,24 @@ const DisjointCycles = () => {
 
   const { trackResults } = useDiagnostics("DISJOINT_CYCLES");
 
-  // Sample disjoint cycles data
-  const SAMPLE_INPUT = "(1 2 3)(4 5)";
   
-  const fillWithSample = () => {
+  const fillWithSingle = () => {
+    const SAMPLE_INPUT = "(1)";
+    setInput(SAMPLE_INPUT);
+  };
+
+  const fillWithTwo = () => {
+    const SAMPLE_INPUT = "(1 2 3)(3 4)";
+    setInput(SAMPLE_INPUT);
+  };
+
+  const fillWithFour = () => {
+    const SAMPLE_INPUT = "(1 2 3)(4 5)(4 2)(7 5)";
+    setInput(SAMPLE_INPUT);
+  };
+
+  const fillWithNoOverlap = () => {
+    const SAMPLE_INPUT = "(1 2 3)(4 5)";
     setInput(SAMPLE_INPUT);
   };
 
@@ -46,8 +60,32 @@ const DisjointCycles = () => {
 
         <Box margin={{ top: 'medium' }} align="center">
           <Button 
-            label="Fill with Sample" 
-            onClick={fillWithSample} 
+            label="Fill with Single Element" 
+            onClick={fillWithSingle} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Two Cycles" 
+            onClick={fillWithTwo} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Four Cycles" 
+            onClick={fillWithFour} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Disjoint" 
+            onClick={fillWithNoOverlap} 
             primary 
             size="small"
             border={{ color: 'black', size: '2px' }}
@@ -143,8 +181,8 @@ const DisjointCycles = () => {
       return false;
     }
   
-    // Improved regex to match cycles with space or comma separators
-    const regex = /\(\s*([a-zA-Z0-9]+(?:\s*,\s*|\s+)[a-zA-Z0-9]+(?:(?:\s*,\s*|\s+)[a-zA-Z0-9]+)*)\s*\)/g;
+    // Match cycles with one or more elements inside parentheses
+    const regex = /\(\s*([a-zA-Z0-9]+(?:\s*(?:,|\s)\s*[a-zA-Z0-9]+)*)\s*\)/g;
   
     // Remove composition symbols before matching
     const cleanedInput = input.replace(/\s*∘\s*/g, ' '); // Unicode composition symbol only
@@ -152,8 +190,8 @@ const DisjointCycles = () => {
     // Find all matches
     const matches = cleanedInput.match(regex);
   
-    // Check if there are at least two valid cycles
-    return matches && matches.length >= 2;
+    // Valid if there's at least one valid cycle
+    return matches && matches.length >= 1;
   };
 
   return (
