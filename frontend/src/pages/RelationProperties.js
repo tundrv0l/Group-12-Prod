@@ -21,20 +21,6 @@ const RelationProperties = () => {
 
   const { trackResults } = useDiagnostics("RELATION_PROPERTIES");
 
-//  const SAMPLE_SET = "{a, b, c}";
-//  const SAMPLE_RELATION = "{(a,a),(b,b),(c,c),(a,b),(b,c),(a,c)}";
-//
-//      const SAMPLE_SET = [];
-//      [];
-//      SAMPLE_SET.push("{}");
-//      SAMPLE_RELATION.push("{}");
-//      SAMPLE_SET.push("{a,b,c,11}");
-//      SAMPLE_RELATION.push("{(a,a),(b,b),(c,c),(11,11),(a,11),(b,11),(11,c),(a,c),(b,c)}");
-//      SAMPLE_SET.push("{ls,53534,12}");
-//      SAMPLE_RELATION.push("{(53534,53534),(ls,ls),(12,12),(12,ls),(ls,12),(ls,53534),(53534,ls),(12,53534),(53534,12)}");
-//      SAMPLE_SET.push("{a,b,c}");
-//      SAMPLE_RELATION.push("{(c,c),(a,b),(b,a),(a,c)}");
-
   // Add this function inside the RelationProperties component
   const fillWithEmpty = () => {
     const SAMPLE_SET = "{}";
