@@ -20,16 +20,48 @@ const PERTDiagrams = () => {
   
   // Add diagnostics
   const { trackResults } = useDiagnostics("PERT_DIAGRAMS");
-
-  const SAMPLE_TASKS = [
-    { name: 'A', prerequisites: new Set(), time: 3 },
-    { name: 'B', prerequisites: new Set(['A']), time: 4 },
-    { name: 'C', prerequisites: new Set(['A']), time: 2 },
-    { name: 'D', prerequisites: new Set(['B', 'C']), time: 5 },
-    { name: 'E', prerequisites: new Set(['D']), time: 1 }
-  ];
   
-  const fillWithSample = () => {
+  const fillWithSingle = () => {
+      const SAMPLE_TASKS = [
+        { name: 'A', prerequisites: new Set(), time: 3 },
+        { name: 'B', prerequisites: new Set(['A']), time: 4 },
+        { name: 'C', prerequisites: new Set(['A']), time: 2 },
+        { name: 'D', prerequisites: new Set(['B', 'C']), time: 5 },
+        { name: 'E', prerequisites: new Set(['D']), time: 1 }
+      ];
+
+    setTasks(SAMPLE_TASKS);
+  };
+
+  const fillWithPronged = () => {
+      const SAMPLE_TASKS = [
+        { name: 'A', prerequisites: new Set(), time: 3 },
+        { name: 'B', prerequisites: new Set(), time: 44 },
+        { name: 'C', prerequisites: new Set(['D']), time: 2 },
+        { name: 'D', prerequisites: new Set(['A', 'B']), time: 5 },
+        { name: 'E', prerequisites: new Set(['D']), time: 12 }
+      ];
+
+    setTasks(SAMPLE_TASKS);
+  };
+
+  const fillWithSplit = () => {
+      const SAMPLE_TASKS = [
+        { name: 'A', prerequisites: new Set(), time: 3 },
+        { name: 'B', prerequisites: new Set(['A']), time: 14 },
+        { name: 'C', prerequisites: new Set(), time: 20 },
+        { name: 'D', prerequisites: new Set(['A']), time: 5 },
+        { name: 'E', prerequisites: new Set(['C']), time: 12 }
+      ];
+
+    setTasks(SAMPLE_TASKS);
+  };
+
+  const fillWithSingleton = () => {
+      const SAMPLE_TASKS = [
+        { name: 'A', prerequisites: new Set(), time: 3 },
+      ];
+
     setTasks(SAMPLE_TASKS);
   };
 
@@ -167,13 +199,68 @@ const PERTDiagrams = () => {
     }
   };
 
+    const Info = () => {
+      return (
+        <>
+          <Text weight="bold" margin={{ bottom: "xsmall" }}>
+            Task Table Input:
+          </Text>
+          <Text>
+            A task table represents activities with their dependencies and durations.
+          </Text>
+          <Text margin={{ top: "xsmall" }}>
+            To use this tool:
+          </Text>
+          <Text>1. Add tasks with descriptive names (A, B, C, etc.)</Text>
+          <Text>2. For each task, select its prerequisites (tasks that must be completed before it can start)</Text>
+          <Text>3. Enter the time required to complete each task</Text>
+          <Text>4. Click Solve to generate the diagram and analyze paths</Text>
+          
+          <Box margin={{ top: 'medium' }} align="center">
+            <Button 
+              label="Fill with Single Endpoint" 
+              onClick={fillWithSingle} 
+              primary 
+              size="small"
+              border={{ color: 'black', size: '2px' }}
+              pad={{ vertical: 'xsmall', horizontal: 'small' }}
+            />
+            <Button 
+              label="Fill with Multiple Endpoints" 
+              onClick={fillWithPronged} 
+              primary 
+              size="small"
+              border={{ color: 'black', size: '2px' }}
+              pad={{ vertical: 'xsmall', horizontal: 'small' }}
+            />
+            <Button 
+              label="Fill with Indepedent Paths" 
+              onClick={fillWithSplit} 
+              primary 
+              size="small"
+              border={{ color: 'black', size: '2px' }}
+              pad={{ vertical: 'xsmall', horizontal: 'small' }}
+            />
+            <Button 
+              label="Fill with Single Task" 
+              onClick={fillWithSingleton} 
+              primary 
+              size="small"
+              border={{ color: 'black', size: '2px' }}
+              pad={{ vertical: 'xsmall', horizontal: 'small' }}
+            />
+          </Box>
+        </>
+      ); 
+    }
+
   return (
     <SolverPage
       title="PERT Diagrams"
       topic="Topological Sorting"
       description="This tool helps you analyze PERT Diagrams in discrete mathematics."
       DescriptionComponent={Description}
-      InfoText={() => <Info fillWithSample={fillWithSample} />}
+      InfoText={() => <Info/>}
       InputComponent={TaskTableInput}
       input_props={{tasks, setTasks, isTimed, setIsTimed}}
       error={error}
@@ -199,37 +286,6 @@ const Description = () => {
         </Text>
       </>
     ); 
-}
-
-const Info = ({ fillWithSample }) => {
-  return (
-    <>
-      <Text weight="bold" margin={{ bottom: "xsmall" }}>
-        Task Table Input:
-      </Text>
-      <Text>
-        A task table represents activities with their dependencies and durations.
-      </Text>
-      <Text margin={{ top: "xsmall" }}>
-        To use this tool:
-      </Text>
-      <Text>1. Add tasks with descriptive names (A, B, C, etc.)</Text>
-      <Text>2. For each task, select its prerequisites (tasks that must be completed before it can start)</Text>
-      <Text>3. Enter the time required to complete each task</Text>
-      <Text>4. Click Solve to generate the diagram and analyze paths</Text>
-      
-      <Box margin={{ top: 'medium' }} align="center">
-        <Button 
-          label="Fill with Sample" 
-          onClick={fillWithSample} 
-          primary 
-          size="small"
-          border={{ color: 'black', size: '2px' }}
-          pad={{ vertical: 'xsmall', horizontal: 'small' }}
-        />
-      </Box>
-    </>
-  ); 
 }
 
 const Output = ({ output, isTimed }) => {

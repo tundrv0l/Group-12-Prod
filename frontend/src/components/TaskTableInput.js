@@ -86,7 +86,7 @@ const TaskTableInput = ({ tasks, setTasks, isTimed, setIsTimed, showTimedToggle 
       <Box direction="row" align="center" gap="small">
         {showTimedToggle && (
         <CheckBox
-          label="Include task times"
+          label="Timed"
           checked={isTimed}
           onChange={(e) => setIsTimed(e.target.checked)}
         />
