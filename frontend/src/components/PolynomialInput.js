@@ -110,6 +110,11 @@ const PolynomialInput = forwardRef((props, ref) => {
       }
       
       const value = parseFloat(coefficients[i]);
+      if (i == 0.0 && value <= 0.0) {
+        setError && setError(`${label1}: Leading Coefficient should be greater than 0.`);
+        return false;
+      }
+
       if (isNaN(value)) {
         setError && setError(`${label1}: Invalid number for coefficient of x^${coefficients.length - 1 - i}.`);
         return false;
@@ -125,6 +130,11 @@ const PolynomialInput = forwardRef((props, ref) => {
         }
         
         const value = parseFloat(coefficients2[i]);
+          if (i == 0.0 && value <= 0.0) {
+            setError && setError(`${label2}: Leading Coefficient should be greater than 0.`);
+            return false;
+          }
+
         if (isNaN(value)) {
           setError && setError(`${label2}: Invalid number for coefficient of x^${coefficients2.length - 1 - i}.`);
           return false;
