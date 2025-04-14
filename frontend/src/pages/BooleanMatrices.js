@@ -26,19 +26,63 @@ const BooleanMatrices = () => {
 
   const { trackResults } = useDiagnostics("BOOLEAN_MATRICES");
 
-  const SAMPLE_MATRIX1 = [
-    ['1', '0', '1'],
-    ['0', '1', '0'],
-    ['1', '1', '0']
-  ];
-  
-  const SAMPLE_MATRIX2 = [
-    ['0', '1', '0'],
-    ['1', '1', '1'],
-    ['0', '0', '1']
-  ];
+  const fillWithIdentity = () => {
+      const SAMPLE_MATRIX1 = [
+        ['1', '0', '0'],
+        ['0', '1', '0'],
+        ['0', '0', '1']
+      ];
+      
+      const SAMPLE_MATRIX2 = [
+        ['0', '1', '0'],
+        ['1', '1', '1'],
+        ['0', '0', '1']
+      ];
+    setMatrix1(SAMPLE_MATRIX1);
+    setMatrix2(SAMPLE_MATRIX2);
+  };
 
-  const fillWithSample = () => {
+  const fillWithSingle = () => {
+      const SAMPLE_MATRIX1 = [
+        ['1']
+      ];
+      
+      const SAMPLE_MATRIX2 = [
+        ['0']
+      ];
+    setMatrix1(SAMPLE_MATRIX1);
+    setMatrix2(SAMPLE_MATRIX2);
+  };
+
+  const fillWithRowColumn = () => {
+      const SAMPLE_MATRIX1 = [
+        ['1', '0', '1']
+      ];
+      
+      const SAMPLE_MATRIX2 = [
+        ['0'],
+        ['1'],
+        ['0']
+      ];
+    setMatrix1(SAMPLE_MATRIX1);
+    setMatrix2(SAMPLE_MATRIX2);
+  };
+
+  const fillWithNonSquare = () => {
+      const SAMPLE_MATRIX1 = [
+        ['1', '0', '1', '1', '1', '0'],
+        ['0', '1', '0', '1', '1', '0'],
+        ['1', '1', '0', '0', '1', '0']
+      ];
+      
+      const SAMPLE_MATRIX2 = [
+        ['0', '1', '0'],
+        ['1', '1', '1'],
+        ['0', '0', '1'],
+        ['0', '1', '0'],
+        ['0', '0', '1'],
+        ['0', '1', '1']
+      ];
     setMatrix1(SAMPLE_MATRIX1);
     setMatrix2(SAMPLE_MATRIX2);
   };
@@ -64,8 +108,32 @@ const BooleanMatrices = () => {
         
         <Box margin={{ top: 'medium' }} align="center">
           <Button 
-            label="Fill with Sample" 
-            onClick={fillWithSample} 
+            label="Fill with Identity" 
+            onClick={fillWithIdentity} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Single Row/Column" 
+            onClick={fillWithSingle} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Row/Column Vectors" 
+            onClick={fillWithRowColumn} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Non-Square" 
+            onClick={fillWithNonSquare} 
             primary 
             size="small"
             border={{ color: 'black', size: '2px' }}

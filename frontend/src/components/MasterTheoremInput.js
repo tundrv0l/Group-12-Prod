@@ -23,7 +23,7 @@ const MasterTheoremInput = forwardRef((props, ref) => {
     if (!a || !b || c === undefined) return "T(n) = ?";
     
     const divisionFactor = b > 1 ? `n/${b}` : 'n';
-    const workFactor = c > 0 ? `n^${c}` : (c === 0 ? '1' : '0');
+    const workFactor = c > 0 ? `n^${c}` : '1';
     
     return `T(n) = ${a}T(${divisionFactor}) + ${workFactor}`;
   };

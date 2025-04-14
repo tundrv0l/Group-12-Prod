@@ -25,19 +25,42 @@ const MasterTheorem = () => {
 
   // Diagnostics tracking
   const { trackResults } = useDiagnostics("MASTER_THEOREM");
-
-  // Sample data for the "Fill with Sample" button
-  const SAMPLE_A = "2";
-  const SAMPLE_B = "2";
-  const SAMPLE_C = "1";
   
-  const fillWithSample = () => {
+  const fillWithEdge = () => {
+      const SAMPLE_A = "1";
+      const SAMPLE_B = "2";
+      const SAMPLE_C = "0";
     setA(SAMPLE_A);
     setB(SAMPLE_B);
     setC(SAMPLE_C);
   };
 
- 
+  const fillWithOne = () => {
+      const SAMPLE_A = "4";
+      const SAMPLE_B = "2";
+      const SAMPLE_C = "3";
+    setA(SAMPLE_A);
+    setB(SAMPLE_B);
+    setC(SAMPLE_C);
+  };
+
+  const fillWithTwo = () => {
+      const SAMPLE_A = "4";
+      const SAMPLE_B = "2";
+      const SAMPLE_C = "2";
+    setA(SAMPLE_A);
+    setB(SAMPLE_B);
+    setC(SAMPLE_C);
+  };
+
+  const fillWithThree = () => {
+      const SAMPLE_A = "13";
+      const SAMPLE_B = "2";
+      const SAMPLE_C = "1";
+    setA(SAMPLE_A);
+    setB(SAMPLE_B);
+    setC(SAMPLE_C);
+  };
 
   const handleSolve = async () => {
     // Empty output and error messages
@@ -113,8 +136,32 @@ const MasterTheorem = () => {
 
         <Box margin={{ top: 'medium' }} align="center">
           <Button 
-            label="Fill with Sample" 
-            onClick={fillWithSample} 
+            label="Fill with Edge Case" 
+            onClick={fillWithEdge} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Case 1" 
+            onClick={fillWithOne} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Case 2" 
+            onClick={fillWithTwo} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with Case 3" 
+            onClick={fillWithThree} 
             primary 
             size="small"
             border={{ color: 'black', size: '2px' }}
