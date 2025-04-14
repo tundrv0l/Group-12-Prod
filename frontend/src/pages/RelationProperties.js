@@ -50,6 +50,13 @@ const RelationProperties = () => {
     setRelation(SAMPLE_RELATION);
   };
 
+  const fillWithPartialSplit = () => {
+    const SAMPLE_SET = "{a,b,c,d,e}";
+    const SAMPLE_RELATION = "{(a,a),(b,b),(c,c),(d,d),(e,e),(a,b),(b,c),(a,c),(d,e)}";
+    setSet(SAMPLE_SET);
+    setRelation(SAMPLE_RELATION);
+  };
+
   const handleSolve = async () => {
     // Empty output and error messages
     setLoading(true);
@@ -174,6 +181,15 @@ const RelationProperties = () => {
             <Button 
               label="Fill with No Properties" 
               onClick={fillWithNo} 
+              primary
+              size="small"
+              border={{ color: 'black', size: '2px' }}
+              pad={{ vertical: 'xsmall', horizontal: 'small' }}
+              onMouseDown={(e) => e.preventDefault()}
+            />
+            <Button 
+              label="Fill with Partial Split Diagram" 
+              onClick={fillWithPartialSplit} 
               primary
               size="small"
               border={{ color: 'black', size: '2px' }}
