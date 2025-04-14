@@ -6,12 +6,12 @@ import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 
 /*
-* Name: PERTDiagrams.js
+* Name: TaskTables.js
 * Author: Parker Clark, Jacob Warren
 * Description: 5.2 task table analysis
 */
 
-const PERTDiagrams = () => {
+const TaskTables = () => {
   const [tasks, setTasks] = React.useState([{ name: '', prerequisites: new Set(), time: 0 }]);
   const [isTimed, setIsTimed] = React.useState(true);
   const [output, setOutput] = React.useState('');
@@ -60,6 +60,17 @@ const PERTDiagrams = () => {
   const fillWithSingleton = () => {
       const SAMPLE_TASKS = [
         { name: 'A', prerequisites: new Set(), time: 3 },
+      ];
+
+    setTasks(SAMPLE_TASKS);
+  };
+
+  const fillWithMultipleCrit = () => {
+      const SAMPLE_TASKS = [
+        { name: 'A', prerequisites: new Set(), time: 3 },
+        { name: 'B', prerequisites: new Set(['A']), time: 14 },
+        { name: 'C', prerequisites: new Set(), time: 12 },
+        { name: 'D', prerequisites: new Set(['C']), time: 5 },
       ];
 
     setTasks(SAMPLE_TASKS);
@@ -249,6 +260,14 @@ const PERTDiagrams = () => {
               border={{ color: 'black', size: '2px' }}
               pad={{ vertical: 'xsmall', horizontal: 'small' }}
             />
+            <Button 
+              label="Fill with Multiple Critical Paths" 
+              onClick={fillWithMultipleCrit} 
+              primary 
+              size="small"
+              border={{ color: 'black', size: '2px' }}
+              pad={{ vertical: 'xsmall', horizontal: 'small' }}
+            />
           </Box>
         </>
       ); 
@@ -256,7 +275,7 @@ const PERTDiagrams = () => {
 
   return (
     <SolverPage
-      title="PERT Diagrams"
+      title="Task Tables"
       topic="Topological Sorting"
       description="This tool helps you analyze PERT Diagrams in discrete mathematics."
       DescriptionComponent={Description}
@@ -321,4 +340,4 @@ const Output = ({ output, isTimed }) => {
     );
 };
 
-export default PERTDiagrams;
+export default TaskTables;

@@ -141,7 +141,7 @@ const SidebarMenu = () => (
           <CustomAccordionPanel label="5.2: Topological Sorting">
             <AccordionPanelContent 
               content={[
-                { label: "PERT Diagrams", path: "/pert-diagrams" }
+                { label: "Task Tables", path: "/pert-diagrams" }
               ]} 
               size={size}
             />

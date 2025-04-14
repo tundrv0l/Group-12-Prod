@@ -53,6 +53,13 @@ const Partitions = () => {
     setRelation(SAMPLE_PARTITION);
   };
 
+  const fillWithDuplicate = () => {
+    const SAMPLE_SET = "{a, b, c, d, a}";
+    const SAMPLE_PARTITION = "{{a,b,b},{c,c,d}}";
+    setSet(SAMPLE_SET);
+    setRelation(SAMPLE_PARTITION);
+  };
+
   const handleSolve = async () => {
     // Empty output and error messages
     setLoading(true);
@@ -303,6 +310,14 @@ const Partitions = () => {
                 <Button 
                   label="Fill with Half" 
                   onClick={fillWithHalf} 
+                  primary 
+                  size="small"
+                  border={{ color: 'brand', size: '1px' }}
+                  pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                />
+                <Button 
+                  label="Fill with Duplicate Elements" 
+                  onClick={fillWithDuplicate} 
                   primary 
                   size="small"
                   border={{ color: 'brand', size: '1px' }}
