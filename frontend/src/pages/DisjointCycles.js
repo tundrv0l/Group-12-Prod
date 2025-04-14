@@ -181,8 +181,8 @@ const DisjointCycles = () => {
       return false;
     }
   
-    // Improved regex to match cycles with space or comma separators
-    const regex = /\(\s*([a-zA-Z0-9]+(?:\s*,\s*|\s+)[a-zA-Z0-9]+(?:(?:\s*,\s*|\s+)[a-zA-Z0-9]+)*)\s*\)/g;
+    // Match cycles with one or more elements inside parentheses
+    const regex = /\(\s*([a-zA-Z0-9]+(?:\s*(?:,|\s)\s*[a-zA-Z0-9]+)*)\s*\)/g;
   
     // Remove composition symbols before matching
     const cleanedInput = input.replace(/\s*∘\s*/g, ' '); // Unicode composition symbol only
@@ -190,8 +190,8 @@ const DisjointCycles = () => {
     // Find all matches
     const matches = cleanedInput.match(regex);
   
-    // Check if there are at least two valid cycles
-    return matches && matches.length >= 2;
+    // Valid if there's at least one valid cycle
+    return matches && matches.length >= 1;
   };
 
   return (
