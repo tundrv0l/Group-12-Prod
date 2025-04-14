@@ -42,17 +42,40 @@ const customTheme = deepMerge(grommet, {
   },
   button: {
     border: {
-      radius: '4px'
+      radius: '4px',
+      // No color by default, individual buttons can specify color
+      width: '1px'
     },
     default: {
       color: 'text',
+      // Add padding to maintain consistent sizing even without borders
+      padding: {
+        horizontal: 'medium',
+        vertical: 'small'
+      }
+    },
+    primary: {
+      // Let primary buttons display their borders when specified
+      border: {
+        color: 'brand',
+        width: undefined
+      }
     },
     hover: {
       background: { color: 'light-2' },
+      // Add subtle border on hover for better UX
+      border: { color: 'light-4' }
     },
     focus: {
       outline: { color: 'transparent', size: '0px' },
       shadow: { color: 'transparent', size: '0px' }
+    },
+    // Custom variant for buttons with borders
+    bordered: {
+      border: {
+        color: 'brand',
+        width: '1px'
+      }
     }
   },
   // Make sure Page component doesn't block the background

@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Select, TextArea, Image, Tabs, Tab } from 'grommet';
-import { CircleInformation } from 'grommet-icons';
+import { Box, Text, TextInput, Button, Select, Tab, Tabs, TextArea, Image, Spinner } from 'grommet';
 import { solveTreeNotation } from '../api';
-import ReportFooter from '../components/ReportFooter';
-import Background from '../components/Background';
-import HomeButton from '../components/HomeButton';
+import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
-import PageTopScroller from '../components/PageTopScroller';
 
 /*
 * Name: TreeNotation.js
@@ -28,9 +24,238 @@ const TreeNotation = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
   
   const { trackResults } = useDiagnostics("TREE_NOTATION");
+
+  // Sample data for different input types
+  const SAMPLE_LEVEL_ORDER = "A B C D E None F";
+  const SAMPLE_TABLE = "A B C\nB D E\nC F 0\nD 0 0\nE 0 0\nF 0 0";
+  const SAMPLE_MATH_EXPR = "3*(x+4)";
+  const SAMPLE_PREORDER = "A B D E C F";
+  const SAMPLE_POSTORDER = "D E B F C A";
+  const SAMPLE_INORDER = "D B E A C F";
+
+  const fillWithSample = () => {
+    if (operationType === 'build_tree') {
+      switch (inputFormat) {
+        case 'level':
+          setPrimaryInput(SAMPLE_LEVEL_ORDER);
+          break;
+        case 'table':
+          setPrimaryInput(SAMPLE_TABLE);
+          break;
+        case 'math':
+          setPrimaryInput(SAMPLE_MATH_EXPR);
+          break;
+        default:
+          break;
+      }
+    } else { // reconstruct_tree
+      if (traversalType === 'preorder_inorder') {
+        setPrimaryInput(SAMPLE_PREORDER);
+        setSecondaryInput(SAMPLE_INORDER);
+      } else { // postorder_inorder
+        setPrimaryInput(SAMPLE_POSTORDER);
+        setSecondaryInput(SAMPLE_INORDER);
+      }
+    }
+  };
+
+  const Info = () => {
+    return (
+      <>
+        <Text weight="bold" margin={{ bottom: "xsmall" }}>
+          Tree Notation Help:
+        </Text>
+        {operationType === 'build_tree' ? (
+          <>
+            {inputFormat === 'level' && (
+              <>
+                <Text>
+                  Enter nodes in level-order traversal (breadth-first). Separate nodes with spaces.
+                  Use 'None' for empty nodes.
+                </Text>
+                <Text margin={{ top: "xsmall" }}>
+                  Example: <strong>A B C D E None F</strong>
+                </Text>
+              </>
+            )}
+            {inputFormat === 'table' && (
+              <>
+                <Text>
+                  Enter one node per line in the format: "node leftChild rightChild".
+                  Use '0' to indicate no child.
+                </Text>
+                <Text margin={{ top: "xsmall" }}>
+                  Example:<br/>
+                  <pre style={{ background: '#f8f8f8', padding: '8px', borderRadius: '4px' }}>
+                    A B C<br/>
+                    B D E<br/>
+                    C F 0<br/>
+                    D 0 0<br/>
+                    E 0 0<br/>
+                    F 0 0
+                  </pre>
+                </Text>
+              </>
+            )}
+            {inputFormat === 'math' && (
+              <>
+                <Text>
+                  Enter a mathematical expression with operators (+, -, *, /, ^) and parentheses.
+                </Text>
+                <Text margin={{ top: "xsmall" }}>
+                  Example: <strong>3*(x+4)</strong> or <strong>a+b*c</strong>
+                </Text>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <Text>
+              Enter traversal values separated by spaces. Each node must appear in both traversals.
+            </Text>
+            <Box 
+              margin={{ vertical: 'small' }} 
+              pad="xsmall" 
+              background="light-3" 
+              round="xsmall"
+            >
+              <Text size="small" weight="bold" margin={{ bottom: 'xsmall' }}>Example Tree:</Text>
+              <Text size="small">Tree in parentheses format: A(B(D,E),C(,F))</Text>
+              <Text size="small" margin={{ top: 'xsmall' }}>Where each node is written as Node(LeftChild,RightChild)</Text>
+            </Box>
+            <Text>
+              <Text weight="bold">Example traversals:</Text><br/>
+              Preorder: A B D E C F<br/>
+              Inorder: D B E A C F<br/>
+              Postorder: D E B F C A
+            </Text>
+          </>
+        )}
+
+        <Box margin={{ top: 'medium' }} align="center">
+          <Button 
+            label="Fill with Sample" 
+            onClick={fillWithSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+        </Box>
+      </>
+    );
+  };
+
+  const Input = () => {
+    return (
+      <Box>
+        <Box margin={{ bottom: 'medium' }}>
+          <Text margin={{ bottom: 'xsmall' }}>Select Operation:</Text>
+          <Select
+            options={[
+              { label: 'Build Tree from Input', value: 'build_tree' },
+              { label: 'Reconstruct Tree from Traversals', value: 'reconstruct_tree' }
+            ]}
+            value={operationType}
+            labelKey="label"
+            valueKey="value"
+            onChange={({ value }) => {
+              setOperationType(value.value);
+              setPrimaryInput('');
+              setSecondaryInput('');
+              setResult(null);
+            }}
+          />
+        </Box>
+
+        {/* Conditional rendering based on operation type */}
+        {operationType === 'build_tree' ? (
+          <Box gap="small">
+            <Box margin={{ bottom: 'small' }}>
+              <Text margin={{ bottom: 'xsmall' }}>Input Format:</Text>
+              <Select
+                options={[
+                  { label: 'Level-Order Traversal', value: 'level' },
+                  { label: 'Left-Child Right-Child Table', value: 'table' },
+                  { label: 'Mathematical Expression', value: 'math' }
+                ]}
+                value={inputFormat}
+                labelKey="label"
+                valueKey="value"
+                onChange={({ value }) => {
+                  setInputFormat(value.value);
+                  setPrimaryInput('');
+                }}
+              />
+            </Box>
+
+            <Box>
+              <Text margin={{ bottom: 'xsmall' }}>
+                Enter {inputFormat === 'level' ? 'Level-Order Input' : 
+                         inputFormat === 'table' ? 'Tree Table' : 'Mathematical Expression'}:
+              </Text>
+              {inputFormat === 'table' ? (
+                <TextArea
+                  placeholder={getPlaceholder()}
+                  value={primaryInput}
+                  onChange={(event) => setPrimaryInput(event.target.value)}
+                  rows={6}
+                />
+              ) : (
+                <TextInput 
+                  placeholder={getPlaceholder()}
+                  value={primaryInput}
+                  onChange={(event) => setPrimaryInput(event.target.value)}
+                />
+              )}
+            </Box>
+          </Box>
+        ) : (
+          <Box gap="small">
+            <Box margin={{ bottom: 'small' }}>
+              <Text margin={{ bottom: 'xsmall' }}>Traversal Combination:</Text>
+              <Select
+                options={[
+                  { label: 'Preorder + Inorder', value: 'preorder_inorder' },
+                  { label: 'Postorder + Inorder', value: 'postorder_inorder' }
+                ]}
+                value={traversalType}
+                labelKey="label"
+                valueKey="value"
+                onChange={({ value }) => {
+                  setTraversalType(value.value);
+                  setPrimaryInput('');
+                  setSecondaryInput('');
+                }}
+              />
+            </Box>
+
+            <Box>
+              <Text margin={{ bottom: 'xsmall' }}>
+                {traversalType === 'preorder_inorder' ? 'Preorder' : 'Postorder'} Traversal:
+              </Text>
+              <TextInput 
+                placeholder={getPlaceholder()}
+                value={primaryInput}
+                onChange={(event) => setPrimaryInput(event.target.value)}
+              />
+            </Box>
+            
+            <Box margin={{ top: 'small' }}>
+              <Text margin={{ bottom: 'xsmall' }}>Inorder Traversal:</Text>
+              <TextInput 
+                placeholder={getSecondaryPlaceholder()}
+                value={secondaryInput}
+                onChange={(event) => setSecondaryInput(event.target.value)}
+              />
+            </Box>
+          </Box>
+        )}
+      </Box>
+    );
+  };
 
   const handleSolve = async () => {
     setLoading(true);
@@ -324,155 +549,6 @@ const TreeNotation = () => {
     return "Example: D B E A F C (inorder traversal)";
   };
 
-  const renderInputSection = () => {
-    if (operationType === 'build_tree') {
-      return (
-        <Box gap="small">
-          <Box margin={{ bottom: 'small' }}>
-            <Text margin={{ bottom: 'xsmall' }}>Input Format:</Text>
-            <Select
-              options={[
-                { label: 'Level-Order Traversal', value: 'level' },
-                { label: 'Left-Child Right-Child Table', value: 'table' },
-                { label: 'Mathematical Expression', value: 'math' }
-              ]}
-              value={inputFormat}
-              labelKey="label"
-              valueKey="value"
-              onChange={({ value }) => {
-                setInputFormat(value.value);
-                setPrimaryInput(''); // Clear input when format changes
-              }}
-            />
-          </Box>
-          
-          <Box>
-            <Box direction="row" align="center" justify="between" margin={{ bottom: 'xsmall' }}>
-              <Text>Enter {inputFormat === 'level' ? 'Level-Order Input' : 
-                           inputFormat === 'table' ? 'Tree Table' : 'Mathematical Expression'}:</Text>
-              <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-            </Box>
-            
-            {showHelp && (
-              <Box background="light-2" pad="small" round="small" margin={{ bottom: 'small' }}>
-                {inputFormat === 'level' && (
-                  <Text size="small">
-                    Enter nodes in level-order traversal (breadth-first). Separate nodes with spaces.
-                    Use 'None' for empty nodes. Example: "A B C None D"
-                  </Text>
-                )}
-                {inputFormat === 'table' && (
-                  <Text size="small">
-                    Enter one node per line in the format: "node leftChild rightChild"<br/>
-                    Use '0' to indicate no child. Example:<br/>
-                    A B C<br/>
-                    B D E<br/>
-                    C F 0<br/>
-                    D 0 0<br/>
-                    E 0 0<br/>
-                    F 0 0
-                  </Text>
-                )}
-                {inputFormat === 'math' && (
-                  <Text size="small">
-                    Enter a mathematical expression with operators (+, -, *, /, ^) and parentheses.
-                    Example: "3*(x+4)" or "a+b*c"
-                  </Text>
-                )}
-              </Box>
-            )}
-            
-            {inputFormat === 'table' ? (
-              <TextArea
-                placeholder={getPlaceholder()}
-                value={primaryInput}
-                onChange={(event) => setPrimaryInput(event.target.value)}
-                rows={6}
-              />
-            ) : (
-              <TextInput 
-                placeholder={getPlaceholder()}
-                value={primaryInput}
-                onChange={(event) => setPrimaryInput(event.target.value)}
-              />
-            )}
-          </Box>
-        </Box>
-      );
-    } else { // reconstruct_tree
-      return (
-        <Box gap="small">
-          <Box margin={{ bottom: 'small' }}>
-            <Text margin={{ bottom: 'xsmall' }}>Traversal Combination:</Text>
-            <Select
-              options={[
-                { label: 'Preorder + Inorder', value: 'preorder_inorder' },
-                { label: 'Postorder + Inorder', value: 'postorder_inorder' }
-              ]}
-              value={traversalType}
-              labelKey="label"
-              valueKey="value"
-              onChange={({ value }) => {
-                setTraversalType(value.value);
-                setPrimaryInput('');
-                setSecondaryInput('');
-              }}
-            />
-          </Box>
-          
-          <Box>
-            <Box direction="row" align="center" justify="between" margin={{ bottom: 'xsmall' }}>
-              <Text>{traversalType === 'preorder_inorder' ? 'Preorder' : 'Postorder'} Traversal:</Text>
-              <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-            </Box>
-            
-            {showHelp && (
-              <Box background="light-2" pad="small" round="small" margin={{ bottom: 'small' }}>
-                <Text size="small">
-                  Enter traversal values separated by spaces. Each node must appear in both traversals.
-                </Text>
-                
-                {/* Replace ASCII art with parentheses notation */}
-                <Box 
-                  margin={{ vertical: 'small' }} 
-                  pad="xsmall" 
-                  background="light-3" 
-                  round="xsmall"
-                >
-                  <Text size="small" weight="bold" margin={{ bottom: 'xsmall' }}>Example Tree:</Text>
-                  <Text size="small">Tree in parentheses format: A(B(D,E),C(,F))</Text>
-                  <Text size="small" margin={{ top: 'xsmall' }}>Where each node is written as Node(LeftChild,RightChild)</Text>
-                </Box>
-                
-                <Text size="small">
-                  <Text size="small" weight="bold">Example traversals:</Text>
-                  Preorder: A B D E C F<br/>
-                  Inorder: D B E A C F<br/>
-                  Postorder: D E B F C A
-                </Text>
-              </Box>
-            )}
-            
-            <TextInput 
-              placeholder={getPlaceholder()}
-              value={primaryInput}
-              onChange={(event) => setPrimaryInput(event.target.value)}
-            />
-          </Box>
-          
-          <Box margin={{ top: 'small' }}>
-            <Text margin={{ bottom: 'xsmall' }}>Inorder Traversal:</Text>
-            <TextInput 
-              placeholder={getSecondaryPlaceholder()}
-              value={secondaryInput}
-              onChange={(event) => setSecondaryInput(event.target.value)}
-            />
-          </Box>
-        </Box>
-      );
-    }
-  };
-
   const renderOutput = () => {
     if (loading) {
       return <Spinner size="medium" />;
@@ -488,18 +564,22 @@ const TreeNotation = () => {
     
     return (
       <Box gap="medium">
-        <Tabs>
-          <Tab title="Visualization">
-            <Box pad="small">
+        <Tabs width="100%">
+          {/* Tree Visualization Tab */}
+          <Tab title="Tree Visualization">
+            <Box pad="small" width="100%">
               {result.image && (
-                <Box>
+                <Box width="100%">
                   <Text weight="bold" margin={{ bottom: 'small' }}>Tree Visualization:</Text>
-                  <Box height="medium" overflow="auto" background="white" pad="small" round="small">
-                    <Image 
-                      src={`data:image/png;base64,${result.image}`}
-                      fit="contain"
-                      alt="Binary tree visualization"
-                    />
+                  <Box height="medium" width="100%" overflow="auto" background="white" pad="small" round="small">
+                    <Box align="center" justify="center" height="100%">
+                      <Image 
+                        src={`data:image/png;base64,${result.image}`}
+                        fit="contain"
+                        alt="Binary tree visualization"
+                        style={{ maxWidth: '100%' }}
+                      />
+                    </Box>
                   </Box>
                 </Box>
               )}
@@ -539,106 +619,23 @@ const TreeNotation = () => {
   };
 
   return (
-    <PageTopScroller>
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-        <PageContent align="center" skeleton={false}>
-          <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-            <HomeButton />
-          </Box>
-          <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-            <Text size="xxlarge" weight="bold">
-              Tree Notation Solver
-            </Text>
-          </Box>
-          <Box align="center" justify="center">
-            <Text size="large" margin="none" weight={500}>
-              Topic: Trees and Their Representations
-            </Text>
-          </Box>
-          <Box align="center" justify="start" direction="column" width='large'>
-            <Text margin={{ bottom: 'small' }} textAlign="center">
-              This tool helps you work with binary trees and their various representations.
-            </Text>
-            
-            <Text margin={{ bottom: 'small' }} textAlign="center" weight="normal">
-              You can either build a tree from different input formats or reconstruct a tree from traversal pairs.
-            </Text>
-  
-            <Box background="light-1" pad="small" round="small" margin={{ vertical: "small" }}>
-              <Text weight="bold" size="medium" margin={{ bottom: "xsmall" }}>
-                Understanding Tree Traversals and Notations
-              </Text>
-              <Text textAlign="start" weight="normal" size="small">
-                
-                <Text weight="bold">• Preorder (also known as prefix notation):</Text> Visit the root first, then the left subtree, 
-                then the right subtree (Root-Left-Right). When applied to expression trees, this produces prefix notation where 
-                operators precede their operands (e.g., "+ 2 3" means "2+3").<br/><br/>
-                
-                <Text weight="bold">• Inorder (also known as infix notation):</Text> Visit the left subtree first, then the root, 
-                then the right subtree (Left-Root-Right). For expression trees, this produces the familiar infix notation 
-                where operators appear between operands (e.g., "2+3").<br/><br/>
-                
-                <Text weight="bold">• Postorder (also known as postfix notation):</Text> Visit the left subtree first, then the right subtree, 
-                then the root (Left-Right-Root). In expression trees, this yields postfix (Reverse Polish) notation where 
-                operators follow their operands (e.g., "2 3 +" means "2+3").<br/><br/>
-                
-                <Text weight="bold">• Level-order:</Text> Visit nodes level by level, from left to right, starting from the root.
-                This is also called breadth-first traversal.<br/><br/>
-                
-                A binary tree can be uniquely reconstructed from certain traversal pairs, such as preorder+inorder or 
-                postorder+inorder. However, other combinations (like preorder+postorder) do not always guarantee a unique tree.
-              </Text>
-            </Box>
-          </Box>
-          
-          <Card width="large" pad="medium" background={{ color: "light-1" }}>
-            <CardBody pad="small">
-              <Box margin={{ bottom: 'medium' }}>
-                <Text margin={{ bottom: 'xsmall' }}>Select Operation:</Text>
-                <Select
-                  options={[
-                    { label: 'Build Tree from Input', value: 'build_tree' },
-                    { label: 'Reconstruct Tree from Traversals', value: 'reconstruct_tree' }
-                  ]}
-                  value={operationType}
-                  labelKey="label"
-                  valueKey="value"
-                  onChange={({ value }) => {
-                    setOperationType(value.value);
-                    setPrimaryInput('');
-                    setSecondaryInput('');
-                    setResult(null);
-                  }}
-                />
-              </Box>
-              
-              {renderInputSection()}
-              
-              {error && <Text color="status-critical" margin={{ top: 'small' }}>{error}</Text>}
-            </CardBody>
-            <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{ top: "small" }}>
-              <Button label={loading ? <Spinner /> : "Process"} onClick={handleSolve} disabled={loading} />
-            </CardFooter>
-          </Card>
-          
-          <Card width="large" pad="medium" background={{ color: "light-2" }} margin={{ top: "medium" }}>
-            <CardBody pad="small">
-              <Text weight="bold">
-                Output:
-              </Text>
-              <Box pad={{ vertical: "small" }} background={{ color: "light-2" }} round="xsmall">
-                {renderOutput()}
-              </Box>
-            </CardBody>
-          </Card>
-          
-          <ReportFooter />
-        </PageContent>
-      </Box>
-    </Page>
-    </PageTopScroller>
+    <SolverPage
+      title="Tree Notations"
+      topic="Trees And Their Representations"
+      description="This tool helps you work with binary trees and their various representations."
+      paragraphs={[
+        "Binary trees can be represented in multiple formats, including level-order traversal, left-child right-child notation, and as expression trees for mathematical formulas.",
+        "Tree traversal algorithms like preorder, inorder, postorder, and level-order provide different ways to visit all nodes in a tree. Certain traversal pairs (like preorder+inorder or postorder+inorder) contain enough information to uniquely reconstruct a binary tree.",
+        "This tool allows you to either build a tree from different input formats or reconstruct a tree from traversal pairs. Enter your input below to visualize trees and analyze their traversals!"
+      ]}
+      InfoText={Info}
+      InputComponent={Input}
+      input_props={null}
+      error={error}
+      handle_solve={handleSolve}
+      loading={loading}
+      render_output={renderOutput}
+    />
   );
 };
 

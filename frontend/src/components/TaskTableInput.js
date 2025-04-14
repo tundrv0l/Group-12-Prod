@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Text, TextInput, Button, CheckBox, Table, TableRow, TableCell, TableHeader, TableBody } from 'grommet';
-import { Add, Trash } from 'grommet-icons';
+import { Add, Trash} from 'grommet-icons';
 
 /*
 * Name: TaskTableInput.js
@@ -82,7 +82,7 @@ const TaskTableInput = ({ tasks, setTasks, isTimed, setIsTimed, showTimedToggle 
   };
 
   return (
-    <Box gap="medium">
+    <Box gap="small">
       <Box direction="row" align="center" gap="small">
         {showTimedToggle && (
         <CheckBox

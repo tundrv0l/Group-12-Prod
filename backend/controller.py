@@ -39,6 +39,7 @@ from backend.solvers import master_solver
 from backend.solvers import set_complement_solver
 from backend.solvers import power_set_solver
 from backend.solvers import binary_unary_solver
+from backend.solvers import cartesian_product_solver
 from solvers.util import exceptions
 
 #---Imports for the reporter---#
@@ -116,8 +117,7 @@ def solve_algorithim(solver_type, data):
         data.get('expression', '')
         )
     elif solver_type == 'cartesian-products':
-        # Call the appropriate function for cartesian products
-        pass
+        return cartesian_product_solver.solve(data["setOne"], data["setTwo"])
     elif solver_type == 'properties-of-relations':
         return properties_solver.solve(data["set"], data["relation"])
     elif solver_type == 'closure-axioms':

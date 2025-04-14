@@ -2,8 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { Box, Button, Text, TextInput, Grid } from 'grommet';
 import { Add, Trash } from 'grommet-icons';
 
-const WeightedGraphInput = ({ value, onChange }) => {
-  // Parse the initial value if it exists
+const GraphInput = ({ value, onChange }) => {
   // Parse the initial value if it exists - memoize to prevent unnecessary recalculations
   const parseInitialEdges = useCallback(() => {
     if (!value || value === '{}') return [];
@@ -15,63 +14,58 @@ const WeightedGraphInput = ({ value, onChange }) => {
       return edgesStr.map(edge => {
         // Clean up the edge string
         edge = edge.replace(/^\(|\)$/g, '');
-        const [vertices, weight] = edge.split(';');
-        const [source, target] = vertices.split(',');
+        const [source, target] = edge.split(',');
         
         return {
           source: source.trim(),
-          target: target.trim(),
-          weight: weight.trim()
+          target: target.trim()
         };
       });
     } catch (e) {
       console.error("Error parsing edges:", e);
       return [];
     }
-  }, [value]);
+  }, [value]); // Add value as a dependency
 
   const [edges, setEdges] = React.useState(parseInitialEdges());
-  const [newEdge, setNewEdge] = React.useState({ source: '', target: '', weight: '' });
+  const [newEdge, setNewEdge] = React.useState({ source: '', target: '' });
   const [inputError, setInputError] = React.useState('');
 
+  // Add this effect to update internal state when value changes from outside
   useEffect(() => {
     setEdges(parseInitialEdges());
-  }, [parseInitialEdges]); 
+  }, [parseInitialEdges]); // This will run when value changes through the dependency chain
 
   // Update the parent component when edges change
-  React.useEffect(() => {
+  useEffect(() => {
     if (edges.length === 0) {
       onChange('{}');
       return;
     }
     
-    // Format edges into {(x1, y1; w1), (x2, y2; w2), ...} format
+    // Format edges into {(x1, y1), (x2, y2), ...} format
     const formattedValue = '{' + edges.map(e => 
-      `(${e.source}, ${e.target}; ${e.weight})`
+      `(${e.source}, ${e.target})`
     ).join(', ') + '}';
     
     onChange(formattedValue);
   }, [edges, onChange]);
 
-  // Validate a single edge input
-  const validateEdgeInput = (edge) => {
-      const alphanumericRegex = /^[a-zA-Z0-9]+$/;
-      const numberRegex = /^\d+$/;
-      
-      if (!edge.source || !alphanumericRegex.test(edge.source)) {
-      return "Source vertex must be alphanumeric (letters or numbers)";
-      }
-      
-      if (!edge.target || !alphanumericRegex.test(edge.target)) {
-      return "Target vertex must be alphanumeric (letters or numbers)";
-      }
-      
-      if (!edge.weight || !numberRegex.test(edge.weight)) {
-      return "Weight must be a number";
-      }
-      
-      return "";
-  };
+
+
+    const validateEdgeInput = (edge) => {
+        const alphanumericRegex = /^[a-zA-Z0-9]+$/;
+        
+        if (!edge.source || !alphanumericRegex.test(edge.source)) {
+        return "Source vertex must be alphanumeric (letters or numbers)";
+        }
+        
+        if (!edge.target || !alphanumericRegex.test(edge.target)) {
+        return "Target vertex must be alphanumeric (letters or numbers)";
+        }
+        
+        return "";
+    };
 
   // Add a new edge
   const addEdge = () => {
@@ -82,7 +76,7 @@ const WeightedGraphInput = ({ value, onChange }) => {
     }
     
     setEdges([...edges, newEdge]);
-    setNewEdge({ source: '', target: '', weight: '' });
+    setNewEdge({ source: '', target: '' });
     setInputError('');
   };
 
@@ -105,32 +99,28 @@ const WeightedGraphInput = ({ value, onChange }) => {
 
   return (
     <Box>
-      <Text margin={{ bottom: 'small' }}>Add weighted edges:</Text>
+      <Text margin={{ bottom: 'small' }}>Add edges:</Text>
       
-      {/* List of existing edges */}
-      {edges.length > 0 && (
-        <Box margin={{ bottom: 'medium' }}>
-          <Text weight="bold" margin={{ bottom: 'xsmall' }}>Current edges:</Text>
-          {edges.map((edge, index) => (
-            <Box key={index} direction="row" align="center" margin={{ bottom: 'xsmall' }}>
-              <Text margin={{ right: 'small' }}>
-                ({edge.source}, {edge.target}; {edge.weight})
-              </Text>
-              <Button
-                icon={<Trash />}
-                onClick={() => removeEdge(index)}
-                tip="Remove this edge"
-              />
-            </Box>
-          ))}
+      {edges.map((edge, index) => (
+        <Box key={index} direction="row" align="center" margin={{ bottom: 'xsmall' }}>
+            <Text margin={{ right: 'small' }}>
+            ({edge.source}, {edge.target})
+            </Text>
+            <Button
+            icon={<Trash />}
+            onClick={() => removeEdge(index)}
+            tip={{
+                content: "Remove this edge",
+                dropProps: { align: { left: 'right' } }
+            }}
+            plain
+            />
         </Box>
-      )}
+        ))}
       
-      {/* Add new edge form */}
       <Box>
-        <Text weight="bold" margin={{ bottom: 'xsmall' }}>New edge:</Text>
         <Grid
-          columns={['1/4', '1/4', '1/4', '1/4']}
+          columns={['1/3', '1/3', '1/3']}
           gap="small"
           margin={{ bottom: 'small' }}
         >
@@ -143,11 +133,6 @@ const WeightedGraphInput = ({ value, onChange }) => {
             placeholder="Target"
             value={newEdge.target}
             onChange={(e) => updateNewEdge('target', e.target.value)}
-          />
-          <TextInput
-            placeholder="Weight"
-            value={newEdge.weight}
-            onChange={(e) => updateNewEdge('weight', e.target.value)}
           />
           <Button
             icon={<Add />}
@@ -167,7 +152,7 @@ const WeightedGraphInput = ({ value, onChange }) => {
       <Box margin={{ top: 'small' }} background="light-2" pad="small" round="small">
         <Text size="small">
           Preview: {edges.length > 0 ? 
-            '{' + edges.map(e => `(${e.source}, ${e.target}; ${e.weight})`).join(', ') + '}' : 
+            '{' + edges.map(e => `(${e.source}, ${e.target})`).join(', ') + '}' : 
             '{}'}
         </Text>
       </Box>
@@ -175,4 +160,4 @@ const WeightedGraphInput = ({ value, onChange }) => {
   );
 };
 
-export default WeightedGraphInput;
+export default GraphInput;
