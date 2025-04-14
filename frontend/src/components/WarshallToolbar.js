@@ -7,8 +7,13 @@ import { Box, Button } from 'grommet';
 * Description: Altered MatrixToolbar.js to only have 2 buttons and always be a square
 */
 
-const MatrixToolbar = ({ matrix, setMatrix }) => {
+const WarshallToolbar = ({ matrix, setMatrix, maxDimension = 10}) => {
   const addRowAndColumn = () => {
+
+    if (matrix.length >= maxDimension) {
+      return;
+    }
+
     let newMatrix = [...matrix];
 
     if (newMatrix.length === 0) {
@@ -54,4 +59,4 @@ const MatrixToolbar = ({ matrix, setMatrix }) => {
   );
 };
 
-export default MatrixToolbar;
+export default WarshallToolbar;

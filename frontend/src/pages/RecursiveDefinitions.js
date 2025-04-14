@@ -50,6 +50,7 @@ const RecursiveDefinitions = () => {
         <Text margin={{ bottom: "xsmall" }}>• <strong>2 * f(n-1) + 1</strong> - Each term is twice the previous term plus 1</Text>
         <Text margin={{ bottom: "xsmall" }}>• <strong>f(n-1) + f(n-2)</strong> - Fibonacci sequence (each term is the sum of the two preceding terms)</Text>
         <Text margin={{ bottom: "xsmall" }}>• <strong>3 * f(n-1) - 2</strong> - Each term is three times the previous term minus 2</Text>
+        <Text margin={{ bottom: "xsmall" }}>• <strong>f(n-1) ** 2</strong> - Each term is raised to the 2nd power from the previous term</Text>
         
         <Text weight="bold" margin={{ top: "medium", bottom: "xsmall" }}>Base Cases:</Text>
         <Text>
@@ -67,6 +68,10 @@ const RecursiveDefinitions = () => {
         </Text>
         <Text margin={{ bottom: "xsmall" }}>
           The solver will show all values from the base cases up to f(n).
+        </Text>
+
+        <Text margin={{ top: "xsmall" }} color="status-warning">
+          Note: N is limited to 30 iterations.
         </Text>
 
         <Box margin={{ top: 'medium' }} align="center">
@@ -129,7 +134,11 @@ const RecursiveDefinitions = () => {
     const isValidN = validateN(n);
   
     if (!isValidFormula || !isValidBaseCase || !isValidN) {
-      setError('Invalid input. Please enter a valid recursive statement.');
+      if (!isValidN && parseInt(n, 10) > 30) {
+        setError('Value of n cannot exceed 30 to prevent performance issues.');
+      } else {
+        setError('Invalid input. Please enter a valid recursive statement.');
+      }
       setLoading(false);
       return;
     }
@@ -138,11 +147,8 @@ const RecursiveDefinitions = () => {
     const startTime = performance.now();
         
     try {
-      // Log the request for debugging
-      console.log("Sending request with:", { formula, baseCase, n });
       
       const result = await solveRecursion(formula, baseCase, n);
-      console.log("Raw API result:", result);
       
       // Handle if result is already an object
       let parsedResult;
@@ -210,7 +216,14 @@ const RecursiveDefinitions = () => {
   const validateN = (input) => {
     // Regex to validate the value of n (e.g., 5)
     const nRegex = /^\d+$/;
-    return nRegex.test(input);
+
+    if (!nRegex.test(input)) {
+      return false;
+    }
+    
+    // Then check if it's within the allowed range (0-30)
+    const nValue = parseInt(input, 10);
+    return nValue >= 0 && nValue <= 30;
   }
 
   const renderOutput = () => {

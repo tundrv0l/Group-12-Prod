@@ -14,9 +14,11 @@ import { useDiagnostics } from '../hooks/useDiagnostics';
 * Note: Each matrix will be parsed as a 2D array of strings.
 */
 
+const MAX_MATRIX_DIMENSION = 10;
+
 const BooleanMatrices = () => {
-  const [matrix1, setMatrix1] = React.useState([['']]);
-  const [matrix2, setMatrix2] = React.useState([['']]);
+  const [matrix1, setMatrix1] = React.useState([['0']]);
+  const [matrix2, setMatrix2] = React.useState([['0']]);
   const [operation, setOperation] = React.useState('MEET/JOIN');
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
@@ -55,6 +57,10 @@ const BooleanMatrices = () => {
         </Text>
         <Text>• MEET/JOIN: Element-wise operations where Meet (∧) is the minimum and Join (∨) is the maximum of corresponding elements</Text>
         <Text>• PRODUCT: Boolean matrix multiplication with "OR" of "AND" products</Text>
+
+        <Text margin={{ top: "xsmall" }} color="status-warning">
+          Note: Matrices are limited to {MAX_MATRIX_DIMENSION}×{MAX_MATRIX_DIMENSION} dimensions.
+        </Text>
         
         <Box margin={{ top: 'medium' }} align="center">
           <Button 
@@ -71,12 +77,36 @@ const BooleanMatrices = () => {
   };
 
   const Input = () => {
+
+    const ensureMaxSize = (matrix) => {
+      // Limit the number of rows
+      if (matrix.length > MAX_MATRIX_DIMENSION) {
+        return matrix.slice(0, MAX_MATRIX_DIMENSION).map(row => 
+          row.slice(0, MAX_MATRIX_DIMENSION)
+        );
+      }
+      
+      // Limit the number of columns
+      return matrix.map(row => 
+        row.length > MAX_MATRIX_DIMENSION ? row.slice(0, MAX_MATRIX_DIMENSION) : row
+      );
+    };
+
+    // Create wrapped versions of the setMatrix functions
+    const setMatrix1WithLimit = (newMatrix) => {
+      setMatrix1(ensureMaxSize(newMatrix));
+    };
+
+    const setMatrix2WithLimit = (newMatrix) => {
+      setMatrix2(ensureMaxSize(newMatrix));
+    };
+
     return (
       <>
-        <MatrixTable label="Boolean Matrix 1" matrix={matrix1} setMatrix={setMatrix1} />
-        <MatrixToolbar matrix={matrix1} setMatrix={setMatrix1} />
-        <MatrixTable label="Boolean Matrix 2" matrix={matrix2} setMatrix={setMatrix2} />
-        <MatrixToolbar matrix={matrix2} setMatrix={setMatrix2} />
+        <MatrixTable label="Boolean Matrix 1" matrix={matrix1} setMatrix={setMatrix1WithLimit} />
+        <MatrixToolbar matrix={matrix1} setMatrix={setMatrix1WithLimit} maxDimension={MAX_MATRIX_DIMENSION} />
+        <MatrixTable label="Boolean Matrix 2" matrix={matrix2} setMatrix={setMatrix2WithLimit} />
+        <MatrixToolbar matrix={matrix2} setMatrix={setMatrix2WithLimit} maxDimension={MAX_MATRIX_DIMENSION} />
         
         <Box align="center" justify="center" pad={{ vertical: 'small' }}>
           <Select
@@ -134,6 +164,16 @@ const BooleanMatrices = () => {
 
   // Replace the validateMatrices function with this improved version:
   const validateMatrices = (matrix1, matrix2, operation) => {
+
+    // Check if matrices contain only 0s and 1s
+    if (matrix1.length > MAX_MATRIX_DIMENSION || matrix1[0].length > MAX_MATRIX_DIMENSION) {
+      return { valid: false, error: `Matrix 1 exceeds maximum dimension of ${MAX_MATRIX_DIMENSION}×${MAX_MATRIX_DIMENSION}.` };
+    }
+    
+    if (matrix2.length > MAX_MATRIX_DIMENSION || matrix2[0].length > MAX_MATRIX_DIMENSION) {
+      return { valid: false, error: `Matrix 2 exceeds maximum dimension of ${MAX_MATRIX_DIMENSION}×${MAX_MATRIX_DIMENSION}.` };
+    }
+
     // Check if matrices contain only 0s and 1s
     const isValidContent = matrix => matrix.every(row => row.every(cell => cell === '0' || cell === '1'));
     
