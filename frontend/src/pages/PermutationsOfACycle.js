@@ -151,6 +151,22 @@ const PermutationsOfACycle = () => {
       setError('Matrix must have exactly 2 rows.');
       return;
     }
+    
+    const top = []
+    const bottom = []
+
+    for (let i = 0; i < matrix[0].length; i++) {
+        if (top.includes(matrix[0][i])) {
+            setError("Can't have duplicate inputs:" + matrix[0][i]);
+        }
+
+        if (bottom.includes(matrix[1][i])) {
+            setError("Can't have duplicate outputs:" + matrix[1][i]);
+        }
+
+        top.push(matrix[0][i]);
+        bottom.push(matrix[1][i]);
+    }
 
     try {
       const result = await solvePermutationsCycle(matrix);
@@ -169,7 +185,7 @@ const PermutationsOfACycle = () => {
   
       setOutput(result);
     } catch (err) {
-      if (err.message.includes("Not a permutation")) {
+      if (err.message.includes("Not a permutation.")) {
         setError("Not a permutation. Please ensure your input is a valid bijection.");
         // Tracking failures for diagnostics
         trackResults(
@@ -179,7 +195,7 @@ const PermutationsOfACycle = () => {
         );
         return;
       } else {
-        setError("An error occurred while generating the permutations.");
+        setError("Not a permutation. Please ensure your input is a valid bijection.");
         return;
       }
     } finally {
