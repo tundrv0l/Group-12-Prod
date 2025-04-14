@@ -25,10 +25,30 @@ const Partitions = () => {
 
   const { trackResults } = useDiagnostics("PARTITIONS");
 
-  const SAMPLE_SET = "{a, b, c, d}";
-  const SAMPLE_PARTITION = "{{a,b},{c,d}}";
+  const fillWithEmpty = () => {
+    const SAMPLE_SET = "{}";
+    const SAMPLE_PARTITION = "{}";
+    setSet(SAMPLE_SET);
+    setRelation(SAMPLE_PARTITION);
+  };
 
-  const fillWithSample = () => {
+  const fillWithWhole = () => {
+    const SAMPLE_SET = "{a,b,c,d}";
+    const SAMPLE_PARTITION = "{{a,b,c,d}}";
+    setSet(SAMPLE_SET);
+    setRelation(SAMPLE_PARTITION);
+  };
+
+  const fillWithSingletons = () => {
+    const SAMPLE_SET = "{a,b,c,d}";
+    const SAMPLE_PARTITION = "{{a},{b},{c},{d}}";
+    setSet(SAMPLE_SET);
+    setRelation(SAMPLE_PARTITION);
+  };
+
+  const fillWithHalf = () => {
+    const SAMPLE_SET = "{a, b, c, d}";
+    const SAMPLE_PARTITION = "{{a,b},{c,d}}";
     setSet(SAMPLE_SET);
     setRelation(SAMPLE_PARTITION);
   };
@@ -257,8 +277,32 @@ const Partitions = () => {
                 </Text>
                 <Box margin={{ top: 'medium' }} align="center">
                 <Button 
-                  label="Fill with Sample" 
-                  onClick={fillWithSample} 
+                  label="Fill with Empty" 
+                  onClick={fillWithEmpty} 
+                  primary 
+                  size="small"
+                  border={{ color: 'brand', size: '1px' }}
+                  pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                />
+                <Button 
+                  label="Fill with Whole Set" 
+                  onClick={fillWithWhole} 
+                  primary 
+                  size="small"
+                  border={{ color: 'brand', size: '1px' }}
+                  pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                />
+                <Button 
+                  label="Fill with Singletons" 
+                  onClick={fillWithSingletons} 
+                  primary 
+                  size="small"
+                  border={{ color: 'brand', size: '1px' }}
+                  pad={{ vertical: 'xsmall', horizontal: 'small' }}
+                />
+                <Button 
+                  label="Fill with Half" 
+                  onClick={fillWithHalf} 
                   primary 
                   size="small"
                   border={{ color: 'brand', size: '1px' }}
