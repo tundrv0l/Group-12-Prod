@@ -80,8 +80,7 @@ const PolynomialInput = forwardRef((props, ref) => {
   // Generate polynomial text (can be reused for both polynomials)
   const generatePolynomialText = (coeffs) => {
     if (!coeffs || coeffs.length === 0) return "";
-    
-    return coeffs.map((coef, index) => {
+    var result = coeffs.map((coef, index) => {
       const power = coeffs.length - 1 - index;
       
       if (power === 0) {
@@ -92,6 +91,11 @@ const PolynomialInput = forwardRef((props, ref) => {
         return `${coef || '0'}x^${power}`;
       }
     }).join(' + ');
+
+    if (useRoot) {
+        result = '(' + result + ')^0.5' 
+    }
+    return result
   };
 
   // Validator for both polynomials
@@ -162,11 +166,6 @@ const PolynomialInput = forwardRef((props, ref) => {
       </FormField>
       
       <Box direction="row" gap="medium" margin={{ bottom: 'medium' }}>
-        <CheckBox
-          label="Use Logarithm"
-          checked={useLog}
-          onChange={(e) => setUseLog(e.target.checked)}
-        />
         <CheckBox
           label="Use Root"
           checked={useRoot}
