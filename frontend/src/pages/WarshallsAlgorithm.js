@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Text, Button } from 'grommet';
 import { solveWarshallsAlgorithm } from '../api';
 import SolverPage from '../components/SolverPage';
@@ -13,6 +13,7 @@ import { useDiagnostics } from '../hooks/useDiagnostics';
 */
 
 const WarshallsAlgorithm = () => {
+  const [isCaveman, setIsCaveman] = useState(false);
   const [matrix, setMatrix] = React.useState([['0']]);
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
@@ -78,18 +79,20 @@ const WarshallsAlgorithm = () => {
     );
   };
 
-  const getNormalParagraphs = () => [
+  const betterText = [
     "Warshall's Algorithm is used to compute the transitive closure of a directed graph. The transitive closure determines which vertices are reachable from others, making the algorithm especially useful for applications like network analysis and pathfinding.",
     "The algorithm operates on the graph's adjacency matrix, iteratively updating it to reflect reachability. If a path exists from vertex i to vertex j through vertex k, the matrix is updated to show that j is reachable from i.",
     "While not the most efficient algorithm due to its time complexity of O(n³), Warshall's Algorithm is one of the simplest to understand. It systematically processes each row of the matrix: for each intermediate vertex, it updates the reachability information by combining (OR-ing) relevant rows.",
     "Enter your graph below to generate and analyze its transitive closure using Warshall's Algorithm!"
   ];
 
-  const getCavemanParagraphs = () => [
-    "This tool analyzes graphs using Warshall's Algorithm which is definitely what any advanced starship crew would use unless you're using the Force to guide you through graph theory which honestly makes more sense than some ancient Vulcan logic no offense to logic but like come on",
-    "Warshall's Algorithm calculates the transitive closure of a directed graph which means it figures out which planets no nodes are reachable from others like plotting warp paths or maybe charting connections in the Jedi Council archive except this doesn't involve any holocrons or dilithium just matrices so stop yelling",
-    "You start with an adjacency matrix then go row by row column by column whatever it updates itself to show if there's a path from i to j through k and yes that sounds like a transporter buffer protocol but it's also literally how droids map their target reach no it's math pure math no Force ghosts involved just logic and OR operations",
-    "It's got a time complexity of O(n³) which isn't ideal but neither is getting tractor-beamed into a cube or accidentally jumping into a binary star system so it's fine it works okay each step combines reachability info like merging nav charts or scanning for subspace anomalies or mind-merging with an ancient being that lives inside a matrix metaphorically not literally although that would be cool too"
+  const cavemanText = [
+    "Soldiers! Comrades! Warriors of intellect and will! Today, we march not with rifles in hand—but with the sharpest weapon known to mankind: knowledge. And our battlefield? The graph. The map of connections. The unseen threads that bind every node to another in this complex world.",
+  "In our arsenal stands a mighty tool—Warshall’s Algorithm! It is no ordinary tactic. No, this algorithm is the key to understanding reachability within any directed structure. When we unleash it, we uncover the true paths—those that lie hidden—showing us which vertices can be reached, and which stand alone. It is a weapon forged for network domination, for the unrelenting pursuit of pathfinding perfection.",
+  "Warriors, it does not waver. It works tirelessly on the graph’s very soul—its adjacency matrix. With calculated precision, it scans, it updates, it conquers. If there exists a path from node i to node j through node k, the matrix shall reflect it—without mercy, without hesitation.",
+  "Yes, it may not be the fastest—its steps may number in the cubes of n—but let no one question its clarity or simplicity. Warshall’s Algorithm does not stumble. It advances row by row, vertex by vertex, OR-ing together possibilities and building an empire of understanding from the ashes of chaos.",
+  "Now I say to you—enter your graph! Feed it into the machine of reason! Watch as the transitive closure emerges from the fog of war!",
+  "Victory at all costs!"
   ];
 
   const handleSolve = async () => {
@@ -148,6 +151,11 @@ const WarshallsAlgorithm = () => {
     return isSquareMatrix && isValidMatrix;
   };
 
+  const toggleCaveman = () => {
+    setIsCaveman(!isCaveman);
+  };
+
+
   const renderOutput = () => {
     if (!output) {
       return "Output will be displayed here.";
@@ -168,8 +176,7 @@ const WarshallsAlgorithm = () => {
       title="Warshall's Algorithm Solver"
       topic="Directed Graphs and Binary Relations"
       description="This tool helps you analyze graphs using Warshall's Algorithm, a fundamental concept in discrete mathematics."
-      paragraphs={getNormalParagraphs()}
-      alternative_paragraphs={getCavemanParagraphs()}
+      paragraphs={isCaveman ? cavemanText : betterText}
       InfoText={Info}
       InputComponent={Input}
       input_props={null}
@@ -177,6 +184,7 @@ const WarshallsAlgorithm = () => {
       handle_solve={handleSolve}
       loading={loading}
       render_output={renderOutput}
+      topRightButton={toggleCaveman}
     />
   );
 };

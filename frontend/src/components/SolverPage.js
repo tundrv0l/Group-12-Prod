@@ -12,7 +12,7 @@ import InfoBox from './InfoBox';
 * Description: Skeleton for solver pages.
 */
 
-const SolverPage = ({ title, topic, description, paragraphs, DescriptionComponent, InfoText, InputComponent, input_props, error, handle_solve, loading, OutputComponent, render_output, output_props, ExtraComponent }) => {
+const SolverPage = ({ title, topic, description, paragraphs, DescriptionComponent, InfoText, InputComponent, input_props, error, handle_solve, loading, OutputComponent, render_output, output_props, ExtraComponent, topRightButton }) => {
   return (
     <PageTopScroller>
     <Page>
@@ -22,6 +22,21 @@ const SolverPage = ({ title, topic, description, paragraphs, DescriptionComponen
           <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
             <HomeButton />
           </Box>
+
+          {topRightButton && (
+            <Box align="end" style={{ position: 'absolute', top: 0, right: 0, padding: '10px' }}>
+              <Button
+                label="Toggle Funny Text"
+                onClick={topRightButton}
+                primary
+                size="small"
+                style={{ backgroundColor: 'white', color: 'white', borderRadius: '8px' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#333'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+              />
+            </Box>
+          )}
+
           <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
             <Text size="xxlarge" weight="bold">
               {title}
