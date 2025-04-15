@@ -699,8 +699,8 @@ def cycleThrough(conclusion):
         if isinstance(conclusion, IMPLIES):
 
             while isinstance(conclusion, IMPLIES):
-                outputString += "Because this conclusion only matters if " + str(conclusion.letter1) + " is true, then we can assume that it is, and place it in our hypothesises. This also means our new conclusion is " + str(conclusion.letter2) + "\n"
-                outputStrng += "Because this conclusion only matters if " + conclusion.letter1.altPrint() + " is true, then we can assume that it is, and place it in our hypothesises. This also means our new conclusion is " + conclusion.letter2.altPrint() + "\n"
+                outputString += "Because this conclusion only matters if " + str(conclusion.letter1) + " is true, then we can assume that it is, and place it in our hypotheses. This also means our new conclusion is " + str(conclusion.letter2) + "\n"
+                outputStrng += "Because this conclusion only matters if " + conclusion.letter1.altPrint() + " is true, then we can assume that it is, and place it in our hypotheses. This also means our new conclusion is " + conclusion.letter2.altPrint() + "\n"
                 conclusion.letter1.parent1 = "hypothesis"
                 hypothesi.append(conclusion.letter1)
                 conclusion = conclusion.letter2

@@ -118,8 +118,7 @@ const PropositionalLogicSolver = () => {
       // Track successful execution with timing
       trackResults(
         { hypotheses, conclusion }, 
-        parsedResult.String,  // Only track the String output
-        parsedResult.Symbol,
+        {String: parsedResult.String, Symbol: parsedResult.Symbol },
         performance.now() - startTime
       );
     } catch (err) {

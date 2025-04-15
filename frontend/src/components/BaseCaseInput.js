@@ -12,9 +12,13 @@ const BaseCaseInput = ({ baseCases, onChange }) => {
   // Add a new base case
   const addBaseCase = () => {
     // Find the next n value (typically n+1 from the last one)
-    const nextN = baseCases.length > 0 
-      ? Math.max(...baseCases.map(bc => bc.n)) + 1 
-      : 0;
+    const existingIndices = baseCases.map(bc => parseInt(bc.n));
+    let nextN = 0;
+    
+    // Find the first missing index starting from 0
+    while (existingIndices.includes(nextN)) {
+      nextN++;
+    }
     
     onChange([...baseCases, { n: nextN, value: '' }]);
   };
@@ -25,7 +29,17 @@ const BaseCaseInput = ({ baseCases, onChange }) => {
     
     const newBaseCases = [...baseCases];
     newBaseCases.splice(index, 1);
-    onChange(newBaseCases);
+    
+    // Re-index the base cases to maintain a continuous sequence
+    newBaseCases.sort((a, b) => parseInt(a.n) - parseInt(b.n));
+    
+    // Reassign indices to ensure continuity (0, 1, 2, ...)
+    const reindexedBaseCases = newBaseCases.map((bc, i) => ({
+      ...bc,
+      n: i
+    }));
+    
+    onChange(reindexedBaseCases);
   };
 
   // Update a base case value
