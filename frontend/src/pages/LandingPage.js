@@ -23,7 +23,8 @@ const LandingPage = () => (
           style={{
             position: 'relative',
             zIndex: 1,
-            width: size === 'small' ? '90%' : size === 'medium' ? '60%' : '45%',
+            width: size === 'small' ? '80%' : size === 'medium' ? '70%' : 'min(80rem, 75%)',
+            minWidth: size == 'large' ? '800px' : 'auto',
             maxWidth: '1200px',
             margin: 'auto',
             borderRadius: '8px',

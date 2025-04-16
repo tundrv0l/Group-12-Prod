@@ -33,7 +33,7 @@ def receive_diagnostics():
         Returns
         ----------
         result: json
-            Reesponse of if the call was successful or not.
+            Response of if the call was successful or not.
     '''
 
     try:
@@ -45,7 +45,6 @@ def receive_diagnostics():
         filename = f"log_{timestamp}.json"
         filepath = os.path.join(LOGS_DIR, filename)
 
-        '''
         # Start Database Stuff
         # Author: Jacob Warren
         
@@ -102,7 +101,6 @@ def receive_diagnostics():
         database.close()
         
         # End Database Stuff
-        '''
 
         with open(filepath, 'w') as file:
             json.dump(diagnostic_data, file, indent=2)
