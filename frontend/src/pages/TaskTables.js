@@ -246,7 +246,7 @@ const TaskTables = () => {
               pad={{ vertical: 'xsmall', horizontal: 'small' }}
             />
             <Button 
-              label="Fill with Indepedent Paths" 
+              label="Fill with Independent Paths" 
               onClick={fillWithSplit} 
               primary 
               size="small"
