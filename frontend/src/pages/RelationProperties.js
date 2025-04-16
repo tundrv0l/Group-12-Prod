@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, Text, TextInput, Button } from 'grommet';
+import Latex from 'react-latex-next';
 import { solvePropertiesOfRelations, solveClosureAxioms, solveHasseDiagram, solvePartialOrderings } from '../api';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import SolverPage from '../components/SolverPage';
-import Latex from 'react-latex-next';
-//import 'katex/dist/katex.min.css';
+import LatexLine from '../components/LatexLine';
 
 /*
 * Name: RelationProperties.js
@@ -322,14 +322,6 @@ const Description = () => {
       </div>
     );
 };
-
-const LatexLine = ({string}) => {
-    return (
-        <div>
-            <Latex strict>{string}</Latex>
-        </div>
-    );
-}
 
 const Input = React.memo(({set, relation, setSet, setRelation}) => {
     return (
