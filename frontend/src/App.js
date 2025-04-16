@@ -28,6 +28,7 @@ import ArrayToTree from './pages/ArrayToTree';
 import TreeToArray from './pages/TreeToArray';
 import TreeNotation from './pages/TreeNotation';
 import WarshallsAlgorithm from './pages/WarshallsAlgorithm';
+import AdminPanel from './pages/AdminPanel'
 
 
 const App = () => (
@@ -62,6 +63,7 @@ const App = () => (
         <Route path="/tree-to-array" element={<TreeToArray />} />
         <Route path="/tree-notation" element={<TreeNotation />} />
         <Route path="/warshalls-algorithm" element={<WarshallsAlgorithm />} />
+        <Route path="/admin" element={<AdminPanel />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppLayout>
