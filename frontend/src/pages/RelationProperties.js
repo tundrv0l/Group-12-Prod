@@ -334,14 +334,16 @@ const LatexLine = ({string}) => {
 const Input = React.memo(({set, relation, setSet, setRelation}) => {
     return (
       <>
-        <Box margin={{top : "small" }}>
+        <Box margin={{ top: "small" }} direction="row" align="center">
+          <Latex strict>{"$S=$"}</Latex>
           <TextInput 
             placeholder="Enter S here (e.g., {a, b, c, 23})"
             value={set}
             onChange={(event) => setSet(event.target.value)}
           />
         </Box>
-        <Box margin={{top : "small" }}>
+        <Box margin={{ top: "small" }} direction="row" align="center">
+          <Latex strict>{"$\\rho=$"}</Latex>
           <TextInput 
             placeholder="Enter ρ here (e.g., {(a, b), (23, c)})"
             value={relation}
