@@ -1,17 +1,15 @@
 import React from 'react';
-import { Page, PageContent, Box, Text, Card, CardBody, TextInput, CardFooter, Button, Spinner, Collapsible } from 'grommet';
+import { Box, Text, TextInput, Button } from 'grommet';
+import Latex from 'react-latex-next';
 import { solvePartitions } from '../api';
-import { CircleInformation } from 'grommet-icons';
-import ReportFooter from '../components/ReportFooter';
-import HomeButton from '../components/HomeButton';
-import Background from '../components/Background';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 import PartitionInput from '../components/PartitionInput';
-import PageTopScroller from '../components/PageTopScroller';
+import SolverPage from '../components/SolverPage';
+import LatexLine from '../components/LatexLine';
 
 /*
 * Name: Partitions.js
-* Author: Parker Clark
+* Author: Parker Clark, Jacob Warren
 * Description: Solver page for equivalence relations.
 */
 
@@ -21,7 +19,6 @@ const Partitions = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [showHelp, setShowHelp] = React.useState(false);
 
   const { trackResults } = useDiagnostics("PARTITIONS");
 
@@ -208,81 +205,22 @@ const Partitions = () => {
     }
   };
 
-  // Pretty print the output
-  const renderOutput = () => {
-    if (!output) {
-      return "Output will be displayed here!";
-    }
-
-    // Parse out json object and return out elements one by one
-    return (
-      <Box>
-        {Object.entries(output).map(([key, value]) => (
-          <Text key={key}>{`${key}: ${value}`}</Text>
-        ))}
-      </Box>
-    );
-  };
-
-  return (
-    <PageTopScroller>
-    <Page>
-      <Background />
-      <Box align="center" justify="center" pad="medium" background="white" style={{ position: 'relative', zIndex: 1, width: '55%', margin: 'auto', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-      <PageContent align="center" skeleton={false}>
-        <Box align="start" style={{ position: 'absolute', top: 0, left: 0, padding: '10px', background: 'white', borderRadius: '8px' }}>
-            <HomeButton />
-        </Box>
-        <Box align="center" justify="center" pad={{ vertical: 'medium' }}>
-          <Text size="xxlarge" weight="bold">
-            Partitions
-          </Text>
-        </Box>
-        <Box align="center" justify="center">
-          <Text size="large" margin="none" weight={500}>
-            Topic: Relations
-          </Text>
-        </Box>
-        <Box align="center" justify="start" direction="column" cssGap={false} width='large'>
-          <Text margin={{"bottom":"small"}} textAlign="center">
-            This tool helps you analyze partitions and their corresponding equivalence relations.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            A partition of a set A is a collection of non-empty, disjoint subsets whose union equals A. Each subset in a partition is called a part or a block.
-          </Text>
-          <Text margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            Every partition corresponds to a unique equivalence relation, where elements are related if and only if they belong to the same part of the partition. 
-          </Text>
-          <Box margin={{"bottom":"small"}} textAlign="start" weight="normal">
-            <Text>An equivalence relation is a relation that is:</Text>
-            <Text>- Reflexive: Every element is related to itself, i.e., (a, a) ∈ R for all a ∈ A.</Text>
-            <Text>- Symmetric: For every (a, b) ∈ R, (b, a) ∈ R.</Text>
-            <Text>- Transitive: For every (a, b) ∈ R and (b, c) ∈ R, (a, c) ∈ R.</Text>
-          </Box>
-          <Text textAlign="start" weight="normal" margin={{"bottom":"medium"}}>
-            Enter a set and its partition below to generate the corresponding equivalence relation!
-          </Text>
-        </Box>
-        <Card width="large" pad="medium" background={{"color":"light-1"}}>
-          <CardBody pad="small">
-            <Box margin={{bottom : "small" }}><Box direction="row" align="start" justify="start" margin={{ bottom: 'small' }} style={{ marginLeft: '-8px', marginTop: '-8px' }}>
-              <Button icon={<CircleInformation />} onClick={() => setShowHelp(!showHelp)} plain />
-            </Box>
-            <Collapsible open={showHelp}>
-              <Box pad="small" background="light-2" round="small" margin={{ bottom: "medium" }} width="large">
-                <Text>
-                  To input a set, use the following format:
-                </Text>
-                <Text>
-                  <strong>{'{a,b,c,d}'}</strong>
-                </Text>
-                <Text>
-                  To input a partition, use the following format:
-                </Text>
-                <Text>
-                  <strong>{'{{a,b},{c,d}}'}</strong>
-                </Text>
-                <Box margin={{ top: 'medium' }} align="center">
+    const Info = () => {
+        return (
+          <>
+            <Text>
+              To input a set, use the following format:
+            </Text>
+            <Text>
+              <strong>{'{a,b,c,d}'}</strong>
+            </Text>
+            <Text>
+              To input a partition, use the following format:
+            </Text>
+            <Text>
+              <strong>{'{{a,b},{c,d}}'}</strong>
+            </Text>
+            <Box margin={{ top: 'medium' }} align="center">
                 <Button 
                   label="Fill with Empty" 
                   onClick={fillWithEmpty} 
@@ -323,44 +261,80 @@ const Partitions = () => {
                   border={{ color: 'brand', size: '1px' }}
                   pad={{ vertical: 'xsmall', horizontal: 'small' }}
                 />
-                </Box>
-              </Box>
-            </Collapsible>
-              <TextInput 
-                placeholder="Example: Enter your set here (e.g., {a, b, c, 23})"
-                value={set}
-                onChange={(event) => setSet(event.target.value)}
-              />
             </Box>
-            <Box margin={{top : "small" }}>
-              <PartitionInput
-                value={relation}
-                onChange={setRelation} />
-            </Box>
-            {error && <Text color="status-critical">{error}</Text>}
-          </CardBody>
-          <CardFooter align="center" direction="row" flex={false} justify="center" gap="medium" pad={{"top":"small"}}>
-            <Button label={loading ? <Spinner /> : "Solve"} onClick={handleSolve} disabled={loading} />
-          </CardFooter>
-        </Card>
-        <Card width="large" pad="medium" background={{"color":"light-2"}} margin={{"top":"medium"}}>
-          <CardBody pad="small">
-            <Text weight="bold">
-              Output:
-            </Text>
-            <Box align="center" justify="center" pad={{"vertical":"small"}} background={{"color":"light-3"}} round="xsmall">
-              <Text>
-                {renderOutput()}
-              </Text>
-            </Box>
-          </CardBody>
-        </Card>
-        <ReportFooter />
-      </PageContent>
-      </Box>
-    </Page>
-    </PageTopScroller>
+          </>
+        );
+    };
+
+  return (
+    <SolverPage 
+        title="Partitions"
+        topic="Relations"
+        description="This tool helps you analyze partitions and their corresponding equivalence relations."
+        DescriptionComponent={Description}
+        InfoText={Info}
+        InputComponent={Input}
+        input_props={{set, setSet, relation, setRelation}}
+        error={error}
+        handle_solve={handleSolve}
+        loading={loading}
+        OutputComponent={Output}
+        output_props={{output}}
+    />
   );
+};
+
+const Description = () => {
+    return(
+      <div style={{textAlign: "left"}}>
+        <LatexLine
+          string="A partition on a set $S$ is a collection of nonempty disjoint subsets of $S$ whose union equals $S$."
+        />
+        <Text weight="bold" margin={{"bottom": "small"}}>Equivalence Relation</Text>
+        <LatexLine
+          string="A partition on $S$ determines an equivalence relation and an equivalence relation on $S$ determines a partition. This solver determines an equivalence relation from a partition."
+        />
+        <LatexLine
+          string="Enter your $S$ and partition below."
+        />
+      </div>
+    );
+}
+
+const Input = ({set, relation, setSet, setRelation}) => {
+    return (
+      <>
+        <Box margin={{ top: "small" }} direction="row" align="center">
+          <Latex strict>{"$S=$"}</Latex>
+          <TextInput 
+            placeholder="Enter S here (e.g., {a, b, c, 23})"
+            value={set}
+            onChange={(event) => setSet(event.target.value)}
+          />
+        </Box>
+        <Box margin={{top : "small" }}>
+          <PartitionInput
+            value={relation}
+            onChange={setRelation}
+          />
+        </Box>
+      </>
+    );
+};
+
+const Output = ({output}) => {
+    if (!output) {
+      return "Output will be displayed here!";
+    }
+
+    // Parse out json object and return out elements one by one
+    return (
+      <Box>
+        {Object.entries(output).map(([key, value]) => (
+          <Text key={key}>{`${key}: ${value}`}</Text>
+        ))}
+      </Box>
+    );
 };
 
 export default Partitions;
