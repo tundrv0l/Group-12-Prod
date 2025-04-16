@@ -30,17 +30,17 @@ def solve(A, B):
 
     A, B = _preprocess_input(A, B)
 
-    conjunction = [[0 for j in range(0, len(A[0]))] for i in range(0, len(A))]
-    disjunction = [[0 for j in range(0, len(A[0]))] for i in range(0, len(A))]
+    meet = [[0 for j in range(0, len(A[0]))] for i in range(0, len(A))]
+    join = [[0 for j in range(0, len(A[0]))] for i in range(0, len(A))]
 
     for i in range(0, len(A)):
         for j in range(0, len(A[0])):
-            conjunction[i][j] += min(A[i][j], B[i][j])
-            disjunction[i][j] += max(A[i][j], B[i][j])
+            meet[i][j] += min(A[i][j], B[i][j])
+            join[i][j] += max(A[i][j], B[i][j])
     
     result = {
-        "Join (Conjunction)": conjunction,
-        "Meet (Disjunction)": disjunction
+        "Meet": meet,
+        "Join": join
     }
 
     return json.dumps(result)

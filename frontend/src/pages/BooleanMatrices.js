@@ -1,15 +1,16 @@
 import React from 'react';
 import { Box, Text, Button, Select } from 'grommet';
 import { solveBooleanMatrices } from '../api';
+import { useDiagnostics } from '../hooks/useDiagnostics';
 import MatrixOutput from '../components/MatrixOutput';
 import SolverPage from '../components/SolverPage';
 import MatrixTable from '../components/MatrixTable';
 import MatrixToolbar from '../components/MatrixToolbar';
-import { useDiagnostics } from '../hooks/useDiagnostics';
+import LatexLine from '../components/LatexLine';
 
 /*
 * Name: BooleanMatrices.js
-* Author: Parker Clark
+* Author: Parker Clark, Jacob Warren
 * Description: Solver page for boolean matrices.
 * Note: Each matrix will be parsed as a 2D array of strings.
 */
@@ -93,15 +94,6 @@ const BooleanMatrices = () => {
         <Text weight="bold" margin={{ bottom: "xsmall" }}>
           Boolean Matrix Operations:
         </Text>
-        <Text>
-          Boolean matrices contain only 0s and 1s and are used for representing relations, graphs, and logical operations.
-        </Text>
-        <Text margin={{ top: "xsmall" }}>
-          This tool supports two types of operations:
-        </Text>
-        <Text>• MEET/JOIN: Element-wise operations where Meet (∧) is the minimum and Join (∨) is the maximum of corresponding elements</Text>
-        <Text>• PRODUCT: Boolean matrix multiplication with "OR" of "AND" products</Text>
-
         <Text margin={{ top: "xsmall" }} color="status-warning">
           Note: Matrices are limited to {MAX_MATRIX_DIMENSION}×{MAX_MATRIX_DIMENSION} dimensions.
         </Text>
@@ -293,12 +285,8 @@ const BooleanMatrices = () => {
     <SolverPage
       title="Boolean Matrices"
       topic="Matrices"
-      description="This tool helps you generate and analyze Boolean matrices."
-      paragraphs={[
-        "A Boolean matrix is a matrix with entries from the Boolean domain {0, 1}. This tool allows you to input a Boolean matrix and perform various operations such as matrix multiplication, transposition, and finding the transitive closure.",
-        "By analyzing Boolean matrices, you can solve problems in graph theory, computer science, and combinatorics. This tool allows you to input a Boolean matrix and explore its properties through different operations.",
-        "Enter your Boolean matrix below to generate and analyze its properties!"
-      ]}
+      description="This tool compute operations on boolean matrices."
+      DescriptionComponent={Description}
       InfoText={Info}
       InputComponent={Input}
       input_props={null}
@@ -309,5 +297,30 @@ const BooleanMatrices = () => {
     />
   );
 };
+
+const Description = () => {
+    return (
+      <div style={{textAlign: "left"}}>
+        <LatexLine
+          string="A boolean matrix is a matrix with only 0s and 1s as entries." 
+        />
+        <Text weight="bold" margin={{"bottom": "small"}}>Meet</Text>
+        <LatexLine
+          string="For two boolean matrices of the same dimensions, $(A\land B)_{ij}=A_{ij}\land B_{ij}$."
+        />
+        <Text weight="bold" margin={{"bottom": "small"}}>Join</Text>
+        <LatexLine
+          string="For two boolean matrices of the same dimensions, $(A\lor B)_{ij}=A_{ij}\lor B_{ij}$."
+        />
+        <Text weight="bold" margin={{"bottom": "small"}}>Product</Text>
+        <LatexLine
+          string="For two boolean matrices where the column count of A matches the row count of B (m), $(A\times B)_{ij}=\bigvee_{k=1}^m(A_{ik}\land B_{kj})$."
+        />
+        <LatexLine
+          string="Enter two boolean matrices below."
+        />
+      </div>
+    ); 
+}
 
 export default BooleanMatrices;
