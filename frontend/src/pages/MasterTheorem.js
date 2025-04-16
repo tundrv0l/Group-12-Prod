@@ -1,14 +1,16 @@
 import React, { useRef } from 'react';
 import { Box, Text, Button } from 'grommet';
-import { solveMasterTheorem } from '../api';
-import SolverPage from '../components/SolverPage';
-import MasterTheoremInput from '../components/MasterTheoremInput';
 import Latex from 'react-latex-next';
 import 'katex/dist/katex.min.css';
+import { solveMasterTheorem } from '../api';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+import SolverPage from '../components/SolverPage';
+import MasterTheoremInput from '../components/MasterTheoremInput';
+import LatexLine from '../components/LatexLine';
+
 /*
 * Name: MasterTheorem.js
-* Author: Parker Clark
+* Author: Parker Clark, Jacob Warren
 * Description: Solver page for analyzing the Master's Theorem.
 */
 
@@ -117,12 +119,6 @@ const MasterTheorem = () => {
         <Text weight="bold" margin={{ bottom: "xsmall" }}>
           The Master Theorem:
         </Text>
-        <Text>
-          The Master Theorem is used for solving recurrence relations of the form: T(n) = aT(n/b) + f(n)
-        </Text>
-        <Text margin={{ top: "xsmall" }}>
-          Where:
-        </Text>
         <Text>• a ≥ 1: Number of subproblems</Text>
         <Text>• b {">"} 1: Factor by which problem size is reduced</Text>
         <Text>• f(n) = n^c: Cost of dividing and combining solutions</Text>
@@ -225,12 +221,8 @@ const MasterTheorem = () => {
     <SolverPage
       title="The Master Theorem"
       topic="Order of Magnitude"
-      description="This tool helps you analyze the Master Theorem in discrete mathematics."
-      paragraphs={[
-        "The Master Theorem provides a straightforward way to determine the asymptotic behavior of recurrence relations that arise in the analysis of divide-and-conquer algorithms. This tool allows you to input a recurrence relation and determine its asymptotic complexity.",
-        "By analyzing recurrence relations using the Master Theorem, you can understand the time complexity of algorithms and compare their efficiency. This is useful in various applications such as algorithm design, computational complexity, and performance analysis.",
-        "Enter the parameters of your recurrence relation below to analyze its asymptotic complexity using the Master Theorem!"
-      ]}
+      description="This tool applies the Master Theorem to recurrence relations."
+      DescriptionComponent={Description}
       InfoText = {Info}
       InputComponent={Input}
       input_props={null}
@@ -241,5 +233,18 @@ const MasterTheorem = () => {
     />
   );
 };
+
+const Description = () => {
+    return (
+      <div style={{textAlign: "left"}}>
+        <LatexLine
+          string="The Master Theorem is defined for recurrence relations of the form $$ S(1)\geq0 $$$$ S(n)=aS(\frac{n}{b})+n^c(\forall n\geq 2)$$ where $n=b^m$ for some $m\in\mathbb{Z}$, $a\in\mathbb{Z}_{\geq1}$, $b\in\mathbb{Z}_{>1}$, and $c\in\mathbb{R}_{>0}$." 
+        />
+        <LatexLine
+          string="Enter your values for $a$, $b$, and $c$ below."
+        />
+      </div>
+    ); 
+}
 
 export default MasterTheorem;
