@@ -39,7 +39,7 @@ def solve(A, B):
                 C[i][j] = max(min(A[i][k], B[k][j]), C[i][j])
 
     result = {
-        "Product (A × B)": C
+        "Product": C
     }
 
     return json.dumps(result)

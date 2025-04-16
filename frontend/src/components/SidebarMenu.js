@@ -129,7 +129,7 @@ const SidebarMenu = () => (
           <CustomAccordionPanel label="5.1: Relations">
             <AccordionPanelContent 
               content={[
-                { label: "Property Of Relations", path: "/properties-of-relations" },
+                { label: "Properties Of Relations", path: "/properties-of-relations" },
                 { label: "Partitions", path: "/partitions" }
               ]} 
               size={size}
@@ -141,7 +141,7 @@ const SidebarMenu = () => (
           <CustomAccordionPanel label="5.2: Topological Sorting">
             <AccordionPanelContent 
               content={[
-                { label: "Task Tables", path: "/pert-diagrams" }
+                { label: "Task Scheduling", path: "/pert-diagrams" }
               ]} 
               size={size}
             />
@@ -152,8 +152,8 @@ const SidebarMenu = () => (
           <CustomAccordionPanel label="5.4: Functions">
             <AccordionPanelContent 
               content={[
-                { label: "Permutations Of A Cycle", path: "/permutations-cycle" },
-                { label: "Permutations Expressed As Disjoint Cycles", path: "/disjoint-cycles" }
+                { label: "Permutations", path: "/permutations-cycle" },
+                { label: "Disjoint Cycles", path: "/disjoint-cycles" }
               ]} 
               size={size}
             />

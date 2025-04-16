@@ -4,14 +4,11 @@ import { solveBinaryUnaryOperators } from '../api';
 import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
 
-
- 
 const MAX_SET_SIZE = 7;
   
 const BinaryUnaryOperators = () => {
   // State for input mode
   const [choice, setChoice] = useState('1'); // '1' for Table, '2' for Expression
-  const [activeTab, setActiveTab] = useState(0);
   
   // State for table mode
   const [setInput, setSetInput] = useState('');
@@ -30,14 +27,8 @@ const BinaryUnaryOperators = () => {
 
   const { trackResults } = useDiagnostics("BINARY_UNARY_OPERATORS");
 
-  // Switch tabs when choice changes
-  useEffect(() => {
-    setActiveTab(choice === '1' ? 0 : 1);
-  }, [choice]);
-
   const fillWithTableSample = () => {
     setChoice('1');
-    setActiveTab(0);
     setSetInput(SAMPLE_SET);
     
     // Create sample table matrix for a b c
@@ -51,7 +42,6 @@ const BinaryUnaryOperators = () => {
 
   const fillWithExpressionSample = () => {
     setChoice('2');
-    setActiveTab(1);
     setExpressionInput(SAMPLE_EXPRESSION);
   };
 
@@ -77,13 +67,6 @@ const BinaryUnaryOperators = () => {
     } else {
       setTableMatrix([['']]);
     }
-  };
-  
-  // Update choice when tab changes
-  const handleTabChange = (index) => {
-    setActiveTab(index);
-    setChoice(index === 0 ? '1' : '2');
-    setError('');
   };
 
   // Then update the handleSetInputChange function
@@ -248,7 +231,7 @@ const BinaryUnaryOperators = () => {
           Binary & Unary Operations:
         </Text>
         
-        {activeTab === 0 ? (
+        {choice === '1' ? (
           <>
             <Text margin={{ bottom: 'small' }}>
               Table Input Format:
@@ -303,7 +286,28 @@ const BinaryUnaryOperators = () => {
     );
   };
 
-  const Input = () => {
+  return (
+    <SolverPage
+      title="Binary & Unary Operators"
+      topic="Sets"
+      description="This tool helps you analyze binary and unary operations on sets."
+      paragraphs={[
+        "Binary operations take two inputs from a set and return an output in the same set. Examples include addition and multiplication on numbers.",
+        "Unary operations take one input from a set and return an output in the same set. Examples include negation and squaring of numbers.",
+        "Choose an input method below to check if an operation is well-defined on a set!"
+      ]}
+      InfoText={Info}
+      InputComponent={Input}
+      input_props={{ choice, setChoice, setInput, handleSetInputChange, getSetElements, tableMatrix, setTableMatrix, expressionInput, setExpressionInput }}
+      error={error}
+      handle_solve={handleSolve}
+      loading={loading}
+      render_output={renderOutput}
+    />
+  );
+};
+
+  const Input = ({ choice, setChoice, setInput, handleSetInputChange, getSetElements, tableMatrix, setTableMatrix, expressionInput, setExpressionInput }) => {
     return (
       <Box>
         <Box margin={{ "bottom": "medium" }}>
@@ -320,8 +324,8 @@ const BinaryUnaryOperators = () => {
           </FormField>
         </Box>
 
-        <Tabs activeIndex={activeTab} onActive={handleTabChange}>
-          <Tab title="Table Input">
+        {choice === '1' ? (
+          <>
             <Box margin={{ top: 'small' }}>
               <FormField label="Set Elements (space-separated)" required>
                 <TextInput
@@ -371,9 +375,9 @@ const BinaryUnaryOperators = () => {
                 </Box>
               )}
             </Box>
-          </Tab>
-
-          <Tab title="Expression Input">
+          </>
+        ) : (
+          <>
             <Box margin={{ top: 'small' }}>
               <FormField label="Operation Expression" required>
                 <TextInput
@@ -383,31 +387,10 @@ const BinaryUnaryOperators = () => {
                 />
               </FormField>
             </Box>
-          </Tab>
-        </Tabs>
-      </Box>
+          </>
+        )}
+    </Box>
     );
   };
-
-  return (
-    <SolverPage
-      title="Binary & Unary Operators"
-      topic="Sets"
-      description="This tool helps you analyze binary and unary operations on sets."
-      paragraphs={[
-        "Binary operations take two inputs from a set and return an output in the same set. Examples include addition and multiplication on numbers.",
-        "Unary operations take one input from a set and return an output in the same set. Examples include negation and squaring of numbers.",
-        "Choose an input method below to check if an operation is well-defined on a set!"
-      ]}
-      InfoText={Info}
-      InputComponent={Input}
-      input_props={null}
-      error={error}
-      handle_solve={handleSolve}
-      loading={loading}
-      render_output={renderOutput}
-    />
-  );
-};
 
 export default BinaryUnaryOperators;
