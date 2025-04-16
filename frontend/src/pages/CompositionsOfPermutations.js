@@ -218,6 +218,10 @@ const CompositionOfPermutations = () => {
     return Number.isInteger(numOne) && Number.isInteger(numTwo) && numOne > 0 && numTwo > 0 && numOne <= 1000;
   };
 
+  const toggleCaveman = () => {
+    setIsCaveman(!isCaveman);
+  };
+
   const validateSizes = (setOne, setTwo) => {
     return Number(setOne) >= Number(setTwo);
   }
@@ -235,6 +239,7 @@ const CompositionOfPermutations = () => {
       handle_solve={handleSolve}
       loading={loading}
       render_output={renderOutput}
+      topRightButton={toggleCaveman}
     />
   );
 };

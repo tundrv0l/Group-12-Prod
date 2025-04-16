@@ -177,6 +177,10 @@ const PropositionalLogicSolver = () => {
   
 };
 
+  const toggleCaveman = () => {
+    setIsCaveman(!isCaveman);
+  };
+
   const renderOutput = () => {
     return (
       <Box>
@@ -208,6 +212,7 @@ const PropositionalLogicSolver = () => {
     handle_solve={handleSolve}
     loading={loading}
     render_output={renderOutput}
+    topRightButton={toggleCaveman}
   />
   );
 };
