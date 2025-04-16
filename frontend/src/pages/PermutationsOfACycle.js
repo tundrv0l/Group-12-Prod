@@ -1,14 +1,15 @@
 import React from 'react';
 import { Box, Text, Button } from 'grommet';
 import { solvePermutationsCycle } from '../api';
+import { useDiagnostics } from '../hooks/useDiagnostics';
 import SolverPage from '../components/SolverPage';
 import MatrixTable from '../components/PermutationsInput';
 import MatrixToolbar from '../components/PermutatinsToolbar';
-import { useDiagnostics } from '../hooks/useDiagnostics';
+import LatexLine from '../components/LatexLine';
 
 /*
 * Name: PermutationsOfACycle.js
-* Author: Parker Clark
+* Author: Parker Clark, Jacob Warren
 * Description: Solver page for analyzing permutations of a cycle.
 */
 
@@ -19,7 +20,6 @@ const PermutationsOfACycle = () => {
   const [loading, setLoading] = React.useState(false);
 
   const { trackResults } = useDiagnostics("PERMUTATIONS_CYCLE");
-
   
   const fillWithSingle = () => {
       const SAMPLE_MATRIX = [
@@ -64,7 +64,7 @@ const PermutationsOfACycle = () => {
           Permutation Cycles:
         </Text>
         <Text>
-          A permutation is a bijective function from a set to itself. To input a permutation:
+          To input a permutation:
         </Text>
         <Text margin={{ top: "xsmall" }}>
           1. First row: Enter the domain elements (e.g., 1 2 3 4)
@@ -114,29 +114,7 @@ const PermutationsOfACycle = () => {
     );
   };
 
-  const Input = () => {
-    return (
-      <Box>
-        <MatrixTable label="Input Matrix" matrix={matrix} setMatrix={setMatrix} />
-        <MatrixToolbar matrix={matrix} setMatrix={setMatrix} combined addRemoveBoth />
-      </Box>
-    );
-  };
-
-  const renderOutput = () => {
-    if (!output) {
-      return "Output will be displayed here!";
-    }
-    
-    const results = typeof output === 'string' ? JSON.parse(output) : output;
-    return Object.entries(results)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join(', ');
-  };
-
-
   const handleSolvePermutations = async () => {
-
     // Empty output and error messages
     setLoading(true);
     setOutput('');
@@ -205,23 +183,63 @@ const PermutationsOfACycle = () => {
 
   return (
     <SolverPage
-      title="Permutations of a Cycle"
+      title="Permutations"
       topic="Functions"
-      description="This tool helps you analyze permutations of a cycle in discrete mathematics."
-      paragraphs={[
-        "A permutation of a cycle is a rearrangement of the elements in a cyclic order. This tool allows you to input a cycle and generate its permutations.",
-        "By analyzing permutations of a cycle, you can understand the different ways elements can be ordered within a cycle, which is useful in various applications such as cryptography, coding theory, and combinatorial optimization.",
-        "Enter your cycle below to generate and analyze its permutations!"
-      ]}
+      description="This tool produces the cycle form of a permutation."
+      DescriptionComponent={Description}
       InfoText={Info}
       InputComponent={Input}
-      input_props={ null }
+      input_props={{matrix, setMatrix}}
       error={error}
       handle_solve={handleSolvePermutations}
       loading={loading}
-      render_output={renderOutput}
+      OutputComponent={Output}
+      output_props={{output}}
     />
   );
+};
+
+const Description = () => {
+    return(
+      <div style={{textAlign: "left"}}>
+        <LatexLine
+          string="Given a set $S$, a permutation of $S$ is a bijective function $f:S\to S$."
+        />
+        <Text weight="bold" margin={{"bottom": "small"}}>Array Form</Text>
+        <LatexLine
+          string="For finite sets, the array form of a permutation is is a two rowed matrix where the top row is your domain, and a bottom row entry corresponds to the image under the permutation for the element above."
+        />
+        <Text weight="bold" margin={{"bottom": "small"}}>Cycle Form</Text>
+        <LatexLine
+          string="The cycle form of a permutation expresses the permutation as a composition of disjoint cycles, where each element maps to the element to its right (wrapping at the end). Every permutation on finite sets, besides the identity permutation can be represented this way (with a single element cycle (a) representing the identity, for output purposes). Example: $$ (1 2 3)\circ (4 5)$$."
+        />
+        <LatexLine
+          string="Enter your perumtation of $S$ in array form below."
+        />
+      </div>
+    );
+}
+
+const Input = ({ matrix, setMatrix }) => {
+    return (
+      <Box>
+        <MatrixTable label="Input Matrix" matrix={matrix} setMatrix={setMatrix} />
+        <MatrixToolbar matrix={matrix} setMatrix={setMatrix} combined addRemoveBoth />
+      </Box>
+    );
+};
+
+const Output = ({ output }) => {
+    if (!output) {
+      return "Output will be displayed here!";
+    }
+
+    const results = typeof output === 'string' ? JSON.parse(output) : output;
+    return (
+        <Text>
+            {Object.entries(results).map(([key, value]) => `${key}: ${value}`).join(', ')}
+        </Text>
+    )
 };
 
 export default PermutationsOfACycle;

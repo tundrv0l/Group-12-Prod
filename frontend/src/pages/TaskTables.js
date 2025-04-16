@@ -348,7 +348,7 @@ const Output = ({ output, isTimed }) => {
             Total Relation: {total_relation}
           </div>
           <Box>
-            <img src={`data:image/png;base64,${diagram}`} alt="PERT Diagram" />
+            <img src={`data:image/png;base64,${diagram}`} alt="PERT Chart" />
           </Box>
       </>
     );
