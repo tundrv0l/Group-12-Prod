@@ -62,7 +62,7 @@ export const sendDiagnostics = async (payload) => {
 
 export const fetchDiagnostics = async () => {
     try {
-        const response = await axios.get('http://localhost:5000/admin/diagnostics', {
+        const response = await apiClient.get('/admin/diagnostics',  {
         headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('adminAuth')
         }
