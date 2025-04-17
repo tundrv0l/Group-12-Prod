@@ -75,27 +75,13 @@ const PropositionalLogicOperationsTable = () => {
               <Text>IMPLIES</Text>
             </TableCell>
             <TableCell>
-              <Text>-{'>'} | → | {">"} </Text>
+              <Text>-{'>'} | {'>'} | → | {">"} </Text>
             </TableCell>
             <TableCell>
               <Text>Logical implication</Text>
             </TableCell>
             <TableCell>
               <Text>A → B</Text>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <Text>IFF</Text>
-            </TableCell>
-            <TableCell>
-              <Text>{'<>'} | ↔ | 4 </Text>
-            </TableCell>
-            <TableCell>
-              <Text>Logical biconditional</Text>
-            </TableCell>
-            <TableCell>
-              <Text>A ↔ B</Text>
             </TableCell>
           </TableRow>
         </TableBody>

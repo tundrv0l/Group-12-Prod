@@ -103,6 +103,9 @@ class Letter:
             if self.parent1 == "hypothesis" or self.parent1 == "Hypothesis":
                 outputString += ", Hypothesis"
                 outputStrng += ", Hypothesis"
+            if self.type == "hypothesis by deduction method":
+                outputString += " by deduction method."
+                outputStrng += " by deduction method."
             if p1:
                 for h in hypothesi:
                     if h >= self.parent1:
@@ -118,7 +121,7 @@ class Letter:
                     if h >= self.parent2:
                         outputString += ", " + str(h.pnumb)
                         outputStrng += ", " + str(h.pnumb)
-            if self.type != "none":
+            if self.type != "none" and self.type != "hypothesis by deduction method":
                 outputString += ", " + self.type
                 outputStrng += ", " + self.type
             outputString += "\n"
@@ -194,6 +197,9 @@ class OR:
             if self.parent1 == "hypothesis" or self.parent1 == "Hypothesis":
                 outputString += ", Hypothesis"
                 outputStrng += ", Hypothesis"
+            if self.type == "hypothesis by deduction method":
+                outputString += " by deduction method."
+                outputStrng += " by deduction method."
             if p1:
                 for h in hypothesi:
                     if h >= self.parent1:
@@ -204,7 +210,7 @@ class OR:
                     if h >= self.parent2:
                         outputString += ", " + str(h.pnumb)
                         outputStrng += ", " + str(h.pnumb)
-            if self.type != "none":
+            if self.type != "none" and self.type != "hypothesis by deduction method":
                 outputString += ", " + self.type
                 outputStrng += ", " + self.type
             outputString += "\n"
@@ -276,6 +282,9 @@ class IMPLIES:
             if self.parent1 == "hypothesis" or self.parent1 == "Hypothesis":
                 outputString += ", Hypothesis"
                 outputStrng += ", Hypothesis"
+            if self.type == "hypothesis by deduction method":
+                outputString += " by deduction method."
+                outputStrng += " by deduction method."
             if p1:
                 for h in hypothesi:
                     if h >= self.parent1:
@@ -286,7 +295,7 @@ class IMPLIES:
                     if h >= self.parent2:
                         outputString += ", " + str(h.pnumb)
                         outputStrng += ", " + str(h.pnumb)
-            if self.type != "none":
+            if self.type != "none" and self.type != "hypothesis by deduction method":
                 outputString += ", " + self.type
                 outputStrng += ", " + self.type
             outputString += "\n"
@@ -361,6 +370,9 @@ class AND:
             if self.parent1 == "hypothesis" or self.parent1 == "Hypothesis":
                 outputString += ", Hypothesis"
                 outputStrng += ", Hypothesis"
+            if self.type == "hypothesis by deduction method":
+                outputString += " by deduction method."
+                outputStrng += " by deduction method."
             if p1:
                 for h in hypothesi:
                     if h >= self.parent1:
@@ -371,7 +383,7 @@ class AND:
                     if h >= self.parent2:
                         outputString += ", " + str(h.pnumb)
                         outputStrng += ", " + str(h.pnumb)
-            if self.type != "none":
+            if self.type != "none" and self.type != "hypothesis by deduction method":
                 outputString += ", " + self.type
                 outputStrng += ", " + self.type
             outputString += "\n"
@@ -417,6 +429,10 @@ def cycleThrough(conclusion):
     global printedH
     global HsPrinted
     global letters
+    printedH.clear()
+    HsPrinted = 0
+    outputString = ""
+    outputStrng = ""
     
     print([str(h) for h in hypothesi])
 
@@ -688,6 +704,10 @@ def cycleThrough(conclusion):
     
     print([str(h) for h in hypothesi])
 
+    for h in hypothesi:
+        if h.type == "none" or h.type == "hypothesis by deduction method":
+            h.printParent()
+
         # Check the conclusion
     hasntThing = True
     for i in hypothesi:
@@ -699,9 +719,10 @@ def cycleThrough(conclusion):
         if isinstance(conclusion, IMPLIES):
 
             while isinstance(conclusion, IMPLIES):
-                outputString += "Because this conclusion only matters if " + str(conclusion.letter1) + " is true, then we can assume that it is, and place it in our hypothesises. This also means our new conclusion is " + str(conclusion.letter2) + "\n"
-                outputStrng += "Because this conclusion only matters if " + conclusion.letter1.altPrint() + " is true, then we can assume that it is, and place it in our hypothesises. This also means our new conclusion is " + conclusion.letter2.altPrint() + "\n"
+                outputString += "Because this conclusion only matters if " + str(conclusion.letter1) + " is true, then we can assume that it is, and place it in our hypotheses. This also means our new conclusion is " + str(conclusion.letter2) + "\n"
+                outputStrng += "Because this conclusion only matters if " + conclusion.letter1.altPrint() + " is true, then we can assume that it is, and place it in our hypotheses. This also means our new conclusion is " + conclusion.letter2.altPrint() + "\n"
                 conclusion.letter1.parent1 = "hypothesis"
+                conclusion.letter1.type = "hypothesis by deduction method"
                 hypothesi.append(conclusion.letter1)
                 conclusion = conclusion.letter2
 
@@ -1049,7 +1070,6 @@ def solve(hypothisis, conclusionn):
         outputStrng += "Because the conclusion is " + str(conclusion) + ", and A > B is the same as A' v B, then we can rearange the conclusion as: "
         l1 = conclusion.letter1.clone()
         l1.is_Not = not l1.is_Not
-        l1.type = "hypothesis"
         conclusion = OR(l1, conclusion.letter2, conclusion.parent1, conclusion.parent2, conclusion.type, True)
         outputString += str(conclusion) + "\n"
         outputStrng += str(conclusion) + "\n"

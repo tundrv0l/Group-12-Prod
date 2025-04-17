@@ -44,19 +44,14 @@ def _parse_formula(formula):
         return: str
             The parsed formula with Python equivalents of logical operators.
     '''
+    # Normalize brackets to parentheses first
+    formula = formula.replace('[', '(').replace(']', ')')
 
     # Process any parenthesized expressions first
     parenthesis_pattern =  re.findall(r'\(([^()]+)\)', formula)
     for expr in parenthesis_pattern:
         parsed_expr = _parse_formula(expr.strip())
         formula = formula.replace(f"({expr})", f"({parsed_expr})")
-    
-    # Also process bracket expressions
-    bracket_pattern = re.findall(r'\[([^\[\]]+)\]', formula)
-    for expr in bracket_pattern:
-        parsed_expr = _parse_formula(expr.strip())
-        formula = formula.replace(f"[{expr}]", f"[{parsed_expr}]")
-
 
     # Replace characters from the book copy n paste format
     formula = formula.replace('`', ' and ')
@@ -85,50 +80,8 @@ def _parse_formula(formula):
     formula = formula.replace('<>', ' == ')
     formula = re.sub(r"([A-Z])'", r'not \1', formula)
 
-    # Handle implication operators with improved pattern matching for complex expressions
-    implication_patterns = ['->', '→', '<=', '>', 'S']
-    
-    # Check if any implication operator exists in the formula
-    has_implication = any(pattern in formula for pattern in implication_patterns)
-
-    # Special handling of implication specifically because python hates this operation.
-    if has_implication:
-        
-        # Track parentheses/brackets balance to find the main implication operator
-        balance = 0
-        implication_pos = -1
-        implication_operator = None
-        
-        for i in range(len(formula)):
-            char = formula[i]
-            
-            # Track parentheses/brackets balance
-            if char in '([':
-                balance += 1
-            elif char in ')]':
-                balance -= 1
-            
-            # Only look for implication operators at top level (balance == 0)
-            if balance == 0:
-                # Check for each implication pattern
-                for pattern in implication_patterns:
-                    if i + len(pattern) <= len(formula) and formula[i:i+len(pattern)] == pattern:
-                        implication_pos = i
-                        implication_operator = pattern
-                        break
-                
-                if implication_pos != -1:
-                    break
-        
-        # If we found an implication operator at the top level
-        if implication_pos != -1:
-            left_side = formula[:implication_pos].strip()
-            right_side = formula[implication_pos + len(implication_operator):].strip()
-            
-            # Convert to implies function
-            formula = f"implies({left_side}, {right_side})"
-
-    return formula
+    # Return the formula once implications are parsed
+    return _parse_implications(formula)
 
 def _extract_intermediate_expressions(formula):
     '''
@@ -276,6 +229,100 @@ def solve(formula):
         truth_table["rows"].append(row)
 
     return json.dumps(truth_table)
+
+def _parse_implications(formula):
+    '''
+        Function to parse implicative expressions via recursion
+
+        Parameters
+        ----------
+        formula (str): 
+            The logical formula to solve
+
+        Returns
+        ----------
+        return: str
+           A string with the elaborated formula
+    '''
+
+    # Base case - if no implication operators, return as is
+    if '->' not in formula and '→' not in formula and 'S' not in formula and '>' not in formula:
+        return formula
+    
+    # Find the rightmost implication at the top level (outside any parentheses)
+    operators = ['->', '→', 'S', '>']
+    last_pos = -1
+    last_op = None
+    paren_level = 0
+    
+    # Scan through the formula character by character
+    for i in range(len(formula)):
+        char = formula[i]
+        
+        if char == '(':
+            paren_level += 1
+        elif char == ')':
+            paren_level -= 1
+        # Only check for operators at the top level (outside parentheses)
+        elif paren_level == 0:
+            for op in operators:
+                # Check if this position contains a complete operator
+                if i + len(op) <= len(formula) and formula[i:i+len(op)] == op:
+                    # Check this isn't part of a longer operator (e.g., '>' in '->')
+                    valid_match = True
+                    if op == '>' and i > 0 and formula[i-1:i+1] == '->':
+                        valid_match = False
+                        
+                    if valid_match and i > last_pos:
+                        last_pos = i
+                        last_op = op
+    
+    # If no implications found at top level
+    if last_pos == -1:  
+        # Process internal parenthesized expressions
+        paren_start = -1
+        paren_level = 0
+        
+        for i in range(len(formula)):
+            if formula[i] == '(':
+                if paren_level == 0:
+                    paren_start = i
+                paren_level += 1
+            elif formula[i] == ')':
+                paren_level -= 1
+                if paren_level == 0 and paren_start != -1:
+                    # Found a complete parenthesized expression
+                    inner_content = formula[paren_start+1:i]
+                    processed = _parse_implications(inner_content)
+                    if processed != inner_content:  # Only replace if changed
+                        return formula[:paren_start+1] + processed + formula[i:]
+        
+        # No changes made
+        return formula
+    
+    # Split the formula at the rightmost top-level implication
+    left_part = formula[:last_pos]
+    op_len = len(last_op)
+    right_part = formula[last_pos + op_len:]
+    
+    # Process both parts recursively
+    parsed_left = _parse_implications(left_part)
+    parsed_right = _parse_implications(right_part)
+    
+    # Combine the results with implies()
+    return f"implies({parsed_left}, {parsed_right})"
+
+def _is_balanced_expression(expr):
+    '''Helper function to check if parentheses are balanced'''
+    paren_count = 0
+    for c in expr:
+        if c == '(':
+            paren_count += 1
+        elif c == ')':
+            paren_count -= 1
+            if paren_count < 0:
+                return False
+    return paren_count == 0
 
 def _classify_wff(truth_table_rows):
     """

@@ -271,7 +271,7 @@ const WFFSolverPage = () => {
       paragraphs={[
         "A WFF is a valid expression in propositional logic that is constructed using logical operators (like AND, OR, NOT, IMPLIES) and propositions (like A, B, C). These formulas strictly adhere to the syntax rules of logic, making them suitable for mathematical reasoning.",
         "A truth table is a systematic way to list all possible truth values for a given logical expression. It shows how the truth value of the entire formula depends on the truth values of its components. Truth tables are especially useful for verifying tautologies (statements that are always true) or contradictions (statements that are always false).",
-        "This solver uses left-to-right associativity for operations at the same precedence level. This means that expressions like \"A ∧ B ∧ C\" are evaluated as \"(A ∧ B) ∧ C\" rather than \"A ∧ (B ∧ C)\". Use parentheses to enforce specific grouping if needed."
+        "WFFs use symbolic notation rather than natural language to represent logical operations. Instead of writing 'A AND B', we use symbols like '∧' or '^' to represent conjunction. Similarly, '∨' represents OR, '¬' represents NOT, and '→' represents IMPLIES. This symbolic notation allows for concise and precise representation of logical statements, making them easier to analyze and evaluate."
       ]}
       InfoText={Info}
       InputComponent={Input}

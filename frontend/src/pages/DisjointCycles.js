@@ -1,12 +1,13 @@
 import React from 'react';
 import { Box, Text, TextInput, Button} from 'grommet';
 import { solveDisjointCycles } from '../api';
-import SolverPage from '../components/SolverPage';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+import SolverPage from '../components/SolverPage';
+import LatexLine from '../components/LatexLine';
 
 /*
 * Name: DisjointCycles.js
-* Author: Parker Clark
+* Author: Parker Clark, Jacob Warren
 * Description: Solver page for analyzing disjoint cycles.
 */
 
@@ -46,16 +47,10 @@ const DisjointCycles = () => {
           Disjoint Cycles:
         </Text>
         <Text>
-          To input permutations as disjoint cycles, use the following format:
+          To input a permutation in a cycle form, use the following format:
         </Text>
         <Text>
-          <strong>(a b c)(d e f)...</strong>
-        </Text>
-        <Text>
-          For example: <strong>(1 2 3)(4 5)</strong>
-        </Text>
-        <Text>
-          This represents two disjoint cycles: one that maps 1→2→3→1 and another that maps 4→5→4.
+          <strong>(a b c)(d e f)</strong>
         </Text>
 
         <Box margin={{ top: 'medium' }} align="center">
@@ -93,17 +88,6 @@ const DisjointCycles = () => {
           />
         </Box>
       </>
-    );
-  };
-
-  // Input component
-  const Input = () => {
-    return (
-      <TextInput 
-        placeholder="Example: Enter your permutations here (e.g., (1 2 3)(4 5))"
-        value={input}
-        onChange={(event) => setInput(event.target.value)}
-      />
     );
   };
 
@@ -198,21 +182,44 @@ const DisjointCycles = () => {
     <SolverPage
     title="Disjoint Cycles"
     topic="Functions"
-    description="This tool helps you analyze permutations as disjoint cycles in discrete mathematics."
-    paragraphs={[
-      "A permutation can be decomposed into a product of disjoint cycles. This tool allows you to input a permutation and generate its disjoint cycle representation.",
-      "By analyzing permutations as disjoint cycles, you can understand the structure of permutations and how elements are mapped within cycles. This is useful in various applications such as group theory, cryptography, and combinatorial optimization.",
-      "Enter your permutation below to generate and analyze its disjoint cycles!"
-    ]}
+    description="This tool converts any cycle form of a permutation to its disjoint cycle form."
+    DescriptionComponent={Description}
     InfoText={Info}
     InputComponent={Input}
-    input_props={null}
+    input_props={{input, setInput}}
     error={error}
     handle_solve={handleSolve}
     loading={loading}
     render_output={renderOutput}
     />
   );
+};
+
+const Description = () => {
+    return(
+      <div style={{textAlign: "left"}}>
+        <LatexLine
+          string="Given a set $S$, a permutation of $S$ is a bijective function $f:S\to S$."
+        />
+        <Text weight="bold" margin={{"bottom": "small"}}>Cycle Form</Text>
+        <LatexLine
+          string="The cycle form of a permutation expresses the permutation as a composition of disjoint cycles, where each element maps to the element to its right (wrapping at the end). Every permutation on finite sets, besides the identity permutation, can be represented this way (with a single element cycle (a) representing the identity, for output purposes). The solver takes a potentially non-disjoint composition of cycles to a disjoint one. Example of non-disjoint: $$ (1\ 2\ 3)\circ (3\ 4)$$."
+        />
+        <LatexLine
+          string="Enter your composition of cycles below."
+        />
+      </div>
+    );
+}
+
+const Input = ({ input, setInput }) => {
+    return (
+      <TextInput 
+        placeholder="Enter your cycles here (e.g., (1 2 3)(4 5))"
+        value={input}
+        onChange={(event) => setInput(event.target.value)}
+      />
+    );
 };
 
 export default DisjointCycles;

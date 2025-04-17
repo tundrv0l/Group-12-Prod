@@ -112,13 +112,13 @@ const PartitionInput = ({ value, onChange }) => {
 
   return (
     <Box>
-      <Text margin={{ bottom: 'xsmall' }}>Partitions:</Text>
+      <Text margin={{ bottom: 'xsmall' }}>Partition:</Text>
       
       {partitions.map((partition, index) => (
         <Box key={index} direction="row" align="center" margin={{ bottom: 'xsmall' }}>
           <Box flex={true} margin={{ right: 'small' }}>
             <TextInput
-              placeholder={`Enter partition elements (e.g., a, b, c)`}
+              placeholder={`Enter elements (e.g., a, b, c)`}
               value={partition}
               onChange={(e) => updatePartition(index, e.target.value)}
             />
@@ -135,7 +135,7 @@ const PartitionInput = ({ value, onChange }) => {
       <Box margin={{ top: 'small' }}>
         <Button
           icon={<Add />}
-          label="Add Partition"
+          label="Add Part"
           onClick={addPartition}
           plain={false}
           primary
@@ -145,12 +145,7 @@ const PartitionInput = ({ value, onChange }) => {
       
       <Box margin={{ top: 'small' }} background="light-2" pad="small" round="small">
         <Text size="small">
-        Preview: {`{${partitions.map(p => {
-          const trimmed = p.trim();
-          if (trimmed === '') return '{}';
-          if (trimmed.startsWith('{') && trimmed.endsWith('}')) return trimmed;
-          return `{${trimmed}}`;
-        }).join(',')}}`}
+        Preview: {`{${partitions.map(p => p.trim()).filter(trimmed => trimmed !== '').map(trimmed => `{${trimmed}}`).join(',')}}`}
         </Text>
       </Box>
     </Box>

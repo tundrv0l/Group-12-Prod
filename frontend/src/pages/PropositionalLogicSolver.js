@@ -118,8 +118,7 @@ const PropositionalLogicSolver = () => {
       // Track successful execution with timing
       trackResults(
         { hypotheses, conclusion }, 
-        parsedResult.String,  // Only track the String output
-        parsedResult.Symbol,
+        {String: parsedResult.String, Symbol: parsedResult.Symbol },
         performance.now() - startTime
       );
     } catch (err) {
@@ -177,6 +176,10 @@ const PropositionalLogicSolver = () => {
   
 };
 
+  const toggleCaveman = () => {
+    setIsCaveman(!isCaveman);
+  };
+
   const renderOutput = () => {
     return (
       <Box>
@@ -208,6 +211,7 @@ const PropositionalLogicSolver = () => {
     handle_solve={handleSolve}
     loading={loading}
     render_output={renderOutput}
+    topRightButton={toggleCaveman}
   />
   );
 };

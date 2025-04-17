@@ -1,9 +1,10 @@
 import React from 'react';
 import { Box, Text, Button } from 'grommet';
 import { solveCriticalPaths, solvePERTDiagrams, solveTopologicalSorting } from '../api';
+import { useDiagnostics } from '../hooks/useDiagnostics';
 import TaskTableInput from '../components/TaskTableInput';
 import SolverPage from '../components/SolverPage';
-import { useDiagnostics } from '../hooks/useDiagnostics';
+import LatexLine from '../components/LatexLine';
 
 /*
 * Name: TaskTables.js
@@ -245,7 +246,7 @@ const TaskTables = () => {
               pad={{ vertical: 'xsmall', horizontal: 'small' }}
             />
             <Button 
-              label="Fill with Indepedent Paths" 
+              label="Fill with Independent Paths" 
               onClick={fillWithSplit} 
               primary 
               size="small"
@@ -275,9 +276,9 @@ const TaskTables = () => {
 
   return (
     <SolverPage
-      title="Task Tables"
+      title="Task Scheduling"
       topic="Topological Sorting"
-      description="This tool helps you analyze PERT Diagrams in discrete mathematics."
+      description="This tool helps you analyze task scheduling."
       DescriptionComponent={Description}
       InfoText={() => <Info/>}
       InputComponent={TaskTableInput}
@@ -293,17 +294,30 @@ const TaskTables = () => {
 
 const Description = () => {
     return (
-      <>
-        <Text margin={{ bottom: "small" }} textAlgin="start" weight="normal">
-          A PERT (Program Evaluation Review Technique) diagram is a graphical representation used to model the tasks and dependencies in a project. This tool allows you to input a set of tasks and their dependencies to generate a PERT diagram.
-        </Text>
-        <Text margin={{ bottom: "small" }} textAlgin="start" weight="normal">
-          By analyzing PERT diagrams, you can visualize the sequence of tasks, identify critical paths, and optimize task scheduling. This tool allows you to input a set of tasks and their dependencies to generate the PERT diagram and analyze the critical paths.
-        </Text>
-        <Text margin={{ bottom: "medium" }} textAlgin="start" weight="normal">
-          Enter your tasks and dependencies below to generate and analyze the PERT diagram and critical paths!
-        </Text>
-      </>
+      <div style={{textAlign: "left"}}>
+        <LatexLine
+          string="Given a table of tasks, their prerequisites, and, optionally, their time to perform, a partial ordering on tasks can be defined by $A\preceq B\iff A=B$ or $A$ is a prerequisite for $B$."
+        />
+        <Text weight="bold" margin={{"bottom": "small"}}>Total Ordering</Text>
+        <LatexLine
+          string="A total ordering is a partial ordering such that for any $x$ and $y$, $x\preceq y$ or $x\preceq y$ is true. For any partial order, $\preceq$, there exists a total order that extends it; such an extension can be produced through topological sorting (for finite sets)."
+        />
+        <Text weight="bold" margin={{"bottom": "small"}}>Topological Sort</Text>
+        <LatexLine
+          string="To produce a total order from a partial order, we remove minimal elements from the set until it is empty. Then the total ordering is produced by ordering the elements by first removed: $x_1\prec x_2\prec\ldots\prec x_n$. The solver will produce a total ordering extending the partial ordering implied by the table inputted."
+        />
+        <Text weight="bold" margin={{"bottom": "small"}}>Critical Path</Text>
+        <LatexLine
+          string="A critical path is a sequence of tasks, starting with a task with no prerequisites and ending with a task with no dependent tasks, such that the time to complete said path is equal to the minimum amount of time required to finish all of the tasks. This solver computes one (of possibly multiple, equal in duration) critical paths and outputs the sequence and its time. Critical paths only apply to timed tasks, so untimed tables will only output the PERT diagram and total ordering."
+        />
+        <Text weight="bold" margin={{"bottom": "small"}}>PERT Chart</Text>
+        <LatexLine
+          string="A PERT chart is similar to a Hasse diagram in that it represents a partial order, but it progresses from left to right, is directed, and has times for timed tasks."
+        />
+        <LatexLine
+          string="Enter your timed or untimed tasks below."
+        />
+      </div>
     ); 
 }
 
@@ -334,7 +348,7 @@ const Output = ({ output, isTimed }) => {
             Total Relation: {total_relation}
           </div>
           <Box>
-            <img src={`data:image/png;base64,${diagram}`} alt="PERT Diagram" />
+            <img src={`data:image/png;base64,${diagram}`} alt="PERT Chart" />
           </Box>
       </>
     );

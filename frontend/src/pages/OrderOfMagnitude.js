@@ -1,20 +1,20 @@
 import React from 'react';
 import { Box, Text, Button } from 'grommet';
-import { solveOrderOfMagnitude } from '../api';
-import SolverPage from '../components/SolverPage';
-import PolynomialInput from '../components/PolynomialInput';
 import Latex from 'react-latex-next';
 import 'katex/dist/katex.min.css';
+import { solveOrderOfMagnitude } from '../api';
 import { useDiagnostics } from '../hooks/useDiagnostics';
+import SolverPage from '../components/SolverPage';
+import PolynomialInput from '../components/PolynomialInput';
+import LatexLine from '../components/LatexLine';
 
 /*
 * Name: OrderOfMagnitude.js
-* Author: Parker Clark
+* Author: Parker Clark, Jacob Warren
 * Description: Solver page for analyzing order of magnitude.
 */
 
 const OrderOfMagnitude = () => {
-
   // Default order on page to 2
   const [order, setOrder] = React.useState('2');
   const [coefficients, setCoefficients] = React.useState([]);
@@ -102,9 +102,6 @@ const OrderOfMagnitude = () => {
       <>
         <Text weight="bold" margin={{ bottom: "xsmall" }}>
           Order of Magnitude Analysis:
-        </Text>
-        <Text>
-          Order of magnitude helps compare the asymptotic growth rates of functions as their inputs become very large.
         </Text>
         <Text margin={{ top: "xsmall" }}>
           To use this tool:
@@ -287,12 +284,8 @@ const OrderOfMagnitude = () => {
     <SolverPage
       title="Order Of Magnitude"
       topic="Order of Magnitude"
-      description="This tool helps you analyze the order of magnitude in discrete mathematics."
-      paragraphs={[
-        "The order of magnitude is a way to express the scale or size of a value in powers of ten. This tool allows you to input a polynomial function and determine its order of magnitude.",
-        "By analyzing the order of magnitude, you can understand the relative size of functions and compare their growth rates. This is useful in various applications such as algorithm analysis and computational complexity.",
-        "Enter your polynomial function below to analyze its order of magnitude!"
-      ]}
+      description="This tool helps you prove that two polynomials have the same order of magnitude."
+      DescriptionComponent={Description}
       InfoText = {Info}
       InputComponent={Input}
       input_props={null}
@@ -303,5 +296,22 @@ const OrderOfMagnitude = () => {
     />
   );
 };
+
+const Description = () => {
+    return (
+      <div style={{textAlign: "left"}}>
+        <LatexLine
+          string="Two functions, $f$ and $f$, mapping to and from the non-negative real numbers have the same order of magnitude ($f=\Theta(g))\iff\exists n_0,c_1,c_2\in\mathbb{R}^+$ such that $\forall x\geq n_0$, $c_1g(x)\geq f(x)\geq c_2g(x)$." 
+        />
+        <Text weight="bold" margin={{"bottom": "small"}}>Polynomials</Text>
+        <LatexLine
+          string="This solver proves that two polynomials (with positive leading coefficients) of the same order are of the same order of magnitude." 
+        />
+        <LatexLine
+          string="Enter your $f$ and $g$ below, both can be placed inside a square root with the check box."
+        />
+      </div>
+    ); 
+}
 
 export default OrderOfMagnitude;
