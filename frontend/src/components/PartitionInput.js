@@ -164,13 +164,6 @@ const PartitionInput = ({ value, wholeValue, onChange }) => {
               const fullSet = flattenSet(wholeValue);
               const difference = [...fullSet].filter(e => !currentSet.has(e));
 
-              // Debug logging
-              console.log("value:", value);
-              console.log("wholeValue:", wholeValue);
-              console.log("currentSet:", Array.from(currentSet));
-              console.log("fullSet:", Array.from(fullSet));
-              console.log("difference:", difference);
-
               return `Missing elements: {${difference.join(', ')}}`;
             })()
           }
