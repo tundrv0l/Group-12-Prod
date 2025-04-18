@@ -44,14 +44,18 @@ def solve(set_string, partition_string):
     errorString = ""
     for letter in checkString1:
         if letter not in checkString2:
-            errorString += letter + ","
+            errorString += letter + ", "
     if errorString != "":
+        errorString = errorString[:-1] + ""
+        errorString = errorString[:-1] + "."
         raise exceptions.CalculateError(f"Partition is missing elements: " + errorString)
     errorString = ""
     for letter in checkString2:
         if letter not in checkString1:
-            errorString += letter + ","
+            errorString += letter + ", "
     if errorString != "":
+        errorString = errorString[:-1] + ""
+        errorString = errorString[:-1] + "."
         raise exceptions.CalculateError(f"Partition has extra elements: " + errorString)
 
     set_list = strings.parse_set(set_string)

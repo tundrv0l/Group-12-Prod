@@ -302,8 +302,9 @@ const Input = ({set, relation, setSet, setRelation}) => {
           />
         </Box>
         <Box margin={{top : "small" }}>
-          <PartitionInput
+        <PartitionInput
             value={relation}
+            wholeValue={set}
             onChange={setRelation}
           />
         </Box>
