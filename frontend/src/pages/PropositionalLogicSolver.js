@@ -93,7 +93,7 @@ const PropositionalLogicSolver = () => {
             pad={{ vertical: 'xsmall', horizontal: 'small' }}
           />
           <Button 
-            label="Fill with cringe Sample" 
+            label="Fill with unused hypotheses Sample" 
             onClick={fillWithSampleFour} 
             primary 
             onMouseDown={(e) => e.preventDefault()}
