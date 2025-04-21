@@ -16,7 +16,7 @@ const BinaryTrees = () => {
   const [output, setOutput] = React.useState('');
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-
+  const [properties, setProperties] = React.useState(null);
   const { trackResults } = useDiagnostics("BINARY_TREES");
 
   const SAMPLE_REGULAR_TREE = "A B C D E None F";
@@ -24,6 +24,18 @@ const BinaryTrees = () => {
   
   const fillWithSample = () => {
     setInput(treeType === 'regular' ? SAMPLE_REGULAR_TREE : SAMPLE_MATH_EXPRESSION);
+  };
+
+  const fillWithFullSample = () => {
+    setInput("A B C D E F G")
+  };
+
+  const fillWithCompleteSample = () => {
+    setInput("A B C D E F")
+  };
+
+  const fillWithUnbalancedSample = () => {
+    setInput("A B C D E None F None None G H None None None None I")
   };
 
   const Info = () => {
@@ -73,6 +85,30 @@ const BinaryTrees = () => {
             border={{ color: 'black', size: '2px' }}
             pad={{ vertical: 'xsmall', horizontal: 'small' }}
           />
+          <Button 
+            label="Fill with complete Sample" 
+            onClick={fillWithCompleteSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with full Sample" 
+            onClick={fillWithFullSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
+          <Button 
+            label="Fill with unbalanced Sample" 
+            onClick={fillWithUnbalancedSample} 
+            primary 
+            size="small"
+            border={{ color: 'black', size: '2px' }}
+            pad={{ vertical: 'xsmall', horizontal: 'small' }}
+          />
         </Box>
       </>
     );
@@ -99,7 +135,10 @@ const BinaryTrees = () => {
         <TextInput 
           placeholder={getPlaceholder()}
           value={input}
-          onChange={(event) => setInput(event.target.value)}
+          onChange={(event) => {
+            setInput(event.target.value);
+            setProperties(null);
+          }}          
         />
       </Box>
     );
@@ -159,6 +198,7 @@ const BinaryTrees = () => {
         );
 
         setOutput(result["image"]);
+        setProperties(result["properties"] || null);
       }
     } catch (err) {
       console.log(err);
@@ -190,14 +230,28 @@ const BinaryTrees = () => {
     if (!output) {
       return "Output will be displayed here!";
     }
-
-    // Parse out json object and return out elements one by one
+  
     return (
       <Box>
-        <img src={`data:image/png;base64,${output}`} alt="Graph" style={{ maxWidth: '100%', height: 'auto' }} />
+        <img
+          src={`data:image/png;base64,${output}`}
+          alt="Graph"
+          style={{ maxWidth: '100%', height: 'auto' }}
+        />
+        {properties && (
+          <Box margin={{ top: 'medium' }}>
+            <Text weight="bold" margin={{ bottom: 'small' }}>Tree Properties:</Text>
+            {Object.entries(properties).map(([key, value]) => (
+              <Text key={key}>
+                {key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}:{" "}
+                {Array.isArray(value) ? value.join(', ') : String(value)}
+              </Text>
+            ))}
+          </Box>
+        )}
       </Box>
     );
-  };
+  };  
 
   // Validate the input based on the tree type
   const validateInput = (input, treeType) => {
